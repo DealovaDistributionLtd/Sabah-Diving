@@ -190,7 +190,6 @@
     </div>
 
     <script>
-        // Updated SheetDB API Endpoint (Unblocked in China)
         const DB_ENDPOINT = "https://sheetdb.io/api/v1/90irpnion96lu";
 
         let bookings = [];
@@ -239,22 +238,23 @@
             submitBtn.innerText = "Syncing to Cloud... / 正在同步...";
             submitBtn.disabled = true;
 
+            // Keys match exact Google Sheet column headers: Timestamp, Booking Date, Full Name, Gender, Passport, Pax, Activity Date, Location, Package, Total Price, Deposit Paid, Balance Due, Payment Method, Status, Remarks
             const bookingData = {
-                timestamp: new Date().toISOString(),
-                bookingDate: document.getElementById('bookingDate').value,
-                fullName: document.getElementById('fullName').value,
-                gender: document.getElementById('gender').value,
-                passport: document.getElementById('passport').value,
-                pax: document.getElementById('pax').value,
-                activityDate: document.getElementById('activityDate').value,
-                location: document.getElementById('location').value,
-                packageType: document.getElementById('packageType').value,
-                totalPrice: document.getElementById('totalPrice').value,
-                depositPaid: document.getElementById('depositPaid').value,
-                balanceDue: document.getElementById('balanceDue').value,
-                paymentMethod: document.getElementById('paymentMethod').value,
-                status: document.getElementById('status').value,
-                remarks: document.getElementById('remarks').value || '-'
+                "Timestamp": new Date().toISOString(),
+                "Booking Date": document.getElementById('bookingDate').value,
+                "Full Name": document.getElementById('fullName').value,
+                "Gender": document.getElementById('gender').value,
+                "Passport": document.getElementById('passport').value,
+                "Pax": document.getElementById('pax').value,
+                "Activity Date": document.getElementById('activityDate').value,
+                "Location": document.getElementById('location').value,
+                "Package": document.getElementById('packageType').value,
+                "Total Price": document.getElementById('totalPrice').value,
+                "Deposit Paid": document.getElementById('depositPaid').value,
+                "Balance Due": document.getElementById('balanceDue').value,
+                "Payment Method": document.getElementById('paymentMethod').value,
+                "Status": document.getElementById('status').value,
+                "Remarks": document.getElementById('remarks').value || '-'
             };
 
             try {
@@ -291,20 +291,20 @@
             bookings.slice().reverse().forEach(b => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 transition">
-                        <td class="py-3 px-2 text-slate-300">${b.bookingDate || ''}</td>
-                        <td class="py-3 px-2 font-semibold text-slate-100">${b.fullName || ''}</td>
-                        <td class="py-3 px-2 text-slate-400">${b.gender || ''}</td>
-                        <td class="py-3 px-2 text-slate-400">${b.passport || ''}</td>
-                        <td class="py-3 px-2 text-center text-cyan-300 font-bold">${b.pax || 1}</td>
-                        <td class="py-3 px-2 text-cyan-400 font-medium">${b.activityDate || ''}</td>
-                        <td class="py-3 px-2 text-slate-300">${b.location || ''}</td>
-                        <td class="py-3 px-2 text-slate-300">${b.packageType || ''}</td>
-                        <td class="py-3 px-2 text-slate-200">RM${b.totalPrice || 0}</td>
-                        <td class="py-3 px-2 text-emerald-400">RM${b.depositPaid || 0}</td>
-                        <td class="py-3 px-2 text-rose-400 font-semibold">RM${b.balanceDue || 0}</td>
-                        <td class="py-3 px-2 text-slate-400">${b.paymentMethod || ''}</td>
-                        <td class="py-3 px-2 font-semibold text-emerald-400">${b.status || ''}</td>
-                        <td class="py-3 px-2 text-slate-400 truncate max-w-[120px]">${b.remarks || '-'}</td>
+                        <td class="py-3 px-2 text-slate-300">${b["Booking Date"] || ''}</td>
+                        <td class="py-3 px-2 font-semibold text-slate-100">${b["Full Name"] || ''}</td>
+                        <td class="py-3 px-2 text-slate-400">${b["Gender"] || ''}</td>
+                        <td class="py-3 px-2 text-slate-400">${b["Passport"] || ''}</td>
+                        <td class="py-3 px-2 text-center text-cyan-300 font-bold">${b["Pax"] || 1}</td>
+                        <td class="py-3 px-2 text-cyan-400 font-medium">${b["Activity Date"] || ''}</td>
+                        <td class="py-3 px-2 text-slate-300">${b["Location"] || ''}</td>
+                        <td class="py-3 px-2 text-slate-300">${b["Package"] || ''}</td>
+                        <td class="py-3 px-2 text-slate-200">RM${b["Total Price"] || 0}</td>
+                        <td class="py-3 px-2 text-emerald-400">RM${b["Deposit Paid"] || 0}</td>
+                        <td class="py-3 px-2 text-rose-400 font-semibold">RM${b["Balance Due"] || 0}</td>
+                        <td class="py-3 px-2 text-slate-400">${b["Payment Method"] || ''}</td>
+                        <td class="py-3 px-2 font-semibold text-emerald-400">${b["Status"] || ''}</td>
+                        <td class="py-3 px-2 text-slate-400 truncate max-w-[120px]">${b["Remarks"] || '-'}</td>
                     </tr>
                 `;
             });
