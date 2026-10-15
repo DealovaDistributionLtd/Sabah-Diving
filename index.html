@@ -190,8 +190,8 @@
     </div>
 
     <script>
-        // Paste your SheetDB API URL here (e.g. "https://sheetdb.io/api/v1/your_id") or keep your Apps Script URL
-        const DB_ENDPOINT = "https://script.google.com/macros/s/AKfycby4pB3rACpf9kkEh5VOIFjydaYFl1_lweAJj6Tf9gDTFtJ2MvwAAGHvfvPkzQrYJQE/exec";
+        // Updated SheetDB API Endpoint (Unblocked in China)
+        const DB_ENDPOINT = "https://sheetdb.io/api/v1/90irpnion96lu";
 
         let bookings = [];
 
@@ -221,7 +221,6 @@
 
         async function fetchBookings() {
             try {
-                // If using SheetDB or a GET endpoint to fetch shared records from the cloud sheet:
                 const response = await fetch(DB_ENDPOINT);
                 const data = await response.json();
                 if (Array.isArray(data)) {
@@ -229,9 +228,7 @@
                     renderTable();
                 }
             } catch (err) {
-                // Fallback to local storage if offline
-                bookings = JSON.parse(localStorage.getItem('sabah_dive_bookings')) || [];
-                renderTable();
+                console.error("Fetch error:", err);
             }
         }
 
@@ -261,26 +258,23 @@
             };
 
             try {
-                const formData = new URLSearchParams(bookingData).toString();
-
                 await fetch(DB_ENDPOINT, {
                     method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: bookingData })
                 });
 
-                bookings.push(bookingData);
-                localStorage.setItem('sabah_dive_bookings', JSON.stringify(bookings));
-                renderTable();
+                alert("Booking saved & synced successfully!");
                 document.getElementById('bookingForm').reset();
                 
                 const todayStr = new Date().toISOString().split('T')[0];
                 document.getElementById('bookingDate').value = todayStr;
                 document.getElementById('activityDate').value = todayStr;
+                
+                fetchBookings(); // Refresh table from cloud
             } catch (err) {
                 console.error("Sync error:", err);
-                alert("Sync failed. Saved locally.");
+                alert("Sync failed. Please check your network.");
             }
             
             submitBtn.innerText = "Save & Sync to Cloud / 保存并云端同步 🚀";
@@ -291,7 +285,7 @@
             const tbody = document.getElementById('bookingTableBody');
             tbody.innerHTML = '';
             if (!bookings || bookings.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="15" class="py-6 text-center text-slate-500 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="14" class="py-6 text-center text-slate-500 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
                 return;
             }
             bookings.slice().reverse().forEach(b => {
