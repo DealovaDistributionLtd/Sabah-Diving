@@ -179,6 +179,7 @@
                                     <th class="py-3 px-2">付款方式</th>
                                     <th class="py-3 px-2">Status</th>
                                     <th class="py-3 px-2">Remarks</th>
+                                    <th class="py-3 px-2 text-center">WeChat / WhatsApp 确认单</th>
                                 </tr>
                             </thead>
                             <tbody id="bookingTableBody" class="divide-y divide-slate-800/60">
@@ -188,7 +189,7 @@
                     </div>
                 </div>
 
-                <!-- Password Protected Financial KPI Summary Cards (Now at the Bottom) -->
+                <!-- Password Protected Financial KPI Summary Cards (At the Bottom) -->
                 <div class="bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
                         <h2 class="text-base sm:text-lg font-semibold text-cyan-300">🔒 Financial Summary / 财务报表</h2>
@@ -328,6 +329,31 @@
             renderTable();
         }
 
+        // Option 2: Generate WeChat / WhatsApp Confirmation Text & Copy to Clipboard
+        function shareBooking(name, actDate, location, pkg, pax, total, balance, status) {
+            const message = 
+`🌊 【沙巴潜水预定确认单 / Sabah Diving Confirmation】
+-----------------------------------
+👤 贵宾姓名 (Name): ${name}
+👥 人数 (Pax): ${pax} 位
+📅 活动日期 (Date): ${actDate}
+📍 活动地点 (Location): ${location}
+🏊 项目 (Package): ${pkg}
+-----------------------------------
+💰 订单总额 (Total): RM${total}
+🏷️ 待付尾款 (Balance Due): RM${balance}
+📌 状态 (Status): ${status}
+-----------------------------------
+💡 温馨提示：请提前准备好泳衣、毛巾及个人随身物品。期待与您开启精彩的沙巴海洋之旅！`;
+
+            navigator.clipboard.writeText(message).then(() => {
+                alert(`✅ Confirmation text copied for ${name}!\n已成功复制给【${name}】的确认单，可直接粘贴至微信或WhatsApp！`);
+            }).catch(err => {
+                console.error("Failed to copy text: ", err);
+                alert("Failed to copy confirmation text.");
+            });
+        }
+
         async function addBooking(event) {
             event.preventDefault();
             
@@ -410,7 +436,7 @@
             }
 
             if (!filtered || filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="14" class="py-6 text-center text-slate-500 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="15" class="py-6 text-center text-slate-500 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
                 return;
             }
 
@@ -418,6 +444,12 @@
                 const cleanBookingDate = (b["Booking Date"] || '').toString().replace(/^'/, '');
                 const cleanActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
                 const rawStatus = b["Status"] || '';
+                const name = b["Full Name"] || '';
+                const location = b["Location"] || '';
+                const pkg = b["Package"] || '';
+                const pax = b["Pax"] || 1;
+                const total = b["Total Price"] || 0;
+                const balance = b["Balance Due"] || 0;
 
                 let badgeClass = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-md";
                 if (rawStatus.toLowerCase().includes('pending')) {
@@ -431,19 +463,24 @@
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 transition">
                         <td class="py-3 px-2 text-slate-300">${cleanBookingDate}</td>
-                        <td class="py-3 px-2 font-semibold text-slate-100">${b["Full Name"] || ''}</td>
+                        <td class="py-3 px-2 font-semibold text-slate-100">${name}</td>
                         <td class="py-3 px-2 text-slate-400">${b["Gender"] || ''}</td>
                         <td class="py-3 px-2 text-slate-400">${b["Passport"] || ''}</td>
-                        <td class="py-3 px-2 text-center text-cyan-300 font-bold">${b["Pax"] || 1}</td>
+                        <td class="py-3 px-2 text-center text-cyan-300 font-bold">${pax}</td>
                         <td class="py-3 px-2 text-cyan-400 font-medium">${cleanActivityDate}</td>
-                        <td class="py-3 px-2 text-slate-300">${b["Location"] || ''}</td>
-                        <td class="py-3 px-2 text-slate-300">${b["Package"] || ''}</td>
-                        <td class="py-3 px-2 text-slate-200">RM${b["Total Price"] || 0}</td>
+                        <td class="py-3 px-2 text-slate-300">${location}</td>
+                        <td class="py-3 px-2 text-slate-300">${pkg}</td>
+                        <td class="py-3 px-2 text-slate-200">RM${total}</td>
                         <td class="py-3 px-2 text-emerald-400">RM${b["Deposit Paid"] || 0}</td>
-                        <td class="py-3 px-2 text-rose-400 font-semibold">RM${b["Balance Due"] || 0}</td>
+                        <td class="py-3 px-2 text-rose-400 font-semibold">RM${balance}</td>
                         <td class="py-3 px-2 text-slate-400">${b["Payment Method"] || ''}</td>
                         <td class="py-3 px-2"><span class="${badgeClass}">${rawStatus}</span></td>
                         <td class="py-3 px-2 text-slate-400 truncate max-w-[120px]">${b["Remarks"] || '-'}</td>
+                        <td class="py-3 px-2 text-center">
+                            <button onclick="shareBooking('${name.replace(/'/g, "\\'")}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${balance}', '${rawStatus}')" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 mx-auto">
+                                💬 Share
+                            </button>
+                        </td>
                     </tr>
                 `;
             });
