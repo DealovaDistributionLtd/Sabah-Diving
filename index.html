@@ -27,7 +27,7 @@
                 </p>
             </div>
             <div id="syncStatus" class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium whitespace-nowrap">
-                🟢 Cloud Shared Database Active / 云端共享数据库同步中
+                🟢 Cloud Shared Database & Calendar Active / 云端双向同步中
             </div>
         </header>
 
@@ -190,7 +190,8 @@
     </div>
 
     <script>
-        const DB_ENDPOINT = "https://sheetdb.io/api/v1/90irpnion96lu";
+        const SHEETDB_ENDPOINT = "https://sheetdb.io/api/v1/90irpnion96lu";
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4pB3rACpf9kkEh5VOIFjydaYFl1_lweAJj6Tf9gDTFtJ2MvwAAGHvfvPkzQrYJQE/exec";
 
         let bookings = [];
 
@@ -220,7 +221,7 @@
 
         async function fetchBookings() {
             try {
-                const response = await fetch(DB_ENDPOINT);
+                const response = await fetch(SHEETDB_ENDPOINT);
                 const data = await response.json();
                 if (Array.isArray(data)) {
                     bookings = data;
@@ -235,10 +236,9 @@
             event.preventDefault();
             
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerText = "Syncing to Cloud... / 正在同步...";
+            submitBtn.innerText = "Syncing to Cloud & Calendar... / 正在同步...";
             submitBtn.disabled = true;
 
-            // Keys match exact Google Sheet column headers: Timestamp, Booking Date, Full Name, Gender, Passport, Pax, Activity Date, Location, Package, Total Price, Deposit Paid, Balance Due, Payment Method, Status, Remarks
             const bookingData = {
                 "Timestamp": new Date().toISOString(),
                 "Booking Date": document.getElementById('bookingDate').value,
@@ -258,13 +258,39 @@
             };
 
             try {
-                await fetch(DB_ENDPOINT, {
+                // 1. Send data to SheetDB to update the Google Sheet
+                await fetch(SHEETDB_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ data: bookingData })
                 });
 
-                alert("Booking saved & synced successfully!");
+                // 2. Send data to Google Apps Script Web App to instantly update Google Calendar
+                const formData = new URLSearchParams({
+                    bookingDate: bookingData["Booking Date"],
+                    fullName: bookingData["Full Name"],
+                    gender: bookingData["Gender"],
+                    passport: bookingData["Passport"],
+                    pax: bookingData["Pax"],
+                    activityDate: bookingData["Activity Date"],
+                    location: bookingData["Location"],
+                    packageType: bookingData["Package"],
+                    totalPrice: bookingData["Total Price"],
+                    depositPaid: bookingData["Deposit Paid"],
+                    balanceDue: bookingData["Balance Due"],
+                    paymentMethod: bookingData["Payment Method"],
+                    status: bookingData["Status"],
+                    remarks: bookingData["Remarks"]
+                }).toString();
+
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+
+                alert("Booking saved, Sheet updated & Calendar synced successfully!");
                 document.getElementById('bookingForm').reset();
                 
                 const todayStr = new Date().toISOString().split('T')[0];
