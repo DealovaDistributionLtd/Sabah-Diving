@@ -149,6 +149,7 @@
                         <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
                             <thead>
                                 <tr class="border-b border-slate-800 text-slate-400 uppercase tracking-wider">
+                                    <th class="py-3 px-2">Timestamp</th>
                                     <th class="py-3 px-2">预定日期</th>
                                     <th class="py-3 px-2">姓名 (Name)</th>
                                     <th class="py-3 px-2">性别</th>
@@ -281,12 +282,13 @@
             const tbody = document.getElementById('bookingTableBody');
             tbody.innerHTML = '';
             if (!bookings || bookings.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="14" class="py-6 text-center text-slate-500 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="15" class="py-6 text-center text-slate-500 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
                 return;
             }
             bookings.slice().reverse().forEach(b => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 transition">
+                        <td class="py-3 px-2 text-slate-500">${b["Timestamp"] || ''}</td>
                         <td class="py-3 px-2 text-slate-300">${b["Booking Date"] || ''}</td>
                         <td class="py-3 px-2 font-semibold text-slate-100">${b["Full Name"] || ''}</td>
                         <td class="py-3 px-2 text-slate-400">${b["Gender"] || ''}</td>
