@@ -152,18 +152,19 @@
                         <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
                             <thead>
                                 <tr class="border-b border-slate-800 text-slate-400 uppercase tracking-wider">
-                                    <th class="py-3 px-2">预定日期</th>
-                                    <th class="py-3 px-2">姓名 (Name)</th>
-                                    <th class="py-3 px-2">性别</th>
-                                    <th class="py-3 px-2">护照号</th>
-                                    <th class="py-3 px-2">人数</th>
-                                    <th class="py-3 px-2">活动日期</th>
-                                    <th class="py-3 px-2">地点</th>
-                                    <th class="py-3 px-2">套餐</th>
-                                    <th class="py-3 px-2">总价</th>
-                                    <th class="py-3 px-2">定金</th>
-                                    <th class="py-3 px-2">尾款</th>
-                                    <th class="py-3 px-2">付款方式</th>
+                                    <th class="py-3 px-2">Timestamp</th>
+                                    <th class="py-3 px-2">Booking Date</th>
+                                    <th class="py-3 px-2">Full Name</th>
+                                    <th class="py-3 px-2">Gender</th>
+                                    <th class="py-3 px-2">Passport</th>
+                                    <th class="py-3 px-2">Pax</th>
+                                    <th class="py-3 px-2">Activity Date</th>
+                                    <th class="py-3 px-2">Location</th>
+                                    <th class="py-3 px-2">Package</th>
+                                    <th class="py-3 px-2">Total Price</th>
+                                    <th class="py-3 px-2">Deposit Paid</th>
+                                    <th class="py-3 px-2">Balance Due</th>
+                                    <th class="py-3 px-2">Payment Method</th>
                                     <th class="py-3 px-2">Status</th>
                                     <th class="py-3 px-2">Remarks</th>
                                 </tr>
@@ -257,14 +258,16 @@
             };
 
             try {
-                // Sends data straight to SheetDB (fully unblocked in China)
                 await fetch(SHEETDB_ENDPOINT, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ data: bookingData })
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify(bookingData)
                 });
 
-                alert("Booking saved & synced to cloud successfully!");
+                alert("Booking saved & synced successfully!");
                 document.getElementById('bookingForm').reset();
                 
                 const todayStr = new Date().toISOString().split('T')[0];
@@ -285,12 +288,13 @@
             const tbody = document.getElementById('bookingTableBody');
             tbody.innerHTML = '';
             if (!bookings || bookings.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="14" class="py-6 text-center text-slate-500 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="15" class="py-6 text-center text-slate-500 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
                 return;
             }
             bookings.slice().reverse().forEach(b => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 transition">
+                        <td class="py-3 px-2 text-slate-500">${b["Timestamp"] || ''}</td>
                         <td class="py-3 px-2 text-slate-300">${b["Booking Date"] || ''}</td>
                         <td class="py-3 px-2 font-semibold text-slate-100">${b["Full Name"] || ''}</td>
                         <td class="py-3 px-2 text-slate-400">${b["Gender"] || ''}</td>
@@ -300,7 +304,7 @@
                         <td class="py-3 px-2 text-slate-300">${b["Location"] || ''}</td>
                         <td class="py-3 px-2 text-slate-300">${b["Package"] || ''}</td>
                         <td class="py-3 px-2 text-slate-200">RM${b["Total Price"] || 0}</td>
-                        <td class="py-3 px-2 text-emerald-400">RM${b["Deposit Paid"]| 0}</td>
+                        <td class="py-3 px-2 text-emerald-400">RM${b["Deposit Paid"] || 0}</td>
                         <td class="py-3 px-2 text-rose-400 font-semibold">RM${b["Balance Due"] || 0}</td>
                         <td class="py-3 px-2 text-slate-400">${b["Payment Method"] || ''}</td>
                         <td class="py-3 px-2 font-semibold text-emerald-400">${b["Status"] || ''}</td>
