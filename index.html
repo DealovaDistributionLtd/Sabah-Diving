@@ -129,33 +129,34 @@
             submitBtn.innerText = "Syncing to Cloud... / 正在同步...";
             submitBtn.disabled = true;
 
-            const newBooking = {
+            const bookingData = {
                 id: Date.now(),
                 name: document.getElementById('guestName').value,
                 passport: document.getElementById('passport').value,
                 date: document.getElementById('activityDate').value,
                 location: document.getElementById('location').value,
                 package: document.getElementById('packageType').value,
-                price: document.getElementById('totalPrice').value,
-                status: 'Syncing...'
+                price: document.getElementById('totalPrice').value
             };
 
             try {
-                // Using text/plain content type to avoid browser preflight CORS blocks with Google Script
+                // Convert object to URL encoded parameters for Google Apps Script compatibility
+                const formData = new URLSearchParams(bookingData).toString();
+
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(newBooking)
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
                 });
 
-                newBooking.status = '✅ Synced Live';
+                bookingData.status = '✅ Synced Live';
             } catch (err) {
                 console.error("Sync error:", err);
-                newBooking.status = '⚠️ Saved Locally';
+                bookingData.status = '⚠️ Saved Locally';
             }
 
-            bookings.push(newBooking);
+            bookings.push(bookingData);
             localStorage.setItem('sabah_dive_bookings', JSON.stringify(bookings));
             renderTable();
             document.getElementById('bookingForm').reset();
