@@ -52,7 +52,7 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1.5">全名 (Full Name - 中/拼音)</label>
-                            <input type="text" id="fullName" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200" placeholder="e.g. Zhang Shiqi / 张诗琪">
+                            <input type="text" id="fullName" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200" placeholder="Enter full name / 请输入全名">
                         </div>
 
                         <div>
@@ -65,7 +65,7 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1.5">护照号码 (Passport Number)</label>
-                            <input type="text" id="passport" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200" placeholder="e.g. ES4761314">
+                            <input type="text" id="passport" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200" placeholder="Enter passport number / 请输入护照号">
                         </div>
 
                         <div>
@@ -84,6 +84,7 @@
                                 <option value="Semporna & Bum Bum">Semporna & Bum Bum (仙本那/邦邦岛)</option>
                                 <option value="Tun Sakaran Marine Park">Tun Sakaran Marine Park (敦沙卡兰公园)</option>
                                 <option value="Kota Kinabalu">Kota Kinabalu (亚庇)</option>
+                                <option value="Dreamer Island (淘梦岛)">Dreamer Island (淘梦岛)</option>
                             </select>
                         </div>
 
@@ -93,6 +94,7 @@
                                 <option value="DSD (Discover Scuba Diving)">DSD (体验潜水)</option>
                                 <option value="Fun Dive (3 Dives)">Fun Dive (3 潜)</option>
                                 <option value="Open Water Course">Open Water Course (OW 考证)</option>
+                                <option value="Snorkeling">Snorkeling (浮潜)</option>
                             </select>
                         </div>
 
@@ -102,23 +104,24 @@
                                 <option value="WeChat Pay">WeChat Pay (微信支付)</option>
                                 <option value="Alipay">Alipay (支付宝)</option>
                                 <option value="Bank Transfer">Bank Transfer (银行转账)</option>
+                                <option value="TNG (Touch 'n Go)">TNG (Touch 'n Go)</option>
                                 <option value="Cash">Cash (现金)</option>
                             </select>
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1.5">总价 (Total Price - RM)</label>
-                            <input type="number" id="totalPrice" oninput="calculateBalance()" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200" placeholder="600">
+                            <input type="number" id="totalPrice" oninput="calculateBalance()" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200" placeholder="0.00">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1.5">已付定金 (Deposit Paid - RM)</label>
-                            <input type="number" id="depositPaid" oninput="calculateBalance()" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200" placeholder="200">
+                            <input type="number" id="depositPaid" oninput="calculateBalance()" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200" placeholder="0.00">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1.5">尾款 (Balance Due - RM)</label>
-                            <input type="number" id="balanceDue" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-3 text-sm text-cyan-400 font-bold" placeholder="Auto-calculated">
+                            <input type="number" id="balanceDue" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-3 text-sm text-cyan-400 font-bold" placeholder="0.00">
                         </div>
 
                         <div>
@@ -133,7 +136,7 @@
 
                         <div class="sm:col-span-2">
                             <label class="block text-xs font-semibold text-slate-400 mb-1.5">Remarks (备注)</label>
-                            <input type="text" id="remarks" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200" placeholder="e.g. Equipment size M, dietary requirements...">
+                            <input type="text" id="remarks" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200" placeholder="Optional notes (e.g. equipment size, dietary requirements)">
                         </div>
 
                         <div class="xl:col-span-3 flex justify-end mt-2">
@@ -239,7 +242,6 @@
             submitBtn.innerText = "Syncing to Cloud & Calendar... / 正在同步...";
             submitBtn.disabled = true;
 
-            // Prepend a single quote (') to force SheetDB/Excel to treat dates as plain text strings, preventing serial number conversion (e.g. 46310)
             const bDateVal = document.getElementById('bookingDate').value;
             const aDateVal = document.getElementById('activityDate').value;
 
@@ -319,7 +321,6 @@
                 return;
             }
             bookings.slice().reverse().forEach(b => {
-                // Clean up any leading single quotes if present from sheet data
                 const cleanBookingDate = (b["Booking Date"] || '').toString().replace(/^'/, '');
                 const cleanActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
 
