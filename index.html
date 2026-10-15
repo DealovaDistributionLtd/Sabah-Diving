@@ -90,6 +90,7 @@
                                 <th class="py-3 px-2">Location / 地点</th>
                                 <th class="py-3 px-2">Package / 套餐</th>
                                 <th class="py-3 px-2">Status / 状态</th>
+                                <th class="py-3 px-2">Action / 操作</th>
                             </tr>
                         </thead>
                         <tbody id="bookingTableBody" class="divide-y divide-slate-700/50">
@@ -160,7 +161,6 @@
             };
 
             try {
-                // Sends data directly to SheetDB (fully unblocked in China)
                 await fetch(SHEETDB_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -168,8 +168,8 @@
                 });
 
                 alert("Booking saved & synced successfully! Calendar will update within 1 minute.");
-                document.getElementById('bookingForm').reset();
-                fetchBookings(); // Refresh table
+                document.getElementById('bookingForm'].reset();
+                fetchBookings();
             } catch (err) {
                 console.error("Sync error:", err);
                 alert("Sync failed. Please check your network.");
@@ -179,22 +179,43 @@
             submitBtn.disabled = false;
         }
 
+        async function deleteBooking(passport) {
+            if (!confirm("Are you sure you want to delete this booking?")) return;
+
+            try {
+                // Delete from SheetDB using Passport column
+                await fetch(`${SHEETDB_ENDPOINT}/Passport/${passport}`, {
+                    method: 'DELETE'
+                });
+
+                alert("Booking deleted from cloud successfully!");
+                fetchBookings(); // Refresh table
+            } catch (err) {
+                console.error("Delete error:", err);
+                alert("Failed to delete booking.");
+            }
+        }
+
         function renderTable() {
             const tbody = document.getElementById('bookingTableBody');
             tbody.innerHTML = '';
             if (!bookings || bookings.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-slate-500">No bookings recorded yet.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-slate-500">No bookings recorded yet.</td></tr>`;
                 return;
             }
             bookings.slice().reverse().forEach(b => {
+                const passportVal = b["Passport"] || '';
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-700/30 transition">
                         <td class="py-3 px-2 font-medium text-slate-200">${b["Full Name"] || ''}</td>
-                        <td class="py-3 px-2 text-slate-400">${b["Passport"] || ''}</td>
+                        <td class="py-3 px-2 text-slate-400">${passportVal}</td>
                         <td class="py-3 px-2 text-cyan-400">${b["Activity Date"] || ''}</td>
                         <td class="py-3 px-2 text-slate-300">${b["Location"] || ''}</td>
                         <td class="py-3 px-2 text-slate-300">${b["Package"] || ''}</td>
                         <td class="py-3 px-2 text-xs font-semibold text-emerald-400">✅ Synced Live</td>
+                        <td class="py-3 px-2">
+                            <button onclick="deleteBooking('${passportVal}')" class="bg-rose-500/20 hover:bg-rose-500/40 text-rose-400 px-2.5 py-1 rounded text-xs transition">Delete</button>
+                        </td>
                     </tr>
                 `;
             });
