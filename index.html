@@ -191,7 +191,7 @@
 
     <script>
         const SHEETDB_ENDPOINT = "https://sheetdb.io/api/v1/90irpnion96lu";
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4pB3rACpf9kkEh5VOIFjydaYFl1_lweAJj6Tf9gDTFtJ2MvwAAGHvfvPkzQrYJQE/exec";
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
 
         let bookings = [];
 
@@ -265,8 +265,8 @@
                     body: JSON.stringify({ data: bookingData })
                 });
 
-                // 2. Send data to Google Apps Script Web App to instantly update Google Calendar
-                const formData = new URLSearchParams({
+                // 2. Send JSON payload to Google Apps Script Web App to instantly update Google Calendar
+                const calendarPayload = {
                     bookingDate: bookingData["Booking Date"],
                     fullName: bookingData["Full Name"],
                     gender: bookingData["Gender"],
@@ -281,13 +281,12 @@
                     paymentMethod: bookingData["Payment Method"],
                     status: bookingData["Status"],
                     remarks: bookingData["Remarks"]
-                }).toString();
+                };
 
                 await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(calendarPayload)
                 });
 
                 alert("Booking saved, Sheet updated & Calendar synced successfully!");
