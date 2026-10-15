@@ -27,7 +27,7 @@
                 </p>
             </div>
             <div id="syncStatus" class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium whitespace-nowrap">
-                🟢 Cloud Auto-Sync Active / 云端同步中
+                🟢 Cloud Shared Database Active / 云端共享数据库同步中
             </div>
         </header>
 
@@ -138,7 +138,7 @@
 
                         <div class="xl:col-span-3 flex justify-end mt-2">
                             <button type="submit" id="submitBtn" class="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-8 py-3.5 rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
-                                Save & Sync to Calendar / 保存并同步日历 🚀
+                                Save & Sync to Cloud / 保存并云端同步 🚀
                             </button>
                         </div>
 
@@ -164,9 +164,8 @@
                                     <th class="py-3 px-2">定金</th>
                                     <th class="py-3 px-2">尾款</th>
                                     <th class="py-3 px-2">付款方式</th>
-                                    <th class="py-3 px-2">状态</th>
-                                    <th class="py-3 px-2">备注</th>
-                                    <th class="py-3 px-2">操作</th>
+                                    <th class="py-3 px-2">Status</th>
+                                    <th class="py-3 px-2">Remarks</th>
                                 </tr>
                             </thead>
                             <tbody id="bookingTableBody" class="divide-y divide-slate-800/60">
@@ -191,16 +190,16 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4pB3rACpf9kkEh5VOIFjydaYFl1_lweAJj6Tf9gDTFtJ2MvwAAGHvfvPkzQrYJQE/exec";
+        // Paste your SheetDB API URL here (e.g. "https://sheetdb.io/api/v1/your_id") or keep your Apps Script URL
+        const DB_ENDPOINT = "https://script.google.com/macros/s/AKfycby4pB3rACpf9kkEh5VOIFjydaYFl1_lweAJj6Tf9gDTFtJ2MvwAAGHvfvPkzQrYJQE/exec";
 
-        let bookings = JSON.parse(localStorage.getItem('sabah_dive_bookings')) || [];
+        let bookings = [];
 
         window.onload = function() {
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById('bookingDate').value = todayStr;
             document.getElementById('activityDate').value = todayStr;
             
-            // Force click/tap anywhere on the date input to open picker on mobile
             ['bookingDate', 'activityDate'].forEach(id => {
                 const el = document.getElementById(id);
                 el.addEventListener('click', function() {
@@ -210,7 +209,7 @@
                 });
             });
 
-            renderTable();
+            fetchBookings();
         };
 
         function calculateBalance() {
@@ -218,6 +217,22 @@
             const deposit = parseFloat(document.getElementById('depositPaid').value) || 0;
             const balance = total - deposit;
             document.getElementById('balanceDue').value = balance >= 0 ? balance : 0;
+        }
+
+        async function fetchBookings() {
+            try {
+                // If using SheetDB or a GET endpoint to fetch shared records from the cloud sheet:
+                const response = await fetch(DB_ENDPOINT);
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    bookings = data;
+                    renderTable();
+                }
+            } catch (err) {
+                // Fallback to local storage if offline
+                bookings = JSON.parse(localStorage.getItem('sabah_dive_bookings')) || [];
+                renderTable();
+            }
         }
 
         async function addBooking(event) {
@@ -228,7 +243,7 @@
             submitBtn.disabled = true;
 
             const bookingData = {
-                id: Date.now(),
+                timestamp: new Date().toISOString(),
                 bookingDate: document.getElementById('bookingDate').value,
                 fullName: document.getElementById('fullName').value,
                 gender: document.getElementById('gender').value,
@@ -248,67 +263,54 @@
             try {
                 const formData = new URLSearchParams(bookingData).toString();
 
-                await fetch(SCRIPT_URL, {
+                await fetch(DB_ENDPOINT, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: formData
                 });
 
-                bookingData.syncStatus = '✅ Synced';
-            } catch (err) {
-                console.error("Sync error:", err);
-                bookingData.syncStatus = '⚠️ Local Only';
-            }
-
-            bookings.push(bookingData);
-            localStorage.setItem('sabah_dive_bookings', JSON.stringify(bookings));
-            renderTable();
-            document.getElementById('bookingForm').reset();
-            
-            const todayStr = new Date().toISOString().split('T')[0];
-            document.getElementById('bookingDate').value = todayStr;
-            document.getElementById('activityDate').value = todayStr;
-            
-            submitBtn.innerText = "Save & Sync to Calendar / 保存并同步日历 🚀";
-            submitBtn.disabled = false;
-        }
-
-        function deleteBooking(id) {
-            if (confirm("Are you sure you want to delete this booking record?")) {
-                bookings = bookings.filter(b => b.id !== id);
+                bookings.push(bookingData);
                 localStorage.setItem('sabah_dive_bookings', JSON.stringify(bookings));
                 renderTable();
+                document.getElementById('bookingForm').reset();
+                
+                const todayStr = new Date().toISOString().split('T')[0];
+                document.getElementById('bookingDate').value = todayStr;
+                document.getElementById('activityDate').value = todayStr;
+            } catch (err) {
+                console.error("Sync error:", err);
+                alert("Sync failed. Saved locally.");
             }
+            
+            submitBtn.innerText = "Save & Sync to Cloud / 保存并云端同步 🚀";
+            submitBtn.disabled = false;
         }
 
         function renderTable() {
             const tbody = document.getElementById('bookingTableBody');
             tbody.innerHTML = '';
-            if (bookings.length === 0) {
+            if (!bookings || bookings.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="15" class="py-6 text-center text-slate-500 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
                 return;
             }
-            bookings.forEach(b => {
+            bookings.slice().reverse().forEach(b => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 transition">
-                        <td class="py-3 px-2 text-slate-300">${b.bookingDate}</td>
-                        <td class="py-3 px-2 font-semibold text-slate-100">${b.fullName}</td>
-                        <td class="py-3 px-2 text-slate-400">${b.gender}</td>
-                        <td class="py-3 px-2 text-slate-400">${b.passport}</td>
-                        <td class="py-3 px-2 text-center text-cyan-300 font-bold">${b.pax}</td>
-                        <td class="py-3 px-2 text-cyan-400 font-medium">${b.activityDate}</td>
-                        <td class="py-3 px-2 text-slate-300">${b.location}</td>
-                        <td class="py-3 px-2 text-slate-300">${b.packageType}</td>
-                        <td class="py-3 px-2 text-slate-200">RM${b.totalPrice}</td>
-                        <td class="py-3 px-2 text-emerald-400">RM${b.depositPaid}</td>
-                        <td class="py-3 px-2 text-rose-400 font-semibold">RM${b.balanceDue}</td>
-                        <td class="py-3 px-2 text-slate-400">${b.paymentMethod}</td>
-                        <td class="py-3 px-2 font-semibold text-emerald-400">${b.status}</td>
-                        <td class="py-3 px-2 text-slate-400 truncate max-w-[120px]">${b.remarks}</td>
-                        <td class="py-3 px-2">
-                            <button onclick="deleteBooking(${b.id})" class="bg-rose-500/20 hover:bg-rose-500/40 text-rose-400 px-2.5 py-1.5 rounded text-xs transition">Delete</button>
-                        </td>
+                        <td class="py-3 px-2 text-slate-300">${b.bookingDate || ''}</td>
+                        <td class="py-3 px-2 font-semibold text-slate-100">${b.fullName || ''}</td>
+                        <td class="py-3 px-2 text-slate-400">${b.gender || ''}</td>
+                        <td class="py-3 px-2 text-slate-400">${b.passport || ''}</td>
+                        <td class="py-3 px-2 text-center text-cyan-300 font-bold">${b.pax || 1}</td>
+                        <td class="py-3 px-2 text-cyan-400 font-medium">${b.activityDate || ''}</td>
+                        <td class="py-3 px-2 text-slate-300">${b.location || ''}</td>
+                        <td class="py-3 px-2 text-slate-300">${b.packageType || ''}</td>
+                        <td class="py-3 px-2 text-slate-200">RM${b.totalPrice || 0}</td>
+                        <td class="py-3 px-2 text-emerald-400">RM${b.depositPaid || 0}</td>
+                        <td class="py-3 px-2 text-rose-400 font-semibold">RM${b.balanceDue || 0}</td>
+                        <td class="py-3 px-2 text-slate-400">${b.paymentMethod || ''}</td>
+                        <td class="py-3 px-2 font-semibold text-emerald-400">${b.status || ''}</td>
+                        <td class="py-3 px-2 text-slate-400 truncate max-w-[120px]">${b.remarks || '-'}</td>
                     </tr>
                 `;
             });
