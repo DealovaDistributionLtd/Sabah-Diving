@@ -239,14 +239,18 @@
             submitBtn.innerText = "Syncing to Cloud & Calendar... / 正在同步...";
             submitBtn.disabled = true;
 
+            // Prepend a single quote (') to force SheetDB/Excel to treat dates as plain text strings, preventing serial number conversion (e.g. 46310)
+            const bDateVal = document.getElementById('bookingDate').value;
+            const aDateVal = document.getElementById('activityDate').value;
+
             const bookingData = {
                 "Timestamp": new Date().toISOString(),
-                "Booking Date": document.getElementById('bookingDate').value,
+                "Booking Date": "'" + bDateVal,
                 "Full Name": document.getElementById('fullName').value,
                 "Gender": document.getElementById('gender').value,
                 "Passport": document.getElementById('passport').value,
                 "Pax": document.getElementById('pax').value,
-                "Activity Date": document.getElementById('activityDate').value,
+                "Activity Date": "'" + aDateVal,
                 "Location": document.getElementById('location').value,
                 "Package": document.getElementById('packageType').value,
                 "Total Price": document.getElementById('totalPrice').value,
@@ -267,12 +271,12 @@
 
                 // 2. Send data to Google Apps Script Web App to instantly update Google Calendar
                 const formData = new URLSearchParams({
-                    bookingDate: bookingData["Booking Date"],
+                    bookingDate: bDateVal,
                     fullName: bookingData["Full Name"],
                     gender: bookingData["Gender"],
                     passport: bookingData["Passport"],
                     pax: bookingData["Pax"],
-                    activityDate: bookingData["Activity Date"],
+                    activityDate: aDateVal,
                     location: bookingData["Location"],
                     packageType: bookingData["Package"],
                     totalPrice: bookingData["Total Price"],
@@ -315,14 +319,18 @@
                 return;
             }
             bookings.slice().reverse().forEach(b => {
+                // Clean up any leading single quotes if present from sheet data
+                const cleanBookingDate = (b["Booking Date"] || '').toString().replace(/^'/, '');
+                const cleanActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 transition">
-                        <td class="py-3 px-2 text-slate-300">${b["Booking Date"] || ''}</td>
+                        <td class="py-3 px-2 text-slate-300">${cleanBookingDate}</td>
                         <td class="py-3 px-2 font-semibold text-slate-100">${b["Full Name"] || ''}</td>
                         <td class="py-3 px-2 text-slate-400">${b["Gender"] || ''}</td>
                         <td class="py-3 px-2 text-slate-400">${b["Passport"] || ''}</td>
                         <td class="py-3 px-2 text-center text-cyan-300 font-bold">${b["Pax"] || 1}</td>
-                        <td class="py-3 px-2 text-cyan-400 font-medium">${b["Activity Date"] || ''}</td>
+                        <td class="py-3 px-2 text-cyan-400 font-medium">${cleanActivityDate}</td>
                         <td class="py-3 px-2 text-slate-300">${b["Location"] || ''}</td>
                         <td class="py-3 px-2 text-slate-300">${b["Package"] || ''}</td>
                         <td class="py-3 px-2 text-slate-200">RM${b["Total Price"] || 0}</td>
