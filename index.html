@@ -114,7 +114,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHGchmv99_S9wrGalzJlZHlPXNkXzh0dy-7BLMC-aM4x_X6EDtRcMLhTtKYb8TNAM/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby4pB3rACpf9kkEh5VOIFjydaYFl1_lweAJj6Tf9gDTFtJ2MvwAAGHvfvPkzQrYJQE/exec";
 
         let bookings = JSON.parse(localStorage.getItem('sabah_dive_bookings')) || [];
 
@@ -140,7 +140,6 @@
             };
 
             try {
-                // Convert object to URL encoded parameters for Google Apps Script compatibility
                 const formData = new URLSearchParams(bookingData).toString();
 
                 await fetch(SCRIPT_URL, {
