@@ -17,7 +17,7 @@
 
     <div class="max-w-[98%] md:max-w-[95%] mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <!-- Header Section -->
-        <header class="flex flex-col md:flex-row justify-between items-center mb-6 sm:mb-8 bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800 gap-3">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-6 bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800 gap-3">
             <div class="text-center md:text-left">
                 <h1 class="text-xl sm:text-2xl font-bold text-cyan-400 flex items-center justify-center md:justify-start gap-2">
                     🌊 Sabah Diving Booking System
@@ -30,6 +30,22 @@
                 🟢 Cloud Shared Database & Calendar Active / 云端双向同步中
             </div>
         </header>
+
+        <!-- Option 1: Financial KPI Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg flex flex-col justify-between">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Revenue / 总收入</span>
+                <div class="text-2xl font-bold text-cyan-400 mt-2" id="kpiTotalRevenue">RM0.00</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg flex flex-col justify-between">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Deposits Collected / 已收定金</span>
+                <div class="text-2xl font-bold text-emerald-400 mt-2" id="kpiTotalDeposits">RM0.00</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg flex flex-col justify-between">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Outstanding Balance / 待收尾款</span>
+                <div class="text-2xl font-bold text-rose-400 mt-2" id="kpiTotalBalance">RM0.00</div>
+            </div>
+        </div>
 
         <!-- Main Content Layout -->
         <div class="grid grid-cols-1 xl:grid-cols-4 gap-6 sm:gap-8">
@@ -148,9 +164,19 @@
                     </form>
                 </div>
 
-                <!-- Bookings Table Card -->
+                <!-- Bookings Table Card with Option 3: Quick Filter Tabs -->
                 <div class="bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800">
-                    <h2 class="text-base sm:text-lg font-semibold text-cyan-300 mb-4">📋 Master Booking Database / 预订总表</h2>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+                        <h2 class="text-base sm:text-lg font-semibold text-cyan-300">📋 Master Booking Database / 预订总表</h2>
+                        <!-- Quick Filter Tabs -->
+                        <div class="flex flex-wrap gap-1.5 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+                            <button onclick="filterTab('All')" id="tab-All" class="px-3 py-1 text-xs font-medium rounded-lg bg-cyan-500 text-slate-950 transition">All / 全部</button>
+                            <button onclick="filterTab('Confirmed')" id="tab-Confirmed" class="px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200 transition">Confirmed / 已确认</button>
+                            <button onclick="filterTab('Pending')" id="tab-Pending" class="px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200 transition">Pending / 待定</button>
+                            <button onclick="filterTab('Completed')" id="tab-Completed" class="px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200 transition">Completed / 已完成</button>
+                        </div>
+                    </div>
+
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
                             <thead>
@@ -197,6 +223,7 @@
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
 
         let bookings = [];
+        let currentTab = 'All';
 
         window.onload = function() {
             const todayStr = new Date().toISOString().split('T')[0];
@@ -228,11 +255,47 @@
                 const data = await response.json();
                 if (Array.isArray(data)) {
                     bookings = data;
+                    updateKPIs(bookings);
                     renderTable();
                 }
             } catch (err) {
                 console.error("Fetch error:", err);
             }
+        }
+
+        // Option 1: Update Financial KPI Cards
+        function updateKPIs(dataArray) {
+            let totalRev = 0;
+            let totalDep = 0;
+            let totalBal = 0;
+
+            dataArray.forEach(b => {
+                // Ignore cancelled bookings from revenue totals if desired, or sum everything active
+                const status = (b["Status"] || '').toLowerCase();
+                if (!status.includes('cancelled')) {
+                    totalRev += parseFloat(b["Total Price"]) || 0;
+                    totalDep += parseFloat(b["Deposit Paid"]) || 0;
+                    totalBal += parseFloat(b["Balance Due"]) || 0;
+                }
+            });
+
+            document.getElementById('kpiTotalRevenue').innerText = `RM${totalRev.toFixed(2)}`;
+            document.getElementById('kpiTotalDeposits').innerText = `RM${totalDep.toFixed(2)}`;
+            document.getElementById('kpiTotalBalance').innerText = `RM${totalBal.toFixed(2)}`;
+        }
+
+        // Option 3: Filter Tabs Logic
+        function filterTab(tabName) {
+            currentTab = tabName;
+            ['All', 'Confirmed', 'Pending', 'Completed'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabName) {
+                    btn.className = "px-3 py-1 text-xs font-medium rounded-lg bg-cyan-500 text-slate-950 transition";
+                } else {
+                    btn.className = "px-3 py-1 text-xs font-medium rounded-lg text-slate-400 hover:text-slate-200 transition";
+                }
+            });
+            renderTable();
         }
 
         async function addBooking(event) {
@@ -316,13 +379,32 @@
         function renderTable() {
             const tbody = document.getElementById('bookingTableBody');
             tbody.innerHTML = '';
-            if (!bookings || bookings.length === 0) {
+
+            // Apply tab filter
+            let filtered = bookings;
+            if (currentTab !== 'All') {
+                filtered = bookings.filter(b => (b["Status"] || '').toLowerCase().includes(currentTab.toLowerCase()));
+            }
+
+            if (!filtered || filtered.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="14" class="py-6 text-center text-slate-500 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
                 return;
             }
-            bookings.slice().reverse().forEach(b => {
+
+            filtered.slice().reverse().forEach(b => {
                 const cleanBookingDate = (b["Booking Date"] || '').toString().replace(/^'/, '');
                 const cleanActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
+                const rawStatus = b["Status"] || '';
+
+                // Option 3: Color-coded status badges
+                let badgeClass = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-md";
+                if (rawStatus.toLowerCase().includes('pending')) {
+                    badgeClass = "bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-1 rounded-md";
+                } else if (rawStatus.toLowerCase().includes('cancel')) {
+                    badgeClass = "bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2 py-1 rounded-md";
+                } else if (rawStatus.toLowerCase().includes('complet')) {
+                    badgeClass = "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 px-2 py-1 rounded-md";
+                }
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-800/50 transition">
@@ -338,7 +420,7 @@
                         <td class="py-3 px-2 text-emerald-400">RM${b["Deposit Paid"] || 0}</td>
                         <td class="py-3 px-2 text-rose-400 font-semibold">RM${b["Balance Due"] || 0}</td>
                         <td class="py-3 px-2 text-slate-400">${b["Payment Method"] || ''}</td>
-                        <td class="py-3 px-2 font-semibold text-emerald-400">${b["Status"] || ''}</td>
+                        <td class="py-3 px-2"><span class="${badgeClass}">${rawStatus}</span></td>
                         <td class="py-3 px-2 text-slate-400 truncate max-w-[120px]">${b["Remarks"] || '-'}</td>
                     </tr>
                 `;
