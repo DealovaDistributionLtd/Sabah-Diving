@@ -1,204 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sabah Diving Booking System | 沙巴潜水预订系统</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-    </style>
-</head>
-<body class="bg-slate-900 text-slate-100 min-h-screen">
+function syncNewBookingsToCalendar() {
+  var sheet = SpreadsheetApp.openById("1D3NxJFID7m5BQAXSGcyEJM6vsifiwHXTKBWddanlEg0").getActiveSheet();
+  var rows = sheet.getDataRange().getValues();
+  
+  var calendarId = "bd0883e3e1e8410e121cd052d9e09c5ed0d1eee32ef9c71ebb6c8cafc354d221@group.calendar.google.com";
+  var calendar = CalendarApp.getCalendarById(calendarId);
+  if (!calendar) return;
 
-    <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Header Section -->
-        <header class="flex flex-col md:flex-row justify-between items-center mb-8 bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700">
-            <div>
-                <h1 class="text-2xl font-bold text-cyan-400 flex items-center gap-2">
-                    🌊 Sabah Diving Bookings & Auto-Sync
-                </h1>
-                <p class="text-slate-400 text-sm mt-1">
-                    沙巴潜水预订与 Google 日历全自动云端同步系统
-                </p>
-            </div>
-            <div id="syncStatus" class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                🟢 China-Optimized Cloud Sync Active / 中马云端共享同步中
-            </div>
-        </header>
+  var properties = PropertiesService.getScriptProperties();
+  var lastSyncedRow = parseInt(properties.getProperty("LAST_SYNCED_ROW") || "1");
+  
+  // 1. Handle New Rows (Forward Sync)
+  if (rows.length > lastSyncedRow) {
+    for (var i = lastSyncedRow; i < rows.length; i++) {
+      var row = rows[i];
+      var guestName = row[2];      // Full Name
+      var passport = row[4];       // Passport
+      var activityDate = row[6];   // Activity Date
+      var location = row[7];       // Location
+      var packageType = row[8];    // Package
+      var price = row[9];          // Total Price
 
-        <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <!-- Left 2 Columns: Booking Form & Table -->
-            <div class="lg:col-span-2 space-y-6">
-                
-                <!-- Input Form Card -->
-                <div class="bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700">
-                    <h2 class="text-lg font-semibold text-cyan-300 mb-4">➕ Add Booking & Auto-Push / 添加预订并自动推送到日历</h2>
-                    <form id="bookingForm" onsubmit="addBooking(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Guest Name / 客户姓名</label>
-                            <input type="text" id="guestName" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400" placeholder="e.g. Zhang Shiqi">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Passport / 护照号</label>
-                            <input type="text" id="passport" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400" placeholder="e.g. ES4761314">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Activity Date / 活动日期</label>
-                            <input type="date" id="activityDate" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Location / 地点</label>
-                            <select id="location" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400">
-                                <option value="Semporna & Bum Bum">Semporna & Bum Bum</option>
-                                <option value="Tun Sakaran Marine Park">Tun Sakaran Marine Park</option>
-                                <option value="Kota Kinabalu">Kota Kinabalu</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Package / 潜水套餐</label>
-                            <select id="packageType" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400">
-                                <option value="DSD (Discover Scuba Diving)">DSD (Discover Scuba Diving)</option>
-                                <option value="Fun Dive 3 Dives">Fun Dive (3 Dives)</option>
-                                <option value="Open Water Course">Open Water Course</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-400 mb-1">Total Price (RM) / 总价</label>
-                            <input type="number" id="totalPrice" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cyan-400" placeholder="600">
-                        </div>
-                        <div class="md:col-span-2 flex justify-end mt-2">
-                            <button type="submit" id="submitBtn" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold px-6 py-2 rounded-lg text-sm transition shadow-lg flex items-center gap-2">
-                                Save & Sync to Cloud / 保存并同步到云端 🚀
-                            </button>
-                        </div>
-                    </form>
-                </div>
+      if (guestName && activityDate) {
+        var title = "Dive: " + guestName + " (" + packageType + ")";
+        var description = 
+          "客户姓名 (Guest Name): " + guestName + "\n" +
+          "护照号码 (Passport): " + passport + "\n" +
+          "活动地点 (Location): " + location + "\n" +
+          "潜水套餐 (Package): " + packageType + "\n" +
+          "总价 (Total Price): RM" + price;
 
-                <!-- Bookings Table Card -->
-                <div class="bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700 overflow-x-auto">
-                    <h2 class="text-lg font-semibold text-cyan-300 mb-4">📋 Booking Records / 预订记录</h2>
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead>
-                            <tr class="border-b border-slate-700 text-slate-400">
-                                <th class="py-3 px-2">Guest / 客户</th>
-                                <th class="py-3 px-2">Passport / 护照</th>
-                                <th class="py-3 px-2">Date / 日期</th>
-                                <th class="py-3 px-2">Location / 地点</th>
-                                <th class="py-3 px-2">Package / 套餐</th>
-                                <th class="py-3 px-2">Status / 状态</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bookingTableBody" class="divide-y divide-slate-700/50">
-                            <!-- Dynamic rows populate here -->
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
-
-            <!-- Right Column: Live Google Calendar Embedded View -->
-            <div class="bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700 flex flex-col h-[650px]">
-                <h2 class="text-lg font-semibold text-cyan-300 mb-4">📅 Live Google Calendar</h2>
-                <div class="flex-1 w-full rounded-xl overflow-hidden border border-slate-700 bg-slate-900">
-                    <iframe src="https://calendar.google.com/calendar/embed?src=bd0883e3e1e8410e121cd052d9e09c5ed0d1eee32ef9c71ebb6c8cafc354d221%40group.calendar.google.com&ctz=Asia%2FKuala_Lumpur" 
-                        style="border: 0" width="100%" height="100%" frameborder="0" scrolling="no"></iframe>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <script>
-        const SHEETDB_ENDPOINT = "https://sheetdb.io/api/v1/90irpnion96lu";
-
-        let bookings = [];
-
-        window.onload = function() {
-            fetchBookings();
-        };
-
-        async function fetchBookings() {
-            try {
-                const response = await fetch(SHEETDB_ENDPOINT);
-                const data = await response.json();
-                if (Array.isArray(data)) {
-                    bookings = data;
-                    renderTable();
-                }
-            } catch (err) {
-                console.error("Fetch error:", err);
-            }
+        var parts = String(activityDate).split("-");
+        if (parts.length >= 3) {
+          var eventDate = new Date(parts[0], parts[1] - 1, parts[2].substring(0, 2));
+          // Store passport in event description for easy tracking/deletion matching if needed
+          calendar.createAllDayEvent(title, eventDate, {description: description});
         }
-
-        async function addBooking(event) {
-            event.preventDefault();
-            
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerText = "Syncing to Cloud... / 正在同步...";
-            submitBtn.disabled = true;
-
-            const bookingData = {
-                "Timestamp": new Date().toISOString(),
-                "Booking Date": new Date().toISOString().split('T')[0],
-                "Full Name": document.getElementById('guestName').value,
-                "Gender": "Not Specified",
-                "Passport": document.getElementById('passport').value,
-                "Pax": "1",
-                "Activity Date": document.getElementById('activityDate').value,
-                "Location": document.getElementById('location').value,
-                "Package": document.getElementById('packageType').value,
-                "Total Price": document.getElementById('totalPrice').value,
-                "Deposit Paid": "0",
-                "Balance Due": document.getElementById('totalPrice').value,
-                "Payment Method": "WeChat/Alipay",
-                "Status": "Confirmed",
-                "Remarks": "-"
-            };
-
-            try {
-                // Sends data directly to SheetDB (fully unblocked in China)
-                await fetch(SHEETDB_ENDPOINT, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ data: bookingData })
-                });
-
-                alert("Booking saved & synced successfully! Calendar will update within 1 minute.");
-                document.getElementById('bookingForm').reset();
-                fetchBookings(); // Refresh table
-            } catch (err) {
-                console.error("Sync error:", err);
-                alert("Sync failed. Please check your network.");
-            }
-            
-            submitBtn.innerText = "Save & Sync to Cloud / 保存并同步到云端 🚀";
-            submitBtn.disabled = false;
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('bookingTableBody');
-            tbody.innerHTML = '';
-            if (!bookings || bookings.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-slate-500">No bookings recorded yet.</td></tr>`;
-                return;
-            }
-            bookings.slice().reverse().forEach(b => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-700/30 transition">
-                        <td class="py-3 px-2 font-medium text-slate-200">${b["Full Name"] || ''}</td>
-                        <td class="py-3 px-2 text-slate-400">${b["Passport"] || ''}</td>
-                        <td class="py-3 px-2 text-cyan-400">${b["Activity Date"] || ''}</td>
-                        <td class="py-3 px-2 text-slate-300">${b["Location"] || ''}</td>
-                        <td class="py-3 px-2 text-slate-300">${b["Package"] || ''}</td>
-                        <td class="py-3 px-2 text-xs font-semibold text-emerald-400">✅ Synced Live</td>
-                    </tr>
-                `;
-            });
-        }
-    </script>
-</body>
-</html>
+      }
+    }
+    properties.setProperty("LAST_SYNCED_ROW", rows.length.toString());
+  } 
+  // 2. Handle Deleted Rows (If rows decreased, reset tracker to re-align)
+  else if (rows.length < lastSyncedRow) {
+    properties.setProperty("LAST_SYNCED_ROW", rows.length.toString());
+  }
+}
