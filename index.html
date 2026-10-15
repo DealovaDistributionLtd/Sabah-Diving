@@ -31,7 +31,7 @@
             </div>
         </header>
 
-        <!-- Option 1: Financial KPI Summary Cards -->
+        <!-- Financial KPI Summary Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-lg flex flex-col justify-between">
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Revenue / 总收入</span>
@@ -164,7 +164,7 @@
                     </form>
                 </div>
 
-                <!-- Bookings Table Card with Option 3: Quick Filter Tabs -->
+                <!-- Bookings Table Card with Quick Filter Tabs -->
                 <div class="bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
                         <h2 class="text-base sm:text-lg font-semibold text-cyan-300">📋 Master Booking Database / 预订总表</h2>
@@ -226,9 +226,7 @@
         let currentTab = 'All';
 
         window.onload = function() {
-            const todayStr = new Date().toISOString().split('T')[0];
-            document.getElementById('bookingDate').value = todayStr;
-            document.getElementById('activityDate').value = todayStr;
+            setTodayDates();
             
             ['bookingDate', 'activityDate'].forEach(id => {
                 const el = document.getElementById(id);
@@ -241,6 +239,12 @@
 
             fetchBookings();
         };
+
+        function setTodayDates() {
+            const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format using local time
+            document.getElementById('bookingDate').value = todayStr;
+            document.getElementById('activityDate').value = todayStr;
+        }
 
         function calculateBalance() {
             const total = parseFloat(document.getElementById('totalPrice').value) || 0;
@@ -263,14 +267,12 @@
             }
         }
 
-        // Option 1: Update Financial KPI Cards
         function updateKPIs(dataArray) {
             let totalRev = 0;
             let totalDep = 0;
             let totalBal = 0;
 
             dataArray.forEach(b => {
-                // Ignore cancelled bookings from revenue totals if desired, or sum everything active
                 const status = (b["Status"] || '').toLowerCase();
                 if (!status.includes('cancelled')) {
                     totalRev += parseFloat(b["Total Price"]) || 0;
@@ -284,7 +286,6 @@
             document.getElementById('kpiTotalBalance').innerText = `RM${totalBal.toFixed(2)}`;
         }
 
-        // Option 3: Filter Tabs Logic
         function filterTab(tabName) {
             currentTab = tabName;
             ['All', 'Confirmed', 'Pending', 'Completed'].forEach(t => {
@@ -362,9 +363,8 @@
                 alert("Booking saved, Sheet updated & Calendar synced successfully!");
                 document.getElementById('bookingForm').reset();
                 
-                const todayStr = new Date().toISOString().split('T')[0];
-                document.getElementById('bookingDate').value = todayStr;
-                document.getElementById('activityDate').value = todayStr;
+                // Reset dates back to current live time automatically after submission
+                setTodayDates();
                 
                 fetchBookings(); // Refresh table from cloud
             } catch (err) {
@@ -380,7 +380,6 @@
             const tbody = document.getElementById('bookingTableBody');
             tbody.innerHTML = '';
 
-            // Apply tab filter
             let filtered = bookings;
             if (currentTab !== 'All') {
                 filtered = bookings.filter(b => (b["Status"] || '').toLowerCase().includes(currentTab.toLowerCase()));
@@ -396,7 +395,6 @@
                 const cleanActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
                 const rawStatus = b["Status"] || '';
 
-                // Option 3: Color-coded status badges
                 let badgeClass = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-md";
                 if (rawStatus.toLowerCase().includes('pending')) {
                     badgeClass = "bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-1 rounded-md";
