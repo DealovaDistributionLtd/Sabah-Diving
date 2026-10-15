@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sabah Diving Professional Booking System | 沙巴专业潜水预订系统</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Flatpickr Date Picker CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -46,7 +50,7 @@
                         
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1.5">预定日期 (Booking Date)</label>
-                            <input type="date" id="bookingDate" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-cyan-400 text-slate-200">
+                            <input type="text" id="bookingDate" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-cyan-400 text-slate-200 cursor-pointer" placeholder="Select booking date...">
                         </div>
 
                         <div>
@@ -74,7 +78,7 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1.5">活动日期 (Activity Date)</label>
-                            <input type="date" id="activityDate" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-cyan-400 text-slate-200">
+                            <input type="text" id="activityDate" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-cyan-400 text-slate-200 cursor-pointer" placeholder="Select activity date...">
                         </div>
 
                         <div>
@@ -193,8 +197,17 @@
         let bookings = JSON.parse(localStorage.getItem('sabah_dive_bookings')) || [];
 
         window.onload = function() {
-            // Set default booking date to today
-            document.getElementById('bookingDate').valueAsDate = new Date();
+            // Initialize Flatpickr Date Pickers
+            flatpickr("#bookingDate", {
+                dateFormat: "Y-m-d",
+                defaultDate: "today"
+            });
+            
+            flatpickr("#activityDate", {
+                dateFormat: "Y-m-d",
+                defaultDate: "today"
+            });
+
             renderTable();
         };
 
@@ -250,7 +263,10 @@
             localStorage.setItem('sabah_dive_bookings', JSON.stringify(bookings));
             renderTable();
             document.getElementById('bookingForm').reset();
-            document.getElementById('bookingDate').valueAsDate = new Date();
+            
+            // Re-initialize pickers to today's date after reset
+            flatpickr("#bookingDate", { dateFormat: "Y-m-d", defaultDate: "today" });
+            flatpickr("#activityDate", { dateFormat: "Y-m-d", defaultDate: "today" });
             
             submitBtn.innerText = "Save & Sync to Calendar / 保存并同步日历 🚀";
             submitBtn.disabled = false;
