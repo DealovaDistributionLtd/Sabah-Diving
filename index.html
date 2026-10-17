@@ -23,11 +23,11 @@
                     🌊 Sabah Diving Booking System
                 </h1>
                 <p class="text-slate-400 text-xs sm:text-sm mt-1">
-                    沙巴潜水高端客户预订、财务与 Google 日历自动化管理系统
+                    沙巴潜水高端客户预订、财务与团队云端日历管理系统
                 </p>
             </div>
             <div id="syncStatus" class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium whitespace-nowrap">
-                🟢 Cloud Shared Database & Calendar Active / 云端双向同步中
+                🟢 Cloud Shared Database & Team Calendar Active / 团队云端同步中
             </div>
         </header>
 
@@ -149,7 +149,7 @@
 
                         <div class="xl:col-span-3 flex justify-end mt-2">
                             <button type="submit" id="submitBtn" class="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-8 py-3.5 rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
-                                Save & Sync to Cloud & Calendar 🚀
+                                Save & Sync to Cloud 🚀
                             </button>
                         </div>
 
@@ -228,7 +228,7 @@
 
             </div>
 
-            <!-- Right Column: Custom Built-in Team Calendar (Instant Sync for Assistant) -->
+            <!-- Right Column: Custom Team Calendar -->
             <div class="xl:col-span-1 bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800 flex flex-col">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-base sm:text-lg font-semibold text-cyan-300">📅 Team Calendar / 团队日程</h2>
@@ -239,7 +239,7 @@
                     </div>
                 </div>
 
-                <!-- Calendar Grid Header (Days of Week) -->
+                <!-- Calendar Grid Header -->
                 <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-slate-400 mb-2">
                     <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
                 </div>
@@ -263,8 +263,6 @@
 
     <script>
         const SHEETDB_ENDPOINT = "https://sheetdb.io/api/v1/90irpnion96lu";
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
-        
         const ADMIN_PASSWORD = "sabah2026";
 
         let bookings = [];
@@ -333,7 +331,6 @@
             }
         }
 
-        // --- Custom Team Calendar Logic ---
         function changeMonth(direction) {
             navDate.setMonth(navDate.getMonth() + direction);
             renderCustomCalendar();
@@ -410,7 +407,6 @@
                 `;
             });
         }
-        // ------------------------------------
 
         function unlockKPIs() {
             const inputVal = document.getElementById('kpiPassword').value;
@@ -485,7 +481,7 @@
             event.preventDefault();
             
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerText = "Syncing to Cloud & Calendar... / 正在同步...";
+            submitBtn.innerText = "Saving to Cloud Database... / 正在保存...";
             submitBtn.disabled = true;
 
             const bDateVal = document.getElementById('bookingDate').value;
@@ -521,48 +517,23 @@
             };
 
             try {
-                // 1. Send data to SheetDB (Updates shared team database & website calendar)
+                // Save to SheetDB (Instant sync for both you, your assistant, and the team calendar)
                 await fetch(SHEETDB_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ data: bookingData })
                 });
 
-                // 2. Send data to Google Apps Script (Server-side writes directly to your Google Calendar)
-                const formData = new URLSearchParams({
-                    bookingDate: bDateVal,
-                    fullName: bookingData["Full Name"],
-                    gender: bookingData["Gender"],
-                    passport: bookingData["Passport"],
-                    pax: bookingData["Pax"],
-                    activityDate: aDateVal,
-                    location: bookingData["Location"],
-                    packageType: bookingData["Package"],
-                    totalPrice: bookingData["Total Price"],
-                    depositPaid: bookingData["Deposit Paid"],
-                    balanceDue: bookingData["Balance Due"],
-                    paymentMethod: bookingData["Payment Method"],
-                    status: bookingData["Status"],
-                    remarks: remarksVal
-                }).toString();
-
-                await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData
-                });
-
-                alert("Booking saved, Sheet updated & Google Calendar synced successfully!");
+                alert("Booking saved successfully! It will sync to your Google Calendar automatically in the background.");
                 document.getElementById('bookingForm').reset();
                 setTodayDates();
                 fetchBookings();
             } catch (err) {
                 console.error("Sync error:", err);
-                alert("Sync failed. Please check your network.");
+                alert("Save failed. Please check your network.");
             }
             
-            submitBtn.innerText = "Save & Sync to Cloud & Calendar 🚀";
+            submitBtn.innerText = "Save & Sync to Cloud 🚀";
             submitBtn.disabled = false;
         }
 
