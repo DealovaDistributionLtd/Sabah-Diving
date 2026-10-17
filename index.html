@@ -27,7 +27,7 @@
                 </p>
             </div>
             <div id="syncStatus" class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium whitespace-nowrap">
-                🟢 Free Unlimited Sheet & Calendar Sync Active / 云端无限同步中
+                🟢 Cloud Shared Database & Calendar Active / 云端双向同步中
             </div>
         </header>
 
@@ -149,7 +149,7 @@
 
                         <div class="xl:col-span-3 flex justify-end mt-2">
                             <button type="submit" id="submitBtn" class="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-8 py-3.5 rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
-                                Save & Sync to Sheet & Calendar 🚀
+                                Save & Sync to Cloud & Calendar 🚀
                             </button>
                         </div>
 
@@ -228,7 +228,7 @@
 
             </div>
 
-            <!-- Right Column: Custom Team Calendar -->
+            <!-- Right Column: Custom Built-in Team Calendar (Instant Sync for Assistant) -->
             <div class="xl:col-span-1 bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800 flex flex-col">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-base sm:text-lg font-semibold text-cyan-300">📅 Team Calendar / 团队日程</h2>
@@ -239,7 +239,7 @@
                     </div>
                 </div>
 
-                <!-- Calendar Grid Header -->
+                <!-- Calendar Grid Header (Days of Week) -->
                 <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-slate-400 mb-2">
                     <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
                 </div>
@@ -261,12 +261,10 @@
         </div>
     </div>
 
-    <!-- Hidden Iframe to guarantee Google Apps Script POST success without CORS blocks -->
-    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-
     <script>
+        const SHEETDB_ENDPOINT = "https://sheetdb.io/api/v1/90irpnion96lu";
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
-        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXE4WfsUR45tCqw7athap5D2462dKLnWEEYoEfktcTlcin_NYJ9NZe6R-X7y5_wOir_mKbMAXW4kCO/pub?output=csv";
+        
         const ADMIN_PASSWORD = "sabah2026";
 
         let bookings = [];
@@ -322,36 +320,20 @@
 
         async function fetchBookings() {
             try {
-                const response = await fetch(SHEET_CSV_URL + "&t=" + new Date().getTime());
-                const csvText = await response.text();
-                bookings = parseCSV(csvText);
-                updateKPIs(bookings);
-                renderTable();
-                renderCustomCalendar();
+                const response = await fetch(SHEETDB_ENDPOINT);
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    bookings = data;
+                    updateKPIs(bookings);
+                    renderTable();
+                    renderCustomCalendar();
+                }
             } catch (err) {
                 console.error("Fetch error:", err);
             }
         }
 
-        function parseCSV(text) {
-            let lines = text.split("\n");
-            let result = [];
-            if (lines.length === 0) return result;
-            let headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ''));
-
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                let currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                let obj = {};
-                for (let j = 0; j < headers.length; j++) {
-                    let val = currentline[j] ? currentline[j].trim().replace(/^"|"$/g, '') : '';
-                    obj[headers[j]] = val;
-                }
-                result.push(obj);
-            }
-            return result;
-        }
-
+        // --- Custom Team Calendar Logic ---
         function changeMonth(direction) {
             navDate.setMonth(navDate.getMonth() + direction);
             renderCustomCalendar();
@@ -428,6 +410,7 @@
                 `;
             });
         }
+        // ------------------------------------
 
         function unlockKPIs() {
             const inputVal = document.getElementById('kpiPassword').value;
@@ -488,7 +471,7 @@
 🏷️ 待付尾款 (Balance Due): RM${balance}
 📌 状态 (Status): ${status}
 -----------------------------------
-💡 温馨提示：请提前准备好泳衣, 毛巾及个人随身物品。期待与您开启精彩的沙巴海洋之旅！`;
+💡 温馨提示：请提前准备好泳衣、毛巾及个人随身物品。期待与您开启精彩的沙巴海洋之旅！`;
 
             navigator.clipboard.writeText(message).then(() => {
                 alert(`✅ Confirmation text copied for ${name}!\n已成功复制给【${name}】的确认单，可直接粘贴至微信或WhatsApp！`);
@@ -498,11 +481,11 @@
             });
         }
 
-        function addBooking(event) {
+        async function addBooking(event) {
             event.preventDefault();
             
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerText = "Syncing to Sheet & Calendar... / 正在同步...";
+            submitBtn.innerText = "Syncing to Cloud & Calendar... / 正在同步...";
             submitBtn.disabled = true;
 
             const bDateVal = document.getElementById('bookingDate').value;
@@ -519,20 +502,14 @@
                 remarksVal = '-';
             }
 
-            // Create a dynamic form that posts directly to Apps Script via hidden iframe (100% bypasses CORS blocks)
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = APPS_SCRIPT_URL;
-            form.target = 'hidden_iframe';
-
-            const fields = {
+            const bookingData = {
                 "Timestamp": new Date().toISOString(),
-                "Booking Date": bDateVal,
+                "Booking Date": "'" + bDateVal,
                 "Full Name": document.getElementById('fullName').value,
                 "Gender": document.getElementById('gender').value,
                 "Passport": document.getElementById('passport').value,
                 "Pax": document.getElementById('pax').value,
-                "Activity Date": aDateVal,
+                "Activity Date": "'" + aDateVal,
                 "Location": document.getElementById('location').value,
                 "Package": document.getElementById('packageType').value,
                 "Total Price": document.getElementById('totalPrice').value,
@@ -543,26 +520,50 @@
                 "Remarks": remarksVal
             };
 
-            for (const key in fields) {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                input.value = fields[key];
-                form.appendChild(input);
-            }
+            try {
+                // 1. Send data to SheetDB (Updates shared team database & website calendar)
+                await fetch(SHEETDB_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data: bookingData })
+                });
 
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
+                // 2. Send data to Google Apps Script (Server-side writes directly to your Google Calendar)
+                const formData = new URLSearchParams({
+                    bookingDate: bDateVal,
+                    fullName: bookingData["Full Name"],
+                    gender: bookingData["Gender"],
+                    passport: bookingData["Passport"],
+                    pax: bookingData["Pax"],
+                    activityDate: aDateVal,
+                    location: bookingData["Location"],
+                    packageType: bookingData["Package"],
+                    totalPrice: bookingData["Total Price"],
+                    depositPaid: bookingData["Deposit Paid"],
+                    balanceDue: bookingData["Balance Due"],
+                    paymentMethod: bookingData["Payment Method"],
+                    status: bookingData["Status"],
+                    remarks: remarksVal
+                }).toString();
 
-            setTimeout(() => {
-                alert("Booking saved & Sabah Bookings Calendar synced successfully!");
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+
+                alert("Booking saved, Sheet updated & Google Calendar synced successfully!");
                 document.getElementById('bookingForm').reset();
                 setTodayDates();
                 fetchBookings();
-                submitBtn.innerText = "Save & Sync to Sheet & Calendar 🚀";
-                submitBtn.disabled = false;
-            }, 2500);
+            } catch (err) {
+                console.error("Sync error:", err);
+                alert("Sync failed. Please check your network.");
+            }
+            
+            submitBtn.innerText = "Save & Sync to Cloud & Calendar 🚀";
+            submitBtn.disabled = false;
         }
 
         function renderTable() {
