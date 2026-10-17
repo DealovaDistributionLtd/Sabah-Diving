@@ -319,7 +319,8 @@
 
         async function fetchBookings() {
             try {
-                const response = await fetch(SHEET_CSV_URL);
+                // Fetch using CSV URL to instantly bypass CORS and load all sheet data
+                const response = await fetch(SHEET_CSV_URL + "&t=" + new Date().getTime());
                 const csvText = await response.text();
                 bookings = parseCSV(csvText);
                 updateKPIs(bookings);
@@ -485,7 +486,7 @@
 🏷️ 待付尾款 (Balance Due): RM${balance}
 📌 状态 (Status): ${status}
 -----------------------------------
-💡 温馨提示：请提前准备好泳衣、毛巾及个人随身物品。期待与您开启精彩的沙巴海洋之旅！`;
+💡 温馨提示：请提前准备好泳衣, 毛巾及个人随身物品。期待与您开启精彩的沙巴海洋之旅！`;
 
             navigator.clipboard.writeText(message).then(() => {
                 alert(`✅ Confirmation text copied for ${name}!\n已成功复制给【${name}】的确认单，可直接粘贴至微信或WhatsApp！`);
@@ -535,7 +536,7 @@
             };
 
             try {
-                // Sends data directly to your Apps Script Web App (saves to Sheet & syncs Calendar)
+                // 1. Send to Apps Script Web App (Saves to Sheet & adds to Sabah Bookings Calendar)
                 await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -543,12 +544,12 @@
                     body: JSON.stringify({ data: bookingData })
                 });
 
-                alert("Booking saved & Google Calendar synced successfully!");
+                alert("Booking saved & Sabah Bookings Calendar synced successfully!");
                 document.getElementById('bookingForm').reset();
                 setTodayDates();
                 
-                // Wait 2 seconds for Google Sheet cache to update, then reload table & calendar
-                setTimeout(fetchBookings, 2000);
+                // Wait 3 seconds for Google Sheet CSV cache to update, then refresh website table & calendar
+                setTimeout(fetchBookings, 3000);
             } catch (err) {
                 console.error("Sync error:", err);
                 alert("Sync failed. Please check your network.");
