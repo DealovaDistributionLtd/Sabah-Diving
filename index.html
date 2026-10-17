@@ -23,11 +23,11 @@
                     🌊 Sabah Diving Booking System
                 </h1>
                 <p class="text-slate-400 text-xs sm:text-sm mt-1">
-                    沙巴潜水高端客户预订、财务与 Google 日历自动化管理系统 (Free API)
+                    沙巴潜水高端客户预订、财务与 Google 日历自动化管理系统
                 </p>
             </div>
             <div id="syncStatus" class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium whitespace-nowrap">
-                🟢 Google Apps Script API Active / 云端双向同步中
+                🟢 Free Unlimited Sheet & Calendar Sync Active / 云端无限同步中
             </div>
         </header>
 
@@ -263,6 +263,7 @@
 
     <script>
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXE4WfsUR45tCqw7athap5D2462dKLnWEEYoEfktcTlcin_NYJ9NZe6R-X7y5_wOir_mKbMAXW4kCO/pub?output=csv";
         const ADMIN_PASSWORD = "sabah2026";
 
         let bookings = [];
@@ -318,17 +319,34 @@
 
         async function fetchBookings() {
             try {
-                const response = await fetch(APPS_SCRIPT_URL);
-                const data = await response.json();
-                if (Array.isArray(data)) {
-                    bookings = data;
-                    updateKPIs(bookings);
-                    renderTable();
-                    renderCustomCalendar();
-                }
+                const response = await fetch(SHEET_CSV_URL);
+                const csvText = await response.text();
+                bookings = parseCSV(csvText);
+                updateKPIs(bookings);
+                renderTable();
+                renderCustomCalendar();
             } catch (err) {
                 console.error("Fetch error:", err);
             }
+        }
+
+        function parseCSV(text) {
+            let lines = text.split("\n");
+            let result = [];
+            if (lines.length === 0) return result;
+            let headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ''));
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                let currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                let obj = {};
+                for (let j = 0; j < headers.length; j++) {
+                    let val = currentline[j] ? currentline[j].trim().replace(/^"|"$/g, '') : '';
+                    obj[headers[j]] = val;
+                }
+                result.push(obj);
+            }
+            return result;
         }
 
         function changeMonth(direction) {
@@ -481,7 +499,7 @@
             event.preventDefault();
             
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerText = "Syncing to Google Sheet & Calendar... / 正在同步...";
+            submitBtn.innerText = "Syncing to Sheet & Calendar... / 正在同步...";
             submitBtn.disabled = true;
 
             const bDateVal = document.getElementById('bookingDate').value;
@@ -517,7 +535,7 @@
             };
 
             try {
-                // Sends data directly to your Google Apps Script Web App (saves to Sheet & syncs Calendar)
+                // Sends data directly to your Apps Script Web App (saves to Sheet & syncs Calendar)
                 await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -529,8 +547,8 @@
                 document.getElementById('bookingForm').reset();
                 setTodayDates();
                 
-                // Wait 1 second for the sheet to process, then refresh table
-                setTimeout(fetchBookings, 1000);
+                // Wait 2 seconds for Google Sheet cache to update, then reload table & calendar
+                setTimeout(fetchBookings, 2000);
             } catch (err) {
                 console.error("Sync error:", err);
                 alert("Sync failed. Please check your network.");
