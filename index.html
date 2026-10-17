@@ -23,11 +23,11 @@
                     🌊 Sabah Diving Booking System
                 </h1>
                 <p class="text-slate-400 text-xs sm:text-sm mt-1">
-                    沙巴潜水高端客户预订、财务与 Google 日历自动化管理系统
+                    沙巴潜水高端客户预订、财务与团队云端日历管理系统
                 </p>
             </div>
             <div id="syncStatus" class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium whitespace-nowrap">
-                🟢 Cloud Shared Database & Calendar Active / 云端双向同步中
+                🟢 Cloud Shared Database & Team Calendar Active / 团队云端日历同步中
             </div>
         </header>
 
@@ -134,9 +134,17 @@
                             </select>
                         </div>
 
-                        <div class="sm:col-span-2">
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Remarks (备注)</label>
-                            <input type="text" id="remarks" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200" placeholder="Optional notes (e.g. equipment size, dietary requirements)">
+                        <!-- Hotel Pick-up & Remarks Section -->
+                        <div class="sm:col-span-2 flex flex-col gap-3">
+                            <label class="block text-xs font-semibold text-slate-400">Hotel Pick-up & Remarks (酒店接送与备注)</label>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <div class="flex items-center gap-2 bg-slate-950 border border-slate-700 px-3 py-3 rounded-lg shrink-0">
+                                    <input type="checkbox" id="hotelPickupToggle" onchange="toggleHotelInput()" class="w-4 h-4 accent-cyan-500 cursor-pointer">
+                                    <label for="hotelPickupToggle" class="text-xs font-medium text-slate-300 cursor-pointer">Hotel Pick-up / 需要酒店接送</label>
+                                </div>
+                                <input type="text" id="hotelName" disabled placeholder="Enter hotel name / 请输入酒店名称" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-400 cursor-not-allowed">
+                            </div>
+                            <input type="text" id="remarks" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200" placeholder="Additional remarks (e.g. equipment size, dietary requirements)">
                         </div>
 
                         <div class="xl:col-span-3 flex justify-end mt-2">
@@ -189,7 +197,7 @@
                     </div>
                 </div>
 
-                <!-- Password Protected Financial KPI Summary Cards (At the Bottom) -->
+                <!-- Password Protected Financial KPI Summary Cards -->
                 <div class="bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
                         <h2 class="text-base sm:text-lg font-semibold text-cyan-300">🔒 Financial Summary / 财务报表</h2>
@@ -199,7 +207,6 @@
                         </div>
                     </div>
 
-                    <!-- Hidden by default until unlocked -->
                     <div id="kpiContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-4 hidden">
                         <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl shadow-lg flex flex-col justify-between">
                             <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Revenue / 总收入</span>
@@ -221,12 +228,33 @@
 
             </div>
 
-            <!-- Right Column: Live Google Calendar Embedded View -->
-            <div class="xl:col-span-1 bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800 flex flex-col h-[500px] xl:h-[850px]">
-                <h2 class="text-base sm:text-lg font-semibold text-cyan-300 mb-4">📅 Live Calendar / 实时日历</h2>
-                <div class="flex-1 w-full rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
-                    <iframe src="https://calendar.google.com/calendar/embed?src=bd0883e3e1e8410e121cd052d9e09c5ed0d1eee32ef9c71ebb6c8cafc354d221%40group.calendar.google.com&ctz=Asia%2FKuala_Lumpur" 
-                        style="border: 0" width="100%" height="100%" frameborder="0" scrolling="no"></iframe>
+            <!-- Right Column: Custom Built-in Team Calendar (No Google Login Required) -->
+            <div class="xl:col-span-1 bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800 flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-base sm:text-lg font-semibold text-cyan-300">📅 Team Calendar / 团队日程</h2>
+                    <div class="flex items-center gap-1">
+                        <button onclick="changeMonth(-1)" class="p-1.5 bg-slate-950 border border-slate-800 rounded-lg hover:border-cyan-400 text-xs px-2.5">◀</button>
+                        <span id="calMonthYear" class="text-xs font-bold text-cyan-400 px-2"></span>
+                        <button onclick="changeMonth(1)" class="p-1.5 bg-slate-950 border border-slate-800 rounded-lg hover:border-cyan-400 text-xs px-2.5">▶</button>
+                    </div>
+                </div>
+
+                <!-- Calendar Grid Header (Days of Week) -->
+                <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-slate-400 mb-2">
+                    <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+                </div>
+
+                <!-- Calendar Days Grid -->
+                <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1 text-xs">
+                    <!-- Dynamic Days Populate Here -->
+                </div>
+
+                <!-- Selected Day Manifest Preview -->
+                <div class="mt-4 pt-4 border-t border-slate-800 flex-1 flex flex-col">
+                    <h3 id="selectedDateTitle" class="text-xs font-semibold text-slate-300 mb-2">Select a date to view manifest / 点击日期查看行程</h3>
+                    <div id="selectedDateManifest" class="space-y-2 overflow-y-auto max-h-[220px] pr-1">
+                        <p class="text-slate-500 text-xs italic">No date selected.</p>
+                    </div>
                 </div>
             </div>
 
@@ -237,11 +265,11 @@
         const SHEETDB_ENDPOINT = "https://sheetdb.io/api/v1/90irpnion96lu";
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
         
-        // 🔑 Change your financial dashboard password here:
         const ADMIN_PASSWORD = "sabah2026";
 
         let bookings = [];
         let currentTab = 'All';
+        let navDate = new Date();
 
         window.onload = function() {
             setTodayDates();
@@ -262,6 +290,25 @@
             const todayStr = new Date().toLocaleDateString('en-CA');
             document.getElementById('bookingDate').value = todayStr;
             document.getElementById('activityDate').value = todayStr;
+            document.getElementById('hotelPickupToggle').checked = false;
+            toggleHotelInput();
+        }
+
+        function toggleHotelInput() {
+            const toggle = document.getElementById('hotelPickupToggle');
+            const hotelInput = document.getElementById('hotelName');
+            if (toggle.checked) {
+                hotelInput.disabled = false;
+                hotelInput.required = true;
+                hotelInput.classList.remove('bg-slate-950', 'text-slate-400', 'cursor-not-allowed');
+                hotelInput.classList.add('bg-slate-950', 'text-slate-200');
+            } else {
+                hotelInput.disabled = true;
+                hotelInput.required = false;
+                hotelInput.value = '';
+                hotelInput.classList.add('bg-slate-950', 'text-slate-400', 'cursor-not-allowed');
+                hotelInput.classList.remove('text-slate-200');
+            }
         }
 
         function calculateBalance() {
@@ -279,11 +326,94 @@
                     bookings = data;
                     updateKPIs(bookings);
                     renderTable();
+                    renderCustomCalendar();
                 }
             } catch (err) {
                 console.error("Fetch error:", err);
             }
         }
+
+        // --- Custom Team Calendar Logic ---
+        function changeMonth(direction) {
+            navDate.setMonth(navDate.getMonth() + direction);
+            renderCustomCalendar();
+        }
+
+        function renderCustomCalendar() {
+            const year = navDate.getFullYear();
+            const month = navDate.getMonth();
+            
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('calMonthYear').innerText = `${monthNames[month]} ${year}`;
+
+            const grid = document.getElementById('calendarDaysGrid');
+            grid.innerHTML = '';
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+            const todayStr = new Date().toLocaleDateString('en-CA');
+
+            // Empty slots for previous month padding
+            for (let i = 0; i < firstDayIndex; i++) {
+                grid.innerHTML += `<div class="aspect-square bg-slate-950/40 rounded-lg opacity-25"></div>`;
+            }
+
+            // Days of current month
+            for (let day = 1; day <= totalDays; day++) {
+                const monthStr = String(month + 1).padStart(2, '0');
+                const dayStr = String(day).padStart(2, '0');
+                const dateKey = `${year}-${monthStr}-${dayStr}`;
+
+                // Check if bookings exist on this date
+                const dayBookings = bookings.filter(b => {
+                    const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                    const status = (b["Status"] || '').toLowerCase();
+                    return actDate === dateKey && !status.includes('cancelled');
+                });
+
+                let isToday = (dateKey === todayStr);
+                let dayBg = isToday ? 'bg-cyan-500/20 border-cyan-500' : 'bg-slate-950 border-slate-800';
+                
+                let indicatorHTML = '';
+                if (dayBookings.length > 0) {
+                    indicatorHTML = `<div class="flex justify-center gap-0.5 mt-0.5 flex-wrap"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span><span class="text-[9px] text-cyan-300 font-bold">${dayBookings.length}</span></div>`;
+                }
+
+                grid.innerHTML += `
+                    <div onclick="selectCalendarDate('${dateKey}')" class="aspect-square ${dayBg} border rounded-lg p-1 flex flex-col justify-between cursor-pointer hover:border-cyan-400 transition text-center select-none">
+                        <span class="text-[11px] font-semibold ${isToday ? 'text-cyan-400' : 'text-slate-300'}">${day}</span>
+                        ${indicatorHTML}
+                    </div>
+                `;
+            }
+        }
+
+        function selectCalendarDate(dateStr) {
+            document.getElementById('selectedDateTitle').innerText = `Manifest for / 行程清单: ${dateStr}`;
+            const container = document.getElementById('selectedDateManifest');
+            container.innerHTML = '';
+
+            const dayBookings = bookings.filter(b => {
+                const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                return actDate === dateStr;
+            });
+
+            if (dayBookings.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 text-xs italic">No dives scheduled on this date.</p>`;
+                return;
+            }
+
+            dayBookings.forEach(b => {
+                container.innerHTML += `
+                    <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 text-[11px]">
+                        <div class="font-bold text-cyan-400">${b["Full Name"]} (${b["Pax"]} Pax)</div>
+                        <div class="text-slate-300">📍 ${b["Location"]} | 🏊 ${b["Package"]}</div>
+                        <div class="text-slate-400 text-[10px]">📌 ${b["Status"]}</div>
+                    </div>
+                `;
+            });
+        }
+        // ------------------------------------
 
         function unlockKPIs() {
             const inputVal = document.getElementById('kpiPassword').value;
@@ -329,8 +459,7 @@
             renderTable();
         }
 
-        // Option 2: Generate WeChat / WhatsApp Confirmation Text & Copy to Clipboard
-        function shareBooking(name, actDate, location, pkg, pax, total, balance, status) {
+        function shareBooking(name, actDate, location, pkg, pax, total, balance, status, remarks) {
             const message = 
 `🌊 【沙巴潜水预定确认单 / Sabah Diving Confirmation】
 -----------------------------------
@@ -339,6 +468,7 @@
 📅 活动日期 (Date): ${actDate}
 📍 活动地点 (Location): ${location}
 🏊 项目 (Package): ${pkg}
+🏨 备注/接送 (Remarks): ${remarks}
 -----------------------------------
 💰 订单总额 (Total): RM${total}
 🏷️ 待付尾款 (Balance Due): RM${balance}
@@ -364,6 +494,17 @@
             const bDateVal = document.getElementById('bookingDate').value;
             const aDateVal = document.getElementById('activityDate').value;
 
+            let remarksVal = document.getElementById('remarks').value.trim();
+            const isHotelChecked = document.getElementById('hotelPickupToggle').checked;
+            const hotelVal = document.getElementById('hotelName').value.trim();
+
+            if (isHotelChecked && hotelVal) {
+                const hotelString = `[Hotel Pick-up / 酒店接送: ${hotelVal}]`;
+                remarksVal = remarksVal ? `${hotelString} - ${remarksVal}` : hotelString;
+            } else if (!remarksVal) {
+                remarksVal = '-';
+            }
+
             const bookingData = {
                 "Timestamp": new Date().toISOString(),
                 "Booking Date": "'" + bDateVal,
@@ -379,7 +520,7 @@
                 "Balance Due": document.getElementById('balanceDue').value,
                 "Payment Method": document.getElementById('paymentMethod').value,
                 "Status": document.getElementById('status').value,
-                "Remarks": document.getElementById('remarks').value || '-'
+                "Remarks": remarksVal
             };
 
             try {
@@ -403,7 +544,7 @@
                     balanceDue: bookingData["Balance Due"],
                     paymentMethod: bookingData["Payment Method"],
                     status: bookingData["Status"],
-                    remarks: bookingData["Remarks"]
+                    remarks: remarksVal
                 }).toString();
 
                 await fetch(APPS_SCRIPT_URL, {
@@ -450,6 +591,7 @@
                 const pax = b["Pax"] || 1;
                 const total = b["Total Price"] || 0;
                 const balance = b["Balance Due"] || 0;
+                const remarks = b["Remarks"] || '-';
 
                 let badgeClass = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-md";
                 if (rawStatus.toLowerCase().includes('pending')) {
@@ -475,9 +617,9 @@
                         <td class="py-3 px-2 text-rose-400 font-semibold">RM${balance}</td>
                         <td class="py-3 px-2 text-slate-400">${b["Payment Method"] || ''}</td>
                         <td class="py-3 px-2"><span class="${badgeClass}">${rawStatus}</span></td>
-                        <td class="py-3 px-2 text-slate-400 truncate max-w-[120px]">${b["Remarks"] || '-'}</td>
+                        <td class="py-3 px-2 text-slate-400 truncate max-w-[150px]" title="${remarks}">${remarks}</td>
                         <td class="py-3 px-2 text-center">
-                            <button onclick="shareBooking('${name.replace(/'/g, "\\'")}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${balance}', '${rawStatus}')" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 mx-auto">
+                            <button onclick="shareBooking('${name.replace(/'/g, "\\'")}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${balance}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 mx-auto">
                                 💬 Share
                             </button>
                         </td>
