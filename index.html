@@ -23,11 +23,11 @@
                     🌊 Sabah Diving Booking System
                 </h1>
                 <p class="text-slate-400 text-xs sm:text-sm mt-1">
-                    沙巴潜水高端客户预订、财务与团队云端日历管理系统
+                    沙巴潜水高端客户预订、财务与 Google 日历自动化管理系统 (Free API)
                 </p>
             </div>
             <div id="syncStatus" class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium whitespace-nowrap">
-                🟢 Cloud Shared Database & Team Calendar Active / 团队云端同步中
+                🟢 Google Apps Script API Active / 云端双向同步中
             </div>
         </header>
 
@@ -149,7 +149,7 @@
 
                         <div class="xl:col-span-3 flex justify-end mt-2">
                             <button type="submit" id="submitBtn" class="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-8 py-3.5 rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
-                                Save & Sync to Cloud 🚀
+                                Save & Sync to Sheet & Calendar 🚀
                             </button>
                         </div>
 
@@ -262,7 +262,7 @@
     </div>
 
     <script>
-        const SHEETDB_ENDPOINT = "https://sheetdb.io/api/v1/90irpnion96lu";
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
         const ADMIN_PASSWORD = "sabah2026";
 
         let bookings = [];
@@ -318,7 +318,7 @@
 
         async function fetchBookings() {
             try {
-                const response = await fetch(SHEETDB_ENDPOINT);
+                const response = await fetch(APPS_SCRIPT_URL);
                 const data = await response.json();
                 if (Array.isArray(data)) {
                     bookings = data;
@@ -481,7 +481,7 @@
             event.preventDefault();
             
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerText = "Saving to Cloud Database... / 正在保存...";
+            submitBtn.innerText = "Syncing to Google Sheet & Calendar... / 正在同步...";
             submitBtn.disabled = true;
 
             const bDateVal = document.getElementById('bookingDate').value;
@@ -500,12 +500,12 @@
 
             const bookingData = {
                 "Timestamp": new Date().toISOString(),
-                "Booking Date": "'" + bDateVal,
+                "Booking Date": bDateVal,
                 "Full Name": document.getElementById('fullName').value,
                 "Gender": document.getElementById('gender').value,
                 "Passport": document.getElementById('passport').value,
                 "Pax": document.getElementById('pax').value,
-                "Activity Date": "'" + aDateVal,
+                "Activity Date": aDateVal,
                 "Location": document.getElementById('location').value,
                 "Package": document.getElementById('packageType').value,
                 "Total Price": document.getElementById('totalPrice').value,
@@ -517,23 +517,26 @@
             };
 
             try {
-                // Save to SheetDB (Instant sync for both you, your assistant, and the team calendar)
-                await fetch(SHEETDB_ENDPOINT, {
+                // Sends data directly to your Google Apps Script Web App (saves to Sheet & syncs Calendar)
+                await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
+                    mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ data: bookingData })
                 });
 
-                alert("Booking saved successfully! It will sync to your Google Calendar automatically in the background.");
+                alert("Booking saved & Google Calendar synced successfully!");
                 document.getElementById('bookingForm').reset();
                 setTodayDates();
-                fetchBookings();
+                
+                // Wait 1 second for the sheet to process, then refresh table
+                setTimeout(fetchBookings, 1000);
             } catch (err) {
                 console.error("Sync error:", err);
-                alert("Save failed. Please check your network.");
+                alert("Sync failed. Please check your network.");
             }
             
-            submitBtn.innerText = "Save & Sync to Cloud 🚀";
+            submitBtn.innerText = "Save & Sync to Sheet & Calendar 🚀";
             submitBtn.disabled = false;
         }
 
