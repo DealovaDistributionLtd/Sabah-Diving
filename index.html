@@ -261,6 +261,9 @@
         </div>
     </div>
 
+    <!-- Hidden Iframe to guarantee Google Apps Script POST success without CORS blocks -->
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
     <script>
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSXE4WfsUR45tCqw7athap5D2462dKLnWEEYoEfktcTlcin_NYJ9NZe6R-X7y5_wOir_mKbMAXW4kCO/pub?output=csv";
@@ -495,7 +498,7 @@
             });
         }
 
-        async function addBooking(event) {
+        function addBooking(event) {
             event.preventDefault();
             
             const submitBtn = document.getElementById('submitBtn');
@@ -516,44 +519,50 @@
                 remarksVal = '-';
             }
 
-            // URL-encoded parameters for reliable Google Apps Script delivery
-            const formData = new URLSearchParams();
-            formData.append("Timestamp", new Date().toISOString());
-            formData.append("Booking Date", bDateVal);
-            formData.append("Full Name", document.getElementById('fullName').value);
-            formData.append("Gender", document.getElementById('gender').value);
-            formData.append("Passport", document.getElementById('passport').value);
-            formData.append("Pax", document.getElementById('pax').value);
-            formData.append("Activity Date", aDateVal);
-            formData.append("Location", document.getElementById('location').value);
-            formData.append("Package", document.getElementById('packageType').value);
-            formData.append("Total Price", document.getElementById('totalPrice').value);
-            formData.append("Deposit Paid", document.getElementById('depositPaid').value);
-            formData.append("Balance Due", document.getElementById('balanceDue').value);
-            formData.append("Payment Method", document.getElementById('paymentMethod').value);
-            formData.append("Status", document.getElementById('status').value);
-            formData.append("Remarks", remarksVal);
+            // Create a dynamic form that posts directly to Apps Script via hidden iframe (100% bypasses CORS blocks)
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = APPS_SCRIPT_URL;
+            form.target = 'hidden_iframe';
 
-            try {
-                await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData.toString()
-                });
+            const fields = {
+                "Timestamp": new Date().toISOString(),
+                "Booking Date": bDateVal,
+                "Full Name": document.getElementById('fullName').value,
+                "Gender": document.getElementById('gender').value,
+                "Passport": document.getElementById('passport').value,
+                "Pax": document.getElementById('pax').value,
+                "Activity Date": aDateVal,
+                "Location": document.getElementById('location').value,
+                "Package": document.getElementById('packageType').value,
+                "Total Price": document.getElementById('totalPrice').value,
+                "Deposit Paid": document.getElementById('depositPaid').value,
+                "Balance Due": document.getElementById('balanceDue').value,
+                "Payment Method": document.getElementById('paymentMethod').value,
+                "Status": document.getElementById('status').value,
+                "Remarks": remarksVal
+            };
 
+            for (const key in fields) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = fields[key];
+                form.appendChild(input);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+
+            setTimeout(() => {
                 alert("Booking saved & Sabah Bookings Calendar synced successfully!");
                 document.getElementById('bookingForm').reset();
                 setTodayDates();
-                
-                setTimeout(fetchBookings, 3000);
-            } catch (err) {
-                console.error("Sync error:", err);
-                alert("Sync failed. Please check your network.");
-            }
-            
-            submitBtn.innerText = "Save & Sync to Sheet & Calendar 🚀";
-            submitBtn.disabled = false;
+                fetchBookings();
+                submitBtn.innerText = "Save & Sync to Sheet & Calendar 🚀";
+                submitBtn.disabled = false;
+            }, 2500);
         }
 
         function renderTable() {
