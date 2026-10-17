@@ -23,11 +23,11 @@
                     🌊 Sabah Diving Booking System
                 </h1>
                 <p class="text-slate-400 text-xs sm:text-sm mt-1">
-                    沙巴潜水高端客户预订、财务与团队云端日历管理系统
+                    沙巴潜水高端客户预订、财务与 Google 日历自动化管理系统
                 </p>
             </div>
             <div id="syncStatus" class="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium whitespace-nowrap">
-                🟢 Cloud Shared Database & Team Calendar Active / 团队云端日历同步中
+                🟢 Cloud Shared Database & Calendar Active / 云端双向同步中
             </div>
         </header>
 
@@ -149,7 +149,7 @@
 
                         <div class="xl:col-span-3 flex justify-end mt-2">
                             <button type="submit" id="submitBtn" class="w-full sm:w-auto bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-8 py-3.5 rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
-                                Save & Sync to Cloud / 保存并云端同步 🚀
+                                Save & Sync to Cloud & Calendar 🚀
                             </button>
                         </div>
 
@@ -228,7 +228,7 @@
 
             </div>
 
-            <!-- Right Column: Custom Built-in Team Calendar (No Google Login Required) -->
+            <!-- Right Column: Custom Built-in Team Calendar (Instant Sync for Assistant) -->
             <div class="xl:col-span-1 bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800 flex flex-col">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-base sm:text-lg font-semibold text-cyan-300">📅 Team Calendar / 团队日程</h2>
@@ -353,18 +353,15 @@
             const totalDays = new Date(year, month + 1, 0).getDate();
             const todayStr = new Date().toLocaleDateString('en-CA');
 
-            // Empty slots for previous month padding
             for (let i = 0; i < firstDayIndex; i++) {
                 grid.innerHTML += `<div class="aspect-square bg-slate-950/40 rounded-lg opacity-25"></div>`;
             }
 
-            // Days of current month
             for (let day = 1; day <= totalDays; day++) {
                 const monthStr = String(month + 1).padStart(2, '0');
                 const dayStr = String(day).padStart(2, '0');
                 const dateKey = `${year}-${monthStr}-${dayStr}`;
 
-                // Check if bookings exist on this date
                 const dayBookings = bookings.filter(b => {
                     const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
                     const status = (b["Status"] || '').toLowerCase();
@@ -408,7 +405,7 @@
                     <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 text-[11px]">
                         <div class="font-bold text-cyan-400">${b["Full Name"]} (${b["Pax"]} Pax)</div>
                         <div class="text-slate-300">📍 ${b["Location"]} | 🏊 ${b["Package"]}</div>
-                        <div class="text-slate-400 text-[10px]">📌 ${b["Status"]}</div>
+                        <div class="text-slate-400 text-[10px]">📌 ${b["Status"]} | 🏨 ${b["Remarks"]}</div>
                     </div>
                 `;
             });
@@ -524,12 +521,14 @@
             };
 
             try {
+                // 1. Send data to SheetDB (Updates shared team database & website calendar)
                 await fetch(SHEETDB_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ data: bookingData })
                 });
 
+                // 2. Send data to Google Apps Script (Server-side writes directly to your Google Calendar)
                 const formData = new URLSearchParams({
                     bookingDate: bDateVal,
                     fullName: bookingData["Full Name"],
@@ -554,7 +553,7 @@
                     body: formData
                 });
 
-                alert("Booking saved, Sheet updated & Calendar synced successfully!");
+                alert("Booking saved, Sheet updated & Google Calendar synced successfully!");
                 document.getElementById('bookingForm').reset();
                 setTodayDates();
                 fetchBookings();
@@ -563,7 +562,7 @@
                 alert("Sync failed. Please check your network.");
             }
             
-            submitBtn.innerText = "Save & Sync to Cloud / 保存并云端同步 🚀";
+            submitBtn.innerText = "Save & Sync to Cloud & Calendar 🚀";
             submitBtn.disabled = false;
         }
 
