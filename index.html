@@ -319,7 +319,6 @@
 
         async function fetchBookings() {
             try {
-                // Fetch using CSV URL to instantly bypass CORS and load all sheet data
                 const response = await fetch(SHEET_CSV_URL + "&t=" + new Date().getTime());
                 const csvText = await response.text();
                 bookings = parseCSV(csvText);
@@ -517,38 +516,36 @@
                 remarksVal = '-';
             }
 
-            const bookingData = {
-                "Timestamp": new Date().toISOString(),
-                "Booking Date": bDateVal,
-                "Full Name": document.getElementById('fullName').value,
-                "Gender": document.getElementById('gender').value,
-                "Passport": document.getElementById('passport').value,
-                "Pax": document.getElementById('pax').value,
-                "Activity Date": aDateVal,
-                "Location": document.getElementById('location').value,
-                "Package": document.getElementById('packageType').value,
-                "Total Price": document.getElementById('totalPrice').value,
-                "Deposit Paid": document.getElementById('depositPaid').value,
-                "Balance Due": document.getElementById('balanceDue').value,
-                "Payment Method": document.getElementById('paymentMethod').value,
-                "Status": document.getElementById('status').value,
-                "Remarks": remarksVal
-            };
+            // URL-encoded parameters for reliable Google Apps Script delivery
+            const formData = new URLSearchParams();
+            formData.append("Timestamp", new Date().toISOString());
+            formData.append("Booking Date", bDateVal);
+            formData.append("Full Name", document.getElementById('fullName').value);
+            formData.append("Gender", document.getElementById('gender').value);
+            formData.append("Passport", document.getElementById('passport').value);
+            formData.append("Pax", document.getElementById('pax').value);
+            formData.append("Activity Date", aDateVal);
+            formData.append("Location", document.getElementById('location').value);
+            formData.append("Package", document.getElementById('packageType').value);
+            formData.append("Total Price", document.getElementById('totalPrice').value);
+            formData.append("Deposit Paid", document.getElementById('depositPaid').value);
+            formData.append("Balance Due", document.getElementById('balanceDue').value);
+            formData.append("Payment Method", document.getElementById('paymentMethod').value);
+            formData.append("Status", document.getElementById('status').value);
+            formData.append("Remarks", remarksVal);
 
             try {
-                // 1. Send to Apps Script Web App (Saves to Sheet & adds to Sabah Bookings Calendar)
                 await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ data: bookingData })
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
                 });
 
                 alert("Booking saved & Sabah Bookings Calendar synced successfully!");
                 document.getElementById('bookingForm').reset();
                 setTodayDates();
                 
-                // Wait 3 seconds for Google Sheet CSV cache to update, then refresh website table & calendar
                 setTimeout(fetchBookings, 3000);
             } catch (err) {
                 console.error("Sync error:", err);
