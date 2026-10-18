@@ -35,7 +35,7 @@
                 <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>💰</span> Assistant Commission / 助理提成</a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.0</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.1</div>
     </div>
 
     <div class="max-w-[95%] md:max-w-[88%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
@@ -52,33 +52,48 @@
             </div>
         </header>
 
-        <!-- KPI Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-            <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gross Revenue / 总营业额</span>
-                <div class="text-3xl font-bold text-emerald-600 mt-3" id="finTotalRev">RM0.00</div>
-            </div>
-            <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Deposits Collected / 已收定金</span>
-                <div class="text-3xl font-bold text-sky-600 mt-3" id="finTotalDep">RM0.00</div>
-            </div>
-            <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Outstanding Balance / 待收尾款</span>
-                <div class="text-3xl font-bold text-rose-600 mt-3" id="finTotalBal">RM0.00</div>
+        <!-- Password Protection Gate -->
+        <div id="passwordGate" class="light-panel p-10 rounded-3xl text-center space-y-4 max-w-md mx-auto my-12">
+            <div class="w-14 h-14 bg-emerald-50 border border-emerald-200 text-emerald-600 text-2xl rounded-2xl flex items-center justify-center mx-auto shadow-sm">🔒</div>
+            <h2 class="text-lg font-bold text-slate-900">Protected Financial Ledger</h2>
+            <p class="text-xs text-slate-500">请输入管理员密码以解锁查看财务报表与清算数据。</p>
+            <div class="flex gap-2 pt-2">
+                <input type="password" id="finPassword" placeholder="Enter password / 输入密码" class="light-input rounded-xl px-4 py-3 text-xs w-full focus:outline-none">
+                <button onclick="unlockFinance()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-xl text-xs transition shadow-md shrink-0">Unlock / 解锁</button>
             </div>
         </div>
 
-        <!-- Payment Channels Breakdown -->
-        <div class="light-panel p-6 sm:p-8 rounded-3xl space-y-6">
-            <h2 class="text-base font-bold text-slate-900">💳 Payment Method Reconciliation / 收款渠道流水明细</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-5 gap-4" id="paymentMethodCards">
-                <!-- Dynamic Channel Totals Populated Here -->
+        <!-- Main Financial Content (Hidden Until Unlocked) -->
+        <div id="financeContent" class="space-y-8 hidden">
+            <!-- KPI Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gross Revenue / 总营业额</span>
+                    <div class="text-3xl font-bold text-emerald-600 mt-3" id="finTotalRev">RM0.00</div>
+                </div>
+                <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Deposits Collected / 已收定金</span>
+                    <div class="text-3xl font-bold text-sky-600 mt-3" id="finTotalDep">RM0.00</div>
+                </div>
+                <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Outstanding Balance / 待收尾款</span>
+                    <div class="text-3xl font-bold text-rose-600 mt-3" id="finTotalBal">RM0.00</div>
+                </div>
+            </div>
+
+            <!-- Payment Channels Breakdown -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl space-y-6">
+                <h2 class="text-base font-bold text-slate-900">💳 Payment Method Reconciliation / 收款渠道流水明细</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-4" id="paymentMethodCards">
+                    <!-- Dynamic Channel Totals Populated Here -->
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
+        const ADMIN_PASSWORD = "sabah2026";
 
         function toggleMenu() {
             const drawer = document.getElementById('mobileDrawer');
@@ -87,9 +102,17 @@
             overlay.classList.toggle('hidden');
         }
 
-        window.onload = function() {
-            fetchData();
-        };
+        function unlockFinance() {
+            const val = document.getElementById('finPassword').value;
+            if (val === ADMIN_PASSWORD) {
+                document.getElementById('passwordGate').classList.add('hidden');
+                document.getElementById('financeContent').classList.remove('hidden');
+                fetchData();
+            } else {
+                alert("Incorrect password! / 密码错误！");
+                document.getElementById('finPassword').value = '';
+            }
+        }
 
         async function fetchData() {
             try {
