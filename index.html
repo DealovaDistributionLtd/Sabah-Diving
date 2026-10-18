@@ -36,7 +36,7 @@
 
     <div class="max-w-[98%] md:max-w-[96%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
         <!-- Header Section -->
-        <header class="flex flex-col md:flex-row justify-between items-center mb-8 light-panel p-6 sm:p-8 rounded-3xl gap-4">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-6 light-panel p-6 sm:p-8 rounded-3xl gap-4">
             <div class="flex items-center gap-4 text-center md:text-left">
                 <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-600 flex items-center justify-center text-2xl shadow-lg shadow-sky-500/20 text-white shrink-0">
                     🌊
@@ -50,13 +50,18 @@
                     </p>
                 </div>
             </div>
-            <div id="syncStatus" class="text-xs px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold flex items-center gap-2 shadow-sm">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Cloud Sync Active / 云端直连同步中
+            
+            <div class="flex items-center gap-3">
+                <a href="commission.html" class="px-4 py-2.5 text-xs font-bold rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition shadow-sm flex items-center gap-2">
+                    <span>💰</span> Assistant Commission Portal / 助理提成后台
+                </a>
+                <div id="syncStatus" class="hidden sm:flex text-xs px-3.5 py-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold items-center gap-2 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Sync Active
+                </div>
             </div>
         </header>
 
-        <!-- Main Content Layout -->
         <div class="grid grid-cols-1 xl:grid-cols-4 gap-6 sm:gap-8">
             
             <!-- Left 3 Columns: Booking Form & Table -->
