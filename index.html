@@ -102,7 +102,7 @@
                         Sabah Diving Operations
                     </h1>
                     <p class="text-slate-500 text-xs mt-0.5">
-                        高端客户预订、动态套餐价格联动与系统管理中心
+                        高端客户预订、动态套餐价格匹配与 Google 日历自动化管理系统
                     </p>
                 </div>
             </div>
@@ -171,7 +171,7 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1.5">地点 (Location)</label>
-                            <select id="location" onchange="updatePackagesAndPrice()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                            <select id="location" onchange="updatePackageOptions()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
                                 <option value="Semporna & Bum Bum">Semporna & Bum Bum (仙本那/邦邦岛)</option>
                                 <option value="Tun Sakaran Marine Park">Tun Sakaran Marine Park (敦沙卡兰公园)</option>
                                 <option value="Dreamer Island (淘梦岛)">Dreamer Island (淘梦岛)</option>
@@ -180,8 +180,8 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1.5">项目类型 (Package Type)</label>
-                            <select id="packageType" onchange="updateDefaultPrice()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
-                                <!-- Populated dynamically based on location -->
+                            <select id="packageType" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                                <!-- Populated dynamically by updatePackageOptions() -->
                             </select>
                         </div>
 
@@ -197,17 +197,17 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">总价 (Total Price - RM)</label>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">总价 (Total Price - RM / RMB)</label>
                             <input type="number" id="totalPrice" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="0.00">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">已付定金 (Deposit Paid - RM)</label>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">已付定金 (Deposit Paid - RM / RMB)</label>
                             <input type="number" id="depositPaid" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="0.00">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">尾款 (Balance Due - RM)</label>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">尾款 (Balance Due)</label>
                             <input type="number" id="balanceDue" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-sky-700 font-bold" placeholder="0.00">
                         </div>
 
@@ -373,29 +373,47 @@
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
         const ADMIN_PASSWORD = "sabah2026";
 
-        // Location-specific package mapping with default standard pricing (RM)
-        const locationPackages = {
-            "Semporna & Bum Bum": [
-                { name: "Fun Dive (3 Dives)", price: 450 },
-                { name: "DSD (Discover Scuba Diving)", price: 350 },
-                { name: "Open Water Course", price: 1600 },
-                { name: "Island Hopping Day Trip", price: 200 }
-            ],
-            "Tun Sakaran Marine Park": [
-                { name: "Tun Sakaran Fun Dive", price: 480 },
-                { name: "Tun Sakaran Snorkeling", price: 220 },
-                { name: "Bohey Dulang Hiking & Snorkeling", price: 250 }
-            ],
-            "Dreamer Island (淘梦岛)": [
-                { name: "Dreamer Island Leisure & Snorkeling", price: 280 },
-                { name: "Dreamer Island DSD (Experience)", price: 380 },
-                { name: "Dreamer Island Fun Dive", price: 450 }
-            ]
-        };
-
         let bookings = [];
         let currentTab = 'All';
         let navDate = new Date();
+
+        // Location-based package options mapping based on official pricing sheet
+        const locationPackages = {
+            "Semporna & Bum Bum": [
+                "DSD: 1 Day/2 Dives (Bum Bum Island)",
+                "DSD: 1 Day/3 Dives (Outer Reef)",
+                "DSD: 1 Day/3 Dives + Hike (Tun Sakaran)",
+                "Fun Dive: 1 Day / 6 Dives",
+                "Fun Dive: 2 Days / 9 Dives",
+                "Fun Dive: 2 Days / 9 Dives (1D Sipadan)",
+                "Fun Dive: 3 Days / 12 Dives",
+                "Fun Dive: 3 Days / 12 Dives (1D Sipadan)",
+                "Fun Dive: 4 Days / 15 Dives",
+                "Fun Dive: 4 Days / 15 Dives (1D Sipadan)",
+                "Fun Dive: 4 Days / 15 Dives (2D Sipadan)",
+                "Fun Dive: 5 Days / 18 Dives",
+                "Fun Dive: 5 Days / 18 Dives (1D Sipadan)",
+                "Fun Dive: 5 Days / 18 Dives (2D Sipadan)",
+                "PADI Course: 2 Days Open Water",
+                "PADI Course: 3 Days OW + 3 Fun Dives",
+                "PADI Course: 2 Days AOW + 3 Fun Dives",
+                "PADI Course: 2 Days AOW + Sipadan",
+                "PADI Course: 3 Days Rescue + EFR",
+                "PADI Course: 6D5N OW + AOW Combo"
+            ],
+            "Tun Sakaran Marine Park": [
+                "TSMP: Snorkel + Hike (Adult)",
+                "TSMP: Snorkel + Hike (Child)",
+                "TSMP: Snorkel (No Hike) (Adult)",
+                "TSMP: Snorkel (No Hike) (Child)",
+                "TSMP: DSD Experience Diving",
+                "TSMP: Fun Dive"
+            ],
+            "Dreamer Island (淘梦岛)": [
+                "Dreamer Island: Package A (MYR 520 - 2 DSD + Lunch + Gear + Drone)",
+                "Dreamer Island: Package B (MYR 620 - 2 DSD + Lunch + Gear + Drone + Edited Footage)"
+            ]
+        };
 
         function toggleMenu() {
             const drawer = document.getElementById('mobileDrawer');
@@ -411,7 +429,7 @@
 
         window.onload = function() {
             setTodayDates();
-            updatePackagesAndPrice();
+            updatePackageOptions();
             
             ['bookingDate', 'activityDate'].forEach(id => {
                 const el = document.getElementById(id);
@@ -425,44 +443,28 @@
             fetchBookings();
         };
 
+        function updatePackageOptions() {
+            const locSelect = document.getElementById('location');
+            const pkgSelect = document.getElementById('packageType');
+            const selectedLoc = locSelect.value;
+            
+            pkgSelect.innerHTML = '';
+            const options = locationPackages[selectedLoc] || [];
+            
+            options.forEach(opt => {
+                const el = document.createElement('option');
+                el.value = opt;
+                el.textContent = opt;
+                pkgSelect.appendChild(el);
+            });
+        }
+
         function setTodayDates() {
             const todayStr = new Date().toLocaleDateString('en-CA');
             document.getElementById('bookingDate').value = todayStr;
             document.getElementById('activityDate').value = todayStr;
             document.getElementById('hotelPickupToggle').checked = false;
             toggleHotelInput();
-        }
-
-        // Dynamically update package dropdown options based on selected location
-        function updatePackagesAndPrice() {
-            const locSelect = document.getElementById('location');
-            const pkgSelect = document.getElementById('packageType');
-            const selectedLoc = locSelect.value;
-
-            pkgSelect.innerHTML = '';
-            const pkgs = locationPackages[selectedLoc] || [];
-
-            pkgs.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p.name;
-                opt.textContent = `${p.name} (RM ${p.price})`;
-                opt.dataset.price = p.price;
-                pkgSelect.appendChild(opt);
-            });
-
-            updateDefaultPrice();
-        }
-
-        // Automatically set total price input based on selected package default rate
-        function updateDefaultPrice() {
-            const pkgSelect = document.getElementById('packageType');
-            const selectedOpt = pkgSelect.options[pkgSelect.selectedIndex];
-            if (selectedOpt && selectedOpt.dataset.price) {
-                const paxCount = parseInt(document.getElementById('pax').value) || 1;
-                const basePrice = parseFloat(selectedOpt.dataset.price) || 0;
-                document.getElementById('totalPrice').value = (basePrice * paxCount).toFixed(2);
-                calculateBalance();
-            }
         }
 
         function toggleHotelInput() {
@@ -636,8 +638,8 @@
 🏊 项目 (Package): ${pkg}
 🏨 备注/接送 (Remarks): ${remarks}
 -----------------------------------
-💰 订单总额 (Total): RM${total}
-🏷️ 待付尾款 (Balance Due): RM${balance}
+💰 订单总额: ${total}
+🏷️ 待付尾款: ${balance}
 📌 Status (状态): ${status}
 -----------------------------------
 💡 温馨提示：请提前准备好泳衣, 毛巾及个人随身物品。期待与您开启精彩的沙巴海洋之旅！`;
@@ -659,11 +661,10 @@
             document.getElementById('pax').value = pax;
             document.getElementById('activityDate').value = activityDate;
             
-            // Set location and update its corresponding packages
             document.getElementById('location').value = location;
-            updatePackagesAndPrice();
-            
+            updatePackageOptions();
             document.getElementById('packageType').value = pkg;
+
             document.getElementById('totalPrice').value = total;
             document.getElementById('depositPaid').value = deposit;
             document.getElementById('paymentMethod').value = paymentMethod;
@@ -695,7 +696,7 @@
             document.getElementById('bookingForm').reset();
             document.getElementById('editRowIndex').value = '';
             setTodayDates();
-            updatePackagesAndPrice();
+            updatePackageOptions();
             document.getElementById('formTitle').innerHTML = '<span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">➕</span> New Booking Entry / 录入新预订';
             document.getElementById('submitBtn').innerText = "Save & Sync to Sheet & Calendar 🚀";
             document.getElementById('cancelEditBtn').classList.add('hidden');
@@ -864,10 +865,10 @@
                         <td class="py-3.5 px-3 text-center text-sky-700 font-bold">${pax}</td>
                         <td class="py-3.5 px-3 text-sky-700 font-semibold">${cleanActivityDate}</td>
                         <td class="py-3.5 px-3 text-slate-600">${location}</td>
-                        <td class="py-3.5 px-3 text-slate-600">${pkg}</td>
-                        <td class="py-3.5 px-3 text-slate-800 font-medium">RM${total}</td>
-                        <td class="py-3.5 px-3 text-emerald-600 font-medium">RM${deposit}</td>
-                        <td class="py-3.5 px-3 text-rose-600 font-bold">RM${balance}</td>
+                        <td class="py-3.5 px-3 text-slate-600" title="${pkg}">${pkg}</td>
+                        <td class="py-3.5 px-3 text-slate-800 font-medium">${total}</td>
+                        <td class="py-3.5 px-3 text-emerald-600 font-medium">${deposit}</td>
+                        <td class="py-3.5 px-3 text-rose-600 font-bold">${balance}</td>
                         <td class="py-3.5 px-3 text-slate-500">${paymentMethod}</td>
                         <td class="py-3.5 px-3"><span class="${badgeClass}">${rawStatus}</span></td>
                         <td class="py-3.5 px-3 text-slate-500 truncate max-w-[150px]" title="${remarks}">${remarks}</td>
