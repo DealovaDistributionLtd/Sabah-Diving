@@ -9,52 +9,49 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #030712;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(14, 116, 144, 0.08) 0px, transparent 50%);
-            background-attachment: fixed;
+            background-color: #f8fafc;
         }
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.07);
+        .light-panel {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
-        .glass-input {
-            background: rgba(2, 6, 23, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .light-input {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
         }
-        .glass-input:focus {
-            border-color: rgba(6, 182, 212, 0.8);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+        .light-input:focus {
+            border-color: #0284c7;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
         }
         ::-webkit-scrollbar { height: 6px; width: 6px; }
-        ::-webkit-scrollbar-track { background: #030712; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="text-slate-100 min-h-screen antialiased selection:bg-cyan-500 selection:text-slate-950">
+<body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white">
 
     <div class="max-w-[98%] md:max-w-[96%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
         <!-- Header Section -->
-        <header class="flex flex-col md:flex-row justify-between items-center mb-8 glass-panel p-6 sm:p-8 rounded-3xl shadow-2xl gap-4">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 light-panel p-6 sm:p-8 rounded-3xl gap-4">
             <div class="flex items-center gap-4 text-center md:text-left">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-2xl shadow-lg shadow-cyan-500/20 shrink-0">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-600 flex items-center justify-center text-2xl shadow-lg shadow-sky-500/20 text-white shrink-0">
                     🌊
                 </div>
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center justify-center md:justify-start gap-2">
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 flex items-center justify-center md:justify-start gap-2">
                         Sabah Diving Operations
                     </h1>
-                    <p class="text-slate-400 text-xs sm:text-sm mt-0.5">
+                    <p class="text-slate-500 text-xs sm:text-sm mt-0.5">
                         高端客户预订、财务清算与 Google 日历自动化管理系统
                     </p>
                 </div>
             </div>
-            <div id="syncStatus" class="text-xs px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium flex items-center gap-2 shadow-sm">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <div id="syncStatus" class="text-xs px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold flex items-center gap-2 shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 Cloud Sync Active / 云端直连同步中
             </div>
         </header>
@@ -66,13 +63,13 @@
             <div class="xl:col-span-3 space-y-6 sm:space-y-8">
                 
                 <!-- Input Form Card -->
-                <div class="glass-panel p-6 sm:p-8 rounded-3xl shadow-2xl">
+                <div class="light-panel p-6 sm:p-8 rounded-3xl">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 id="formTitle" class="text-base sm:text-lg font-semibold text-cyan-300 flex items-center gap-2.5">
-                            <span class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-xs">➕</span> 
+                        <h2 id="formTitle" class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
+                            <span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">➕</span> 
                             New Booking Entry / 录入新预订
                         </h2>
-                        <button id="cancelEditBtn" onclick="resetFormMode()" class="hidden text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 px-3.5 py-1.5 rounded-xl hover:bg-rose-500/20 transition font-medium">
+                        <button id="cancelEditBtn" onclick="resetFormMode()" class="hidden text-xs bg-rose-50 text-rose-600 border border-rose-200 px-3.5 py-1.5 rounded-xl hover:bg-rose-100 transition font-semibold">
                             Cancel Edit / 取消编辑
                         </button>
                     </div>
@@ -82,109 +79,109 @@
                         <input type="hidden" id="editRowIndex" value="">
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">预定日期 (Booking Date)</label>
-                            <input type="date" id="bookingDate" required class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200 cursor-pointer">
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">预定日期 (Booking Date)</label>
+                            <input type="date" id="bookingDate" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">全名 (Full Name - 中/拼音)</label>
-                            <input type="text" id="fullName" required class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200" placeholder="Enter full name / 请输入全名">
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">全名 (Full Name - 中/拼音)</label>
+                            <input type="text" id="fullName" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Enter full name / 请输入全名">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">性别 (Gender)</label>
-                            <select id="gender" class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200">
-                                <option value="Male / 男" class="bg-slate-900">Male / 男</option>
-                                <option value="Female / 女" class="bg-slate-900">Female / 女</option>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">性别 (Gender)</label>
+                            <select id="gender" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                                <option value="Male / 男">Male / 男</option>
+                                <option value="Female / 女">Female / 女</option>
                             </select>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">护照号码 (Passport Number)</label>
-                            <input type="text" id="passport" required class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200" placeholder="Enter passport number / 请输入护照号">
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">护照号码 (Passport Number)</label>
+                            <input type="text" id="passport" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Enter passport number / 请输入护照号">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">人数 (Number of Pax)</label>
-                            <input type="number" id="pax" min="1" value="1" required class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200">
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">人数 (Number of Pax)</label>
+                            <input type="number" id="pax" min="1" value="1" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">活动日期 (Activity Date)</label>
-                            <input type="date" id="activityDate" required class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200 cursor-pointer">
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">活动日期 (Activity Date)</label>
+                            <input type="date" id="activityDate" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">地点 (Location)</label>
-                            <select id="location" class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200">
-                                <option value="Semporna & Bum Bum" class="bg-slate-900">Semporna & Bum Bum (仙本那/邦邦岛)</option>
-                                <option value="Tun Sakaran Marine Park" class="bg-slate-900">Tun Sakaran Marine Park (敦沙卡兰公园)</option>
-                                <option value="Kota Kinabalu" class="bg-slate-900">Kota Kinabalu (亚庇)</option>
-                                <option value="Dreamer Island (淘梦岛)" class="bg-slate-900">Dreamer Island (淘梦岛)</option>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">地点 (Location)</label>
+                            <select id="location" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                                <option value="Semporna & Bum Bum">Semporna & Bum Bum (仙本那/邦邦岛)</option>
+                                <option value="Tun Sakaran Marine Park">Tun Sakaran Marine Park (敦沙卡兰公园)</option>
+                                <option value="Kota Kinabalu">Kota Kinabalu (亚庇)</option>
+                                <option value="Dreamer Island (淘梦岛)">Dreamer Island (淘梦岛)</option>
                             </select>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">项目类型 (Package Type)</label>
-                            <select id="packageType" class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200">
-                                <option value="DSD (Discover Scuba Diving)" class="bg-slate-900">DSD (体验潜水)</option>
-                                <option value="Fun Dive (3 Dives)" class="bg-slate-900">Fun Dive (3 潜)</option>
-                                <option value="Open Water Course" class="bg-slate-900">Open Water Course (OW 考证)</option>
-                                <option value="Snorkeling" class="bg-slate-900">Snorkeling (浮潜)</option>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">项目类型 (Package Type)</label>
+                            <select id="packageType" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                                <option value="DSD (Discover Scuba Diving)">DSD (体验潜水)</option>
+                                <option value="Fun Dive (3 Dives)">Fun Dive (3 潜)</option>
+                                <option value="Open Water Course">Open Water Course (OW 考证)</option>
+                                <option value="Snorkeling">Snorkeling (浮潜)</option>
                             </select>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">收款方式 (Payment Method)</label>
-                            <select id="paymentMethod" class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200">
-                                <option value="WeChat Pay" class="bg-slate-900">WeChat Pay (微信支付)</option>
-                                <option value="Alipay" class="bg-slate-900">Alipay (支付宝)</option>
-                                <option value="Bank Transfer" class="bg-slate-900">Bank Transfer (银行转账)</option>
-                                <option value="TNG (Touch 'n Go)" class="bg-slate-900">TNG (Touch 'n Go)</option>
-                                <option value="Cash" class="bg-slate-900">Cash (现金)</option>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">收款方式 (Payment Method)</label>
+                            <select id="paymentMethod" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                                <option value="WeChat Pay">WeChat Pay (微信支付)</option>
+                                <option value="Alipay">Alipay (支付宝)</option>
+                                <option value="Bank Transfer">Bank Transfer (银行转账)</option>
+                                <option value="TNG (Touch 'n Go)">TNG (Touch 'n Go)</option>
+                                <option value="Cash">Cash (现金)</option>
                             </select>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">总价 (Total Price - RM)</label>
-                            <input type="number" id="totalPrice" oninput="calculateBalance()" required class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200" placeholder="0.00">
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">总价 (Total Price - RM)</label>
+                            <input type="number" id="totalPrice" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="0.00">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">已付定金 (Deposit Paid - RM)</label>
-                            <input type="number" id="depositPaid" oninput="calculateBalance()" required class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200" placeholder="0.00">
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">已付定金 (Deposit Paid - RM)</label>
+                            <input type="number" id="depositPaid" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="0.00">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">尾款 (Balance Due - RM)</label>
-                            <input type="number" id="balanceDue" readonly class="w-full bg-slate-900/80 border border-slate-800 rounded-xl px-3.5 py-3 text-sm text-cyan-400 font-bold" placeholder="0.00">
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">尾款 (Balance Due - RM)</label>
+                            <input type="number" id="balanceDue" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-sky-700 font-bold" placeholder="0.00">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1.5">状态 (Status)</label>
-                            <select id="status" class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200">
-                                <option value="Confirmed / 已确认" class="bg-slate-900">Confirmed / 已确认</option>
-                                <option value="Pending / 待定" class="bg-slate-900">Pending / 待定</option>
-                                <option value="Completed / 已完成" class="bg-slate-900">Completed / 已完成</option>
-                                <option value="Cancelled / 已取消" class="bg-slate-900">Cancelled / 已取消</option>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">状态 (Status)</label>
+                            <select id="status" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                                <option value="Confirmed / 已确认">Confirmed / 已确认</option>
+                                <option value="Pending / 待定">Pending / 待定</option>
+                                <option value="Completed / 已完成">Completed / 已完成</option>
+                                <option value="Cancelled / 已取消">Cancelled / 已取消</option>
                             </select>
                         </div>
 
                         <!-- Hotel Pick-up & Remarks Section -->
                         <div class="sm:col-span-2 flex flex-col gap-3">
-                            <label class="block text-xs font-semibold text-slate-400">Hotel Pick-up & Remarks (酒店接送与备注)</label>
+                            <label class="block text-xs font-bold text-slate-600">Hotel Pick-up & Remarks (酒店接送与备注)</label>
                             <div class="flex flex-col sm:flex-row gap-3">
-                                <div class="flex items-center gap-2.5 glass-input px-3.5 py-3 rounded-xl shrink-0">
-                                    <input type="checkbox" id="hotelPickupToggle" onchange="toggleHotelInput()" class="w-4 h-4 accent-cyan-500 cursor-pointer rounded">
-                                    <label for="hotelPickupToggle" class="text-xs font-medium text-slate-300 cursor-pointer">Hotel Pick-up / 需要酒店接送</label>
+                                <div class="flex items-center gap-2.5 light-input px-3.5 py-3 rounded-xl shrink-0">
+                                    <input type="checkbox" id="hotelPickupToggle" onchange="toggleHotelInput()" class="w-4 h-4 accent-sky-600 cursor-pointer rounded">
+                                    <label for="hotelPickupToggle" class="text-xs font-semibold text-slate-700 cursor-pointer">Hotel Pick-up / 需要酒店接送</label>
                                 </div>
-                                <input type="text" id="hotelName" disabled placeholder="Enter hotel name / 请输入酒店名称" class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-500 cursor-not-allowed">
+                                <input type="text" id="hotelName" disabled placeholder="Enter hotel name / 请输入酒店名称" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-400 cursor-not-allowed">
                             </div>
-                            <input type="text" id="remarks" class="w-full glass-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-200" placeholder="Additional remarks (e.g. equipment size, dietary requirements)">
+                            <input type="text" id="remarks" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Additional remarks (e.g. equipment size, dietary requirements)">
                         </div>
 
                         <div class="xl:col-span-3 flex justify-end mt-3">
-                            <button type="submit" id="submitBtn" class="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold px-8 py-3.5 rounded-xl text-sm transition shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2">
+                            <button type="submit" id="submitBtn" class="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-400 hover:to-cyan-500 text-white font-bold px-8 py-3.5 rounded-xl text-sm transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2">
                                 Save & Sync to Sheet & Calendar 🚀
                             </button>
                         </div>
@@ -193,25 +190,25 @@
                 </div>
 
                 <!-- Bookings Table Card with Quick Filter Tabs -->
-                <div class="glass-panel p-6 sm:p-8 rounded-3xl shadow-2xl">
+                <div class="light-panel p-6 sm:p-8 rounded-3xl">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                        <h2 class="text-base sm:text-lg font-semibold text-cyan-300 flex items-center gap-2.5">
-                            <span class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-xs">📋</span> 
+                        <h2 class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
+                            <span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">📋</span> 
                             Master Booking Database / 预订总表
                         </h2>
                         <!-- Quick Filter Tabs -->
-                        <div class="flex flex-wrap gap-1.5 bg-slate-950/60 p-1.5 rounded-2xl border border-slate-800/80">
-                            <button onclick="filterTab('All')" id="tab-All" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-cyan-500 text-slate-950 shadow-md transition">All / 全部</button>
-                            <button onclick="filterTab('Confirmed')" id="tab-Confirmed" class="px-3.5 py-1.5 text-xs font-medium rounded-xl text-slate-400 hover:text-slate-200 transition">Confirmed / 已确认</button>
-                            <button onclick="filterTab('Pending')" id="tab-Pending" class="px-3.5 py-1.5 text-xs font-medium rounded-xl text-slate-400 hover:text-slate-200 transition">Pending / 待定</button>
-                            <button onclick="filterTab('Completed')" id="tab-Completed" class="px-3.5 py-1.5 text-xs font-medium rounded-xl text-slate-400 hover:text-slate-200 transition">Completed / 已完成</button>
+                        <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                            <button onclick="filterTab('All')" id="tab-All" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-sky-600 text-white shadow-sm transition">All / 全部</button>
+                            <button onclick="filterTab('Confirmed')" id="tab-Confirmed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Confirmed / 已确认</button>
+                            <button onclick="filterTab('Pending')" id="tab-Pending" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Pending / 待定</button>
+                            <button onclick="filterTab('Completed')" id="tab-Completed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Completed / 已完成</button>
                         </div>
                     </div>
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
                             <thead>
-                                <tr class="border-b border-slate-800/80 text-slate-400 uppercase tracking-wider font-semibold">
+                                <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
                                     <th class="py-3.5 px-3">预定日期</th>
                                     <th class="py-3.5 px-3">姓名 (Name)</th>
                                     <th class="py-3.5 px-3">性别</th>
@@ -229,7 +226,7 @@
                                     <th class="py-3.5 px-3 text-center">Actions / 操作</th>
                                 </tr>
                             </thead>
-                            <tbody id="bookingTableBody" class="divide-y divide-slate-800/40">
+                            <tbody id="bookingTableBody" class="divide-y divide-slate-100">
                                 <!-- Dynamic rows populate here -->
                             </tbody>
                         </table>
@@ -237,33 +234,33 @@
                 </div>
 
                 <!-- Password Protected Financial KPI Summary Cards -->
-                <div class="glass-panel p-6 sm:p-8 rounded-3xl shadow-2xl">
+                <div class="light-panel p-6 sm:p-8 rounded-3xl">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                        <h2 class="text-base sm:text-lg font-semibold text-cyan-300 flex items-center gap-2.5">
-                            <span class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-xs">🔒</span> 
+                        <h2 class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
+                            <span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">🔒</span> 
                             Financial Summary / 财务报表
                         </h2>
                         <div id="lockSection" class="flex items-center gap-2.5 w-full sm:w-auto">
-                            <input type="password" id="kpiPassword" placeholder="Enter password / 输入密码" class="glass-input rounded-xl px-3.5 py-2 text-xs focus:outline-none text-slate-200">
-                            <button onclick="unlockKPIs()" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition shadow-md">Unlock / 解锁</button>
+                            <input type="password" id="kpiPassword" placeholder="Enter password / 输入密码" class="light-input rounded-xl px-3.5 py-2 text-xs focus:outline-none">
+                            <button onclick="unlockKPIs()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-5 py-2 rounded-xl text-xs transition shadow-sm">Unlock / 解锁</button>
                         </div>
                     </div>
 
                     <div id="kpiContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-5 hidden">
-                        <div class="glass-input p-5 rounded-2xl shadow-lg flex flex-col justify-between border-slate-800">
-                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Revenue / 总收入</span>
-                            <div class="text-2xl font-bold text-cyan-400 mt-3" id="kpiTotalRevenue">RM0.00</div>
+                        <div class="light-input p-5 rounded-2xl shadow-sm flex flex-col justify-between border-slate-200">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Revenue / 总收入</span>
+                            <div class="text-2xl font-bold text-sky-600 mt-3" id="kpiTotalRevenue">RM0.00</div>
                         </div>
-                        <div class="glass-input p-5 rounded-2xl shadow-lg flex flex-col justify-between border-slate-800">
-                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Deposits Collected / 已收定金</span>
-                            <div class="text-2xl font-bold text-emerald-400 mt-3" id="kpiTotalDeposits">RM0.00</div>
+                        <div class="light-input p-5 rounded-2xl shadow-sm flex flex-col justify-between border-slate-200">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Deposits Collected / 已收定金</span>
+                            <div class="text-2xl font-bold text-emerald-600 mt-3" id="kpiTotalDeposits">RM0.00</div>
                         </div>
-                        <div class="glass-input p-5 rounded-2xl shadow-lg flex flex-col justify-between border-slate-800">
-                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Outstanding Balance / 待收尾款</span>
-                            <div class="text-2xl font-bold text-rose-400 mt-3" id="kpiTotalBalance">RM0.00</div>
+                        <div class="light-input p-5 rounded-2xl shadow-sm flex flex-col justify-between border-slate-200">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Outstanding Balance / 待收尾款</span>
+                            <div class="text-2xl font-bold text-rose-600 mt-3" id="kpiTotalBalance">RM0.00</div>
                         </div>
                     </div>
-                    <div id="lockedMessage" class="text-center py-8 text-slate-500 text-xs font-medium">
+                    <div id="lockedMessage" class="text-center py-8 text-slate-400 text-xs font-semibold">
                         🔒 Financial statistics are locked. Enter password to view. / 财务数据已锁定，请输入密码查看。
                     </div>
                 </div>
@@ -271,15 +268,15 @@
             </div>
 
             <!-- Right Column: Custom Team Calendar -->
-            <div class="xl:col-span-1 glass-panel p-6 sm:p-8 rounded-3xl shadow-2xl flex flex-col">
+            <div class="xl:col-span-1 light-panel p-6 sm:p-8 rounded-3xl flex flex-col">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-base sm:text-lg font-semibold text-cyan-300 flex items-center gap-2">
+                    <h2 class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2">
                         <span>📅</span> Team Calendar
                     </h2>
                     <div class="flex items-center gap-1.5">
-                        <button onclick="changeMonth(-1)" class="p-2 glass-input rounded-xl hover:border-cyan-400 text-xs px-3 transition">◀</button>
-                        <span id="calMonthYear" class="text-xs font-bold text-cyan-400 px-2"></span>
-                        <button onclick="changeMonth(1)" class="p-2 glass-input rounded-xl hover:border-cyan-400 text-xs px-3 transition">▶</button>
+                        <button onclick="changeMonth(-1)" class="p-2 light-input rounded-xl hover:border-sky-400 text-xs px-3 transition font-bold">◀</button>
+                        <span id="calMonthYear" class="text-xs font-bold text-sky-700 px-2"></span>
+                        <button onclick="changeMonth(1)" class="p-2 light-input rounded-xl hover:border-sky-400 text-xs px-3 transition font-bold">▶</button>
                     </div>
                 </div>
 
@@ -294,10 +291,10 @@
                 </div>
 
                 <!-- Selected Day Manifest Preview -->
-                <div class="mt-6 pt-5 border-t border-slate-800/80 flex-1 flex flex-col">
-                    <h3 id="selectedDateTitle" class="text-xs font-semibold text-slate-300 mb-3">Select a date to view manifest / 点击日期查看行程</h3>
+                <div class="mt-6 pt-5 border-t border-slate-200 flex-1 flex flex-col">
+                    <h3 id="selectedDateTitle" class="text-xs font-bold text-slate-700 mb-3">Select a date to view manifest / 点击日期查看行程</h3>
                     <div id="selectedDateManifest" class="space-y-2.5 overflow-y-auto max-h-[250px] pr-1">
-                        <p class="text-slate-500 text-xs italic">No date selected.</p>
+                        <p class="text-slate-400 text-xs italic">No date selected.</p>
                     </div>
                 </div>
             </div>
@@ -345,14 +342,14 @@
             if (toggle.checked) {
                 hotelInput.disabled = false;
                 hotelInput.required = true;
-                hotelInput.classList.remove('text-slate-500', 'cursor-not-allowed');
-                hotelInput.classList.add('text-slate-200');
+                hotelInput.classList.remove('text-slate-400', 'cursor-not-allowed');
+                hotelInput.classList.add('text-slate-900');
             } else {
                 hotelInput.disabled = true;
                 hotelInput.required = false;
                 hotelInput.value = '';
-                hotelInput.classList.add('text-slate-500', 'cursor-not-allowed');
-                hotelInput.classList.remove('text-slate-200');
+                hotelInput.classList.add('text-slate-400', 'cursor-not-allowed');
+                hotelInput.classList.remove('text-slate-900');
             }
         }
 
@@ -398,7 +395,7 @@
             const todayStr = new Date().toLocaleDateString('en-CA');
 
             for (let i = 0; i < firstDayIndex; i++) {
-                grid.innerHTML += `<div class="aspect-square bg-slate-900/20 rounded-xl opacity-20"></div>`;
+                grid.innerHTML += `<div class="aspect-square bg-slate-100 rounded-xl opacity-40"></div>`;
             }
 
             for (let day = 1; day <= totalDays; day++) {
@@ -413,16 +410,16 @@
                 });
 
                 let isToday = (dateKey === todayStr);
-                let dayBg = isToday ? 'bg-cyan-500/20 border-cyan-500 shadow-md shadow-cyan-500/10' : 'bg-slate-900/40 border-slate-800/80 hover:border-slate-700';
+                let dayBg = isToday ? 'bg-sky-50 border-sky-400 shadow-sm' : 'bg-slate-50 border-slate-200 hover:border-slate-300';
                 
                 let indicatorHTML = '';
                 if (dayBookings.length > 0) {
-                    indicatorHTML = `<div class="flex justify-center gap-0.5 mt-1 flex-wrap"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span><span class="text-[9px] text-cyan-300 font-bold">${dayBookings.length}</span></div>`;
+                    indicatorHTML = `<div class="flex justify-center gap-0.5 mt-1 flex-wrap"><span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span><span class="text-[9px] text-sky-700 font-bold">${dayBookings.length}</span></div>`;
                 }
 
                 grid.innerHTML += `
                     <div onclick="selectCalendarDate('${dateKey}')" class="aspect-square ${dayBg} border rounded-xl p-1 flex flex-col justify-between cursor-pointer transition text-center select-none">
-                        <span class="text-[11px] font-semibold ${isToday ? 'text-cyan-400 font-bold' : 'text-slate-300'}">${day}</span>
+                        <span class="text-[11px] font-bold ${isToday ? 'text-sky-600' : 'text-slate-700'}">${day}</span>
                         ${indicatorHTML}
                     </div>
                 `;
@@ -440,16 +437,16 @@
             });
 
             if (dayBookings.length === 0) {
-                container.innerHTML = `<p class="text-slate-500 text-xs italic">No dives scheduled on this date.</p>`;
+                container.innerHTML = `<p class="text-slate-400 text-xs italic">No dives scheduled on this date.</p>`;
                 return;
             }
 
             dayBookings.forEach(b => {
                 container.innerHTML += `
-                    <div class="glass-input p-3 rounded-xl border-slate-800 text-[11px] shadow-sm">
-                        <div class="font-bold text-cyan-400">${b["Full Name"]} (${b["Pax"]} Pax)</div>
-                        <div class="text-slate-300 mt-1">📍 ${b["Location"]} | 🏊 ${b["Package"]}</div>
-                        <div class="text-slate-400 text-[10px] mt-0.5">📌 ${b["Status"]} | 🏨 ${b["Remarks"]}</div>
+                    <div class="light-input p-3 rounded-xl border-slate-200 text-[11px] shadow-sm">
+                        <div class="font-bold text-sky-700">${b["Full Name"]} (${b["Pax"]} Pax)</div>
+                        <div class="text-slate-600 mt-1">📍 ${b["Location"]} | 🏊 ${b["Package"]}</div>
+                        <div class="text-slate-500 text-[10px] mt-0.5">📌 ${b["Status"]} | 🏨 ${b["Remarks"]}</div>
                     </div>
                 `;
             });
@@ -460,7 +457,7 @@
             if (inputVal === ADMIN_PASSWORD) {
                 document.getElementById('kpiContainer').classList.remove('hidden');
                 document.getElementById('lockedMessage').classList.add('hidden');
-                document.getElementById('lockSection').innerHTML = '<span class="text-xs text-emerald-400 font-medium bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl">🔓 Unlocked / 已解锁</span>';
+                document.getElementById('lockSection').innerHTML = '<span class="text-xs text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl">🔓 Unlocked / 已解锁</span>';
             } else {
                 alert("Incorrect password! / 密码错误！");
                 document.getElementById('kpiPassword').value = '';
@@ -491,9 +488,9 @@
             ['All', 'Confirmed', 'Pending', 'Completed'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
                 if (t === tabName) {
-                    btn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-cyan-500 text-slate-950 shadow-md transition";
+                    btn.className = "px-3.5 py-1.5 text-xs font-bold rounded-xl bg-sky-600 text-white shadow-sm transition";
                 } else {
-                    btn.className = "px-3.5 py-1.5 text-xs font-medium rounded-xl text-slate-400 hover:text-slate-200 transition";
+                    btn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition";
                 }
             });
             renderTable();
@@ -565,7 +562,7 @@
             document.getElementById('bookingForm').reset();
             document.getElementById('editRowIndex').value = '';
             setTodayDates();
-            document.getElementById('formTitle').innerHTML = '<span class="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-xs">➕</span> New Booking Entry / 录入新预订';
+            document.getElementById('formTitle').innerHTML = '<span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">➕</span> New Booking Entry / 录入新预订';
             document.getElementById('submitBtn').innerText = "Save & Sync to Sheet & Calendar 🚀";
             document.getElementById('cancelEditBtn').classList.add('hidden');
         }
@@ -681,7 +678,7 @@
             }
 
             if (!filtered || filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="15" class="py-8 text-center text-slate-500 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="15" class="py-8 text-center text-slate-400 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
                 return;
             }
 
@@ -702,39 +699,39 @@
                 const paymentMethod = b["Payment Method"] || '';
                 const remarks = b["Remarks"] || '-';
 
-                let badgeClass = "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-lg font-medium";
+                let badgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg font-semibold";
                 if (rawStatus.toLowerCase().includes('pending')) {
-                    badgeClass = "bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-lg font-medium";
+                    badgeClass = "bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-lg font-semibold";
                 } else if (rawStatus.toLowerCase().includes('cancel')) {
-                    badgeClass = "bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2.5 py-1 rounded-lg font-medium";
+                    badgeClass = "bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-lg font-semibold";
                 } else if (rawStatus.toLowerCase().includes('complet')) {
-                    badgeClass = "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2.5 py-1 rounded-lg font-medium";
+                    badgeClass = "bg-sky-50 text-sky-700 border border-sky-200 px-2.5 py-1 rounded-lg font-semibold";
                 }
 
                 tbody.innerHTML += `
-                    <tr class="hover:bg-slate-900/40 transition">
-                        <td class="py-3.5 px-3 text-slate-300">${cleanBookingDate}</td>
-                        <td class="py-3.5 px-3 font-semibold text-white">${name}</td>
-                        <td class="py-3.5 px-3 text-slate-400">${gender}</td>
-                        <td class="py-3.5 px-3 text-slate-400">${passport}</td>
-                        <td class="py-3.5 px-3 text-center text-cyan-300 font-bold">${pax}</td>
-                        <td class="py-3.5 px-3 text-cyan-400 font-medium">${cleanActivityDate}</td>
-                        <td class="py-3.5 px-3 text-slate-300">${location}</td>
-                        <td class="py-3.5 px-3 text-slate-300">${pkg}</td>
-                        <td class="py-3.5 px-3 text-slate-200">RM${total}</td>
-                        <td class="py-3.5 px-3 text-emerald-400">RM${deposit}</td>
-                        <td class="py-3.5 px-3 text-rose-400 font-semibold">RM${balance}</td>
-                        <td class="py-3.5 px-3 text-slate-400">${paymentMethod}</td>
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3.5 px-3 text-slate-600">${cleanBookingDate}</td>
+                        <td class="py-3.5 px-3 font-bold text-slate-900">${name}</td>
+                        <td class="py-3.5 px-3 text-slate-500">${gender}</td>
+                        <td class="py-3.5 px-3 text-slate-500">${passport}</td>
+                        <td class="py-3.5 px-3 text-center text-sky-700 font-bold">${pax}</td>
+                        <td class="py-3.5 px-3 text-sky-700 font-semibold">${cleanActivityDate}</td>
+                        <td class="py-3.5 px-3 text-slate-600">${location}</td>
+                        <td class="py-3.5 px-3 text-slate-600">${pkg}</td>
+                        <td class="py-3.5 px-3 text-slate-800 font-medium">RM${total}</td>
+                        <td class="py-3.5 px-3 text-emerald-600 font-medium">RM${deposit}</td>
+                        <td class="py-3.5 px-3 text-rose-600 font-bold">RM${balance}</td>
+                        <td class="py-3.5 px-3 text-slate-500">${paymentMethod}</td>
                         <td class="py-3.5 px-3"><span class="${badgeClass}">${rawStatus}</span></td>
-                        <td class="py-3.5 px-3 text-slate-400 truncate max-w-[150px]" title="${remarks}">${remarks}</td>
+                        <td class="py-3.5 px-3 text-slate-500 truncate max-w-[150px]" title="${remarks}">${remarks}</td>
                         <td class="py-3.5 px-3 text-center flex items-center justify-center gap-1.5">
-                            <button onclick="shareBooking('${name.replace(/'/g, "\\'")}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${balance}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-xl text-xs font-semibold transition shadow-sm" title="Copy confirmation message">
+                            <button onclick="shareBooking('${name.replace(/'/g, "\\'")}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${balance}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Copy confirmation message">
                                 💬 Share
                             </button>
-                            <button onclick="editBooking('${rowIndex}', '${cleanBookingDate}', '${name.replace(/'/g, "\\'")}', '${gender}', '${passport}', '${pax}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${total}', '${deposit}', '${paymentMethod}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 px-2.5 py-1 rounded-xl text-xs font-semibold transition shadow-sm" title="Edit booking">
+                            <button onclick="editBooking('${rowIndex}', '${cleanBookingDate}', '${name.replace(/'/g, "\\'")}', '${gender}', '${passport}', '${pax}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${total}', '${deposit}', '${paymentMethod}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Edit booking">
                                 ✏️ Edit
                             </button>
-                            <button onclick="deleteBooking('${rowIndex}', '${name.replace(/'/g, "\\'")}')" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2.5 py-1 rounded-xl text-xs font-semibold transition shadow-sm" title="Delete booking">
+                            <button onclick="deleteBooking('${rowIndex}', '${name.replace(/'/g, "\\'")}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Delete booking">
                                 🗑️ Delete
                             </button>
                         </td>
