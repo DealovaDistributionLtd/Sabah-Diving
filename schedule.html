@@ -11,6 +11,9 @@
         .light-panel { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .light-input { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; }
         #mobileDrawer { transition: transform 0.3s ease-in-out; }
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white">
@@ -35,11 +38,27 @@
                 <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>💰</span> Assistant Commission / 助理提成</a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.0</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.1</div>
     </div>
 
-    <div class="max-w-[95%] md:max-w-[90%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
-        <header class="flex justify-between items-center mb-8 light-panel p-5 sm:p-6 rounded-3xl gap-4">
+    <!-- DAY DETAILS MODAL -->
+    <div id="dayModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center px-4">
+        <div class="light-panel bg-white w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative">
+            <div class="flex justify-between items-center pb-4 border-b border-slate-100">
+                <h3 id="modalTitle" class="text-base font-bold text-sky-700 flex items-center gap-2"><span>📅</span> Activity Manifest</h3>
+                <button onclick="closeModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">✕</button>
+            </div>
+            <div id="modalContent" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                <!-- Dynamic day bookings populate here -->
+            </div>
+            <div class="pt-2 flex justify-end">
+                <button onclick="closeModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-2.5 rounded-xl text-xs transition">Close / 关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-[95%] md:max-w-[92%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 light-panel p-5 sm:p-6 rounded-3xl gap-4">
             <div class="flex items-center gap-3.5">
                 <button onclick="toggleMenu()" class="p-2.5 rounded-2xl light-input hover:border-sky-400 text-slate-700 transition flex items-center justify-center shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -47,20 +66,20 @@
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">📅</div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Master Operations Calendar</h1>
-                    <p class="text-slate-500 text-xs mt-0.5">全屏月度潜水日程总览与团队行程规划</p>
+                    <p class="text-slate-500 text-xs mt-0.5">全屏月度潜水日程总览与团队行程规划（点击任意日期可查看详细行程）</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
                 <button onclick="changeMonth(-1)" class="p-2.5 light-input rounded-xl hover:border-sky-400 text-xs px-4 font-bold transition">◀ Prev</button>
-                <span id="calMonthYear" class="text-sm font-bold text-sky-700 px-3"></span>
+                <span id="calMonthYear" class="text-sm font-bold text-sky-700 px-3 min-w-[130px] text-center"></span>
                 <button onclick="changeMonth(1)" class="p-2.5 light-input rounded-xl hover:border-sky-400 text-xs px-4 font-bold transition">Next ▶</button>
             </div>
         </header>
 
         <!-- Full Calendar Grid Panel -->
-        <div class="light-panel p-6 sm:p-8 rounded-3xl space-y-4">
+        <div class="light-panel p-4 sm:p-6 rounded-3xl space-y-4">
             <div class="grid grid-cols-7 gap-2 text-center text-xs font-bold text-slate-400 mb-2">
-                <div>Sunday</div><div>Monday</div><div>Tuesday</div><div>Wednesday</div><div>Thursday</div><div>Friday</div><div>Saturday</div>
+                <div>Sun / 周日</div><div>Mon / 周一</div><div>Tue / 周二</div><div>Wed / 周三</div><div>Thu / 周四</div><div>Fri / 周五</div><div>Sat / 周六</div>
             </div>
             <div id="fullCalendarGrid" class="grid grid-cols-7 gap-2 text-xs">
                 <!-- Dynamic Full Calendar Days Here -->
@@ -113,7 +132,7 @@
             const todayStr = new Date().toLocaleDateString('en-CA');
 
             for (let i = 0; i < firstDayIndex; i++) {
-                grid.innerHTML += `<div class="aspect-[4/3] bg-slate-100 rounded-2xl opacity-30"></div>`;
+                grid.innerHTML += `<div class="min-h-[130px] bg-slate-100/50 rounded-2xl opacity-30"></div>`;
             }
 
             for (let day = 1; day <= totalDays; day++) {
@@ -128,25 +147,64 @@
                 });
 
                 let isToday = (dateKey === todayStr);
-                let boxClass = isToday ? 'bg-sky-50 border-sky-400 ring-2 ring-sky-300/50' : 'bg-slate-50 border-slate-200 hover:border-slate-300';
+                let boxClass = isToday ? 'bg-sky-50/80 border-sky-400 ring-2 ring-sky-300/40 shadow-sm' : 'bg-white border-slate-200 hover:border-sky-300 hover:shadow-md';
 
                 let listHTML = '';
-                dayBookings.forEach(b => {
-                    listHTML += `<div class="bg-white p-1 rounded-lg border border-slate-200 text-[10px] font-semibold text-sky-700 truncate shadow-xs">🏊 ${b["Full Name"]} (${b["Pax"]}p)</div>`;
+                dayBookings.slice(0, 3).forEach(b => {
+                    listHTML += `<div class="bg-sky-50 px-2 py-1 rounded-lg border border-sky-100 text-[10px] font-bold text-sky-800 truncate">🏊 ${b["Full Name"]} (${b["Pax"]}p)</div>`;
                 });
 
+                if (dayBookings.length > 3) {
+                    listHTML += `<div class="text-[10px] font-bold text-slate-400 text-center">+${dayBookings.length - 3} more trips...</div>`;
+                }
+
                 grid.innerHTML += `
-                    <div class="aspect-[4/3] ${boxClass} border rounded-2xl p-2.5 flex flex-col justify-between overflow-hidden shadow-sm transition">
+                    <div onclick="openDayModal('${dateKey}')" class="min-h-[135px] ${boxClass} border rounded-2xl p-2.5 flex flex-col justify-between cursor-pointer transition select-none">
                         <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold ${isToday ? 'text-sky-600 font-extrabold' : 'text-slate-700'}">${day}</span>
-                            ${dayBookings.length > 0 ? `<span class="text-[10px] font-bold bg-sky-600 text-white px-1.5 py-0.5 rounded-md">${dayBookings.length} Trips</span>` : ''}
+                            <span class="text-xs font-bold ${isToday ? 'text-sky-600 font-extrabold bg-sky-100 px-2 py-0.5 rounded-lg' : 'text-slate-700'}">${day}</span>
+                            ${dayBookings.length > 0 ? `<span class="text-[10px] font-bold bg-sky-600 text-white px-1.5 py-0.5 rounded-md shadow-xs">${dayBookings.length} Pax</span>` : ''}
                         </div>
-                        <div class="space-y-1 overflow-y-auto flex-1 mt-1 pr-0.5">
+                        <div class="space-y-1.5 flex-1 mt-2">
                             ${listHTML}
                         </div>
                     </div>
                 `;
             }
+        }
+
+        function openDayModal(dateStr) {
+            document.getElementById('modalTitle').innerText = `📅 Date Manifest / 日期行程清单: ${dateStr}`;
+            const content = document.getElementById('modalContent');
+            content.innerHTML = '';
+
+            const dayBookings = bookings.filter(b => {
+                const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                return actDate === dateStr;
+            });
+
+            if (dayBookings.length === 0) {
+                content.innerHTML = `<p class="text-slate-400 text-xs italic text-center py-6">No dive trips scheduled on this date. 暂无出海行程。</p>`;
+            } else {
+                dayBookings.forEach(b => {
+                    content.innerHTML += `
+                        <div class="light-input p-3.5 rounded-2xl border-slate-200 text-xs space-y-1 shadow-sm">
+                            <div class="flex justify-between items-center font-bold text-slate-900">
+                                <span>👤 ${b["Full Name"]} (${b["Pax"]} Pax)</span>
+                                <span class="text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200">${b["Package"]}</span>
+                            </div>
+                            <div class="text-slate-600">📍 <b>Location:</b> ${b["Location"]}</div>
+                            <div class="text-slate-600">📌 <b>Status:</b> ${b["Status"]}</div>
+                            <div class="text-slate-500 text-[11px]">🏨 <b>Notes/Pickup:</b> ${b["Remarks"] || 'None'}</div>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('dayModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('dayModal').classList.add('hidden');
         }
     </script>
 </body>
