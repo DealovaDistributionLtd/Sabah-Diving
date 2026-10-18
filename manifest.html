@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Boat Manifest & Operations | 每日出海船期与调度中心</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .light-panel { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .light-input { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; }
+        #mobileDrawer { transition: transform 0.3s ease-in-out; }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen antialiased selection:bg-cyan-500 selection:text-white">
+
+    <div id="drawerOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+
+    <!-- HAMBURGER DRAWER -->
+    <div id="mobileDrawer" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full">
+        <div>
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-cyan-600 flex items-center justify-center text-lg text-white shadow-md">🌊</div>
+                    <div><h2 class="font-bold text-slate-900 text-sm">Sabah Operations</h2><p class="text-[10px] text-slate-400">Navigation Menu</p></div>
+                </div>
+                <button onclick="toggleMenu()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">✕</button>
+            </div>
+            <nav class="space-y-2">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📋</span> Master Bookings / 预订总表</a>
+                <a href="manifest.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-sky-50 text-sky-700 font-bold text-xs shadow-sm"><span>🚤</span> Daily Manifest / 每日船期清单</a>
+                <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📅</span> Master Calendar / 全屏日程表</a>
+                <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📈</span> Financial Ledger / 财务利润报表</a>
+                <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>💰</span> Assistant Commission / 助理提成</a>
+            </nav>
+        </div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.0</div>
+    </div>
+
+    <div class="max-w-[95%] md:max-w-[88%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
+        <header class="flex justify-between items-center mb-8 light-panel p-5 sm:p-6 rounded-3xl gap-4">
+            <div class="flex items-center gap-3.5">
+                <button onclick="toggleMenu()" class="p-2.5 rounded-2xl light-input hover:border-sky-400 text-slate-700 transition flex items-center justify-center shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">🚤</div>
+                <div>
+                    <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Daily Boat & Island Manifest</h1>
+                    <p class="text-slate-500 text-xs mt-0.5">每日出海船期、酒店接送与潜水员调度中心</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <input type="date" id="manifestDateFilter" onchange="renderManifest()" class="light-input rounded-xl px-3.5 py-2 text-xs font-bold cursor-pointer">
+                <button onclick="copyManifestText()" class="hidden sm:flex items-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-4 py-2 rounded-xl text-xs font-bold transition">
+                    <span>📲</span> Copy for Captain / 复制船长群通知
+                </button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6" id="manifestContainer">
+            <!-- Dynamic Location Manifest Cards Populated Here -->
+        </div>
+    </div>
+
+    <script>
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
+        let allBookings = [];
+
+        function toggleMenu() {
+            const drawer = document.getElementById('mobileDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            drawer.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        window.onload = function() {
+            document.getElementById('manifestDateFilter').value = new Date().toLocaleDateString('en-CA');
+            fetchData();
+        };
+
+        async function fetchData() {
+            try {
+                const res = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
+                allBookings = await res.json();
+                renderManifest();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderManifest() {
+            const selectedDate = document.getElementById('manifestDateFilter').value;
+            const container = document.getElementById('manifestContainer');
+            container.innerHTML = '';
+
+            const locations = [
+                { name: "Semporna & Bum Bum", icon: "🏝️", zh: "仙本那 / 邦邦岛" },
+                { name: "Tun Sakaran Marine Park", icon: "🐠", zh: "敦沙卡兰海洋公园" },
+                { name: "Dreamer Island (淘梦岛)", icon: "🏖️", zh: "淘梦岛" },
+                { name: "Kota Kinabalu", icon: "🏙️", zh: "亚庇" }
+            ];
+
+            locations.forEach(loc => {
+                const divers = allBookings.filter(b => {
+                    const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                    const status = (b["Status"] || '').toLowerCase();
+                    const bLoc = (b["Location"] || '').toLowerCase();
+                    return actDate === selectedDate && bLoc.includes(loc.name.toLowerCase().split(' ')[0]) && !status.includes('cancelled');
+                });
+
+                let cardsHTML = '';
+                if (divers.length === 0) {
+                    cardsHTML = `<p class="text-xs text-slate-400 italic py-6 text-center">No divers scheduled for this location today.</p>`;
+                } else {
+                    divers.forEach(d => {
+                        const hotelMatch = (d["Remarks"] || '').match(/\[Hotel Pick-up \/ 酒店接送: (.*?)\]/) ;
+                        const hotelName = hotelMatch ? hotelMatch[1] : 'No hotel pick-up specified / 无接送';
+                        const cleanRemarks = (d["Remarks"] || '').replace(/\[Hotel Pick-up \/ 酒店接送:.*?\]/, '').replace(/^ - /, '').trim();
+
+                        cardsHTML += `
+                            <div class="light-input p-3.5 rounded-2xl border-slate-200 text-xs space-y-1.5 shadow-sm">
+                                <div class="flex justify-between items-center font-bold text-slate-900">
+                                    <span>👤 ${d["Full Name"]} (${d["Pax"]} Pax)</span>
+                                    <span class="text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200">${d["Package"]}</span>
+                                </div>
+                                <div class="text-slate-600">🏨 <b>Pick-up:</b> ${hotelName}</div>
+                                <div class="text-slate-500 text-[11px]">📌 <b>Notes:</b> ${cleanRemarks || 'None'}</div>
+                            </div>
+                        `;
+                    });
+                }
+
+                container.innerHTML += `
+                    <div class="light-panel p-6 rounded-3xl flex flex-col space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                            <h2 class="font-bold text-slate-900 flex items-center gap-2"><span>${loc.icon}</span> ${loc.name}</h2>
+                            <span class="text-xs font-bold text-sky-700 bg-sky-50 px-2.5 py-1 rounded-xl border border-sky-200">${divers.reduce((sum, b) => sum + (parseInt(b["Pax"])||1), 0)} Pax Total</span>
+                        </div>
+                        <div class="space-y-3 flex-1 overflow-y-auto max-h-[500px] pr-1">
+                            ${cardsHTML}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function copyManifestText() {
+            const date = document.getElementById('manifestDateFilter').value;
+            let text = `🚤 【沙巴出海船期与接送调度表 / Manifest for ${date}】\n-----------------------------------\n`;
+            
+            const locations = ["Semporna", "Tun Sakaran", "Dreamer Island", "Kota Kinabalu"];
+            locations.forEach(loc => {
+                const divers = allBookings.filter(b => {
+                    const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                    const status = (b["Status"] || '').toLowerCase();
+                    return actDate === date && (b["Location"] || '').toLowerCase().includes(loc.toLowerCase().split(' ')[0]) && !status.includes('cancelled');
+                });
+                if (divers.length > 0) {
+                    text += `\n📍 ${loc} (${divers.reduce((s,b)=>s+(parseInt(b["Pax"])||1),0)} Pax):\n`;
+                    divers.forEach(d => {
+                        const hMatch = (d["Remarks"]||'').match(/\[Hotel Pick-up \/ 酒店接送: (.*?)\]/);
+                        const hName = hMatch ? hMatch[1] : 'Self-arrival';
+                        text += ` - ${d["Full Name"]} (${d["Pax"]}p) | ${d["Package"]} | 🏨 ${hName}\n`;
+                    });
+                }
+            });
+            text += `\n💡 请各位船长与司机核对行程，准时出发！`;
+            
+            navigator.clipboard.writeText(text).then(() => alert("✅ Daily manifest text copied for WhatsApp/WeChat captain group!"));
+        }
+    </script>
+</body>
+</html>
