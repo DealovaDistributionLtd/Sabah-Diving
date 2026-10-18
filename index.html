@@ -79,7 +79,7 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Sabah Diving System v3.4
+            Sabah Diving System v3.5
         </div>
     </div>
 
@@ -102,7 +102,7 @@
                         Sabah Diving Operations
                     </h1>
                     <p class="text-slate-500 text-xs mt-0.5">
-                        高端客户预订、智能价格联动与 Google 日历自动化管理系统
+                        高端客户预订、MYR 智能价格联动与 Google 日历自动化管理系统
                     </p>
                 </div>
             </div>
@@ -197,17 +197,17 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">总价 (Total Price - Editable)</label>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">总价 (Total Price - RM / Editable)</label>
                             <input type="number" id="totalPrice" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none font-bold text-sky-700" placeholder="0.00">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">已付定金 (Deposit Paid)</label>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">已付定金 (Deposit Paid - RM)</label>
                             <input type="number" id="depositPaid" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="0.00">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">尾款 (Balance Due)</label>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">尾款 (Balance Due - RM)</label>
                             <input type="number" id="balanceDue" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-emerald-700 font-bold" placeholder="0.00">
                         </div>
 
@@ -377,41 +377,41 @@
         let currentTab = 'All';
         let navDate = new Date();
 
-        // Location-based package options mapping with standard base unit prices (RMB/MYR values based on your pricing sheet)
+        // Location-based package options mapping with standard base unit prices cleanly converted & set in Malaysian Ringgit (MYR)
         const locationPackages = {
             "Semporna & Bum Bum": [
-                { name: "DSD: 1 Day/2 Dives (Bum Bum Island)", price: 1000.22 },
-                { name: "DSD: 1 Day/3 Dives (Outer Reef)", price: 1171.20 },
-                { name: "DSD: 1 Day/3 Dives + Hike (Tun Sakaran)", price: 1598.64 },
-                { name: "Fun Dive: 1 Day / 6 Dives", price: 1533.67 },
-                { name: "Fun Dive: 2 Days / 9 Dives", price: 2467.20 },
-                { name: "Fun Dive: 2 Days / 9 Dives (1D Sipadan)", price: 3559.75 },
-                { name: "Fun Dive: 3 Days / 12 Dives", price: 3400.74 },
-                { name: "Fun Dive: 3 Days / 12 Dives (1D Sipadan)", price: 4493.29 },
-                { name: "Fun Dive: 4 Days / 15 Dives", price: 4334.28 },
-                { name: "Fun Dive: 4 Days / 15 Dives (1D Sipadan)", price: 5426.82 },
-                { name: "Fun Dive: 4 Days / 15 Dives (2D Sipadan)", price: 6519.37 },
-                { name: "Fun Dive: 5 Days / 18 Dives", price: 5267.81 },
-                { name: "Fun Dive: 5 Days / 18 Dives (1D Sipadan)", price: 6360.36 },
-                { name: "Fun Dive: 5 Days / 18 Dives (2D Sipadan)", price: 7452.90 },
-                { name: "PADI Course: 2 Days Open Water", price: 3128.89 },
-                { name: "PADI Course: 3 Days OW + 3 Fun Dives", price: 4062.42 },
-                { name: "PADI Course: 2 Days AOW + 3 Fun Dives", price: 3267.38 },
-                { name: "PADI Course: 2 Days AOW + Sipadan", price: 4496.71 },
-                { name: "PADI Course: 3 Days Rescue + EFR", price: 4146.20 },
-                { name: "PADI Course: 6D5N OW + AOW Combo", price: 6396.26 }
+                { name: "DSD: 1 Day/2 Dives (Bum Bum Island)", price: 610.00 },
+                { name: "DSD: 1 Day/3 Dives (Outer Reef)", price: 715.00 },
+                { name: "DSD: 1 Day/3 Dives + Hike (Tun Sakaran)", price: 975.00 },
+                { name: "Fun Dive: 1 Day / 6 Dives", price: 935.00 },
+                { name: "Fun Dive: 2 Days / 9 Dives", price: 1505.00 },
+                { name: "Fun Dive: 2 Days / 9 Dives (1D Sipadan)", price: 2170.00 },
+                { name: "Fun Dive: 3 Days / 12 Dives", price: 2075.00 },
+                { name: "Fun Dive: 3 Days / 12 Dives (1D Sipadan)", price: 2740.00 },
+                { name: "Fun Dive: 4 Days / 15 Dives", price: 2643.00 },
+                { name: "Fun Dive: 4 Days / 15 Dives (1D Sipadan)", price: 3308.00 },
+                { name: "Fun Dive: 4 Days / 15 Dives (2D Sipadan)", price: 3975.00 },
+                { name: "Fun Dive: 5 Days / 18 Dives", price: 3212.00 },
+                { name: "Fun Dive: 5 Days / 18 Dives (1D Sipadan)", price: 3878.00 },
+                { name: "Fun Dive: 5 Days / 18 Dives (2D Sipadan)", price: 4544.00 },
+                { name: "PADI Course: 2 Days Open Water", price: 1908.00 },
+                { name: "PADI Course: 3 Days OW + 3 Fun Dives", price: 2477.00 },
+                { name: "PADI Course: 2 Days AOW + 3 Fun Dives", price: 1992.00 },
+                { name: "PADI Course: 2 Days AOW + Sipadan", price: 2742.00 },
+                { name: "PADI Course: 3 Days Rescue + EFR", price: 2528.00 },
+                { name: "PADI Course: 6D5N OW + AOW Combo", price: 3900.00 }
             ],
             "Tun Sakaran Marine Park": [
-                { name: "TSMP: Snorkel + Hike (Adult)", price: 369.80 },
-                { name: "TSMP: Snorkel + Hike (Child)", price: 223.60 },
-                { name: "TSMP: Snorkel (No Hike) (Adult)", price: 249.40 },
-                { name: "TSMP: Snorkel (No Hike) (Child)", price: 163.40 },
-                { name: "TSMP: DSD Experience Diving", price: 1040.60 },
-                { name: "TSMP: Fun Dive", price: 1255.60 }
+                { name: "TSMP: Snorkel + Hike (Adult)", price: 225.00 },
+                { name: "TSMP: Snorkel + Hike (Child)", price: 136.00 },
+                { name: "TSMP: Snorkel (No Hike) (Adult)", price: 152.00 },
+                { name: "TSMP: Snorkel (No Hike) (Child)", price: 100.00 },
+                { name: "TSMP: DSD Experience Diving", price: 635.00 },
+                { name: "TSMP: Fun Dive", price: 765.00 }
             ],
             "Dreamer Island (淘梦岛)": [
-                { name: "Dreamer Island: Package A (2 DSD + Lunch + Gear + Drone)", price: 520 },
-                { name: "Dreamer Island: Package B (2 DSD + Lunch + Gear + Drone + Edited Footage)", price: 620 }
+                { name: "Dreamer Island: Package A (2 DSD + Lunch + Gear + Drone)", price: 520.00 },
+                { name: "Dreamer Island: Package B (2 DSD + Lunch + Gear + Drone + Edited Footage)", price: 620.00 }
             ]
         };
 
@@ -655,8 +655,8 @@
 🏊 项目 (Package): ${pkg}
 🏨 备注/接送 (Remarks): ${remarks}
 -----------------------------------
-💰 订单总额: ${total}
-🏷️ 待付尾款: ${balance}
+💰 订单总额: RM${total}
+🏷️ 待付尾款: RM${balance}
 📌 Status (状态): ${status}
 -----------------------------------
 💡 温馨提示：请提前准备好泳衣, 毛巾及个人随身物品。期待与您开启精彩的沙巴海洋之旅！`;
@@ -883,9 +883,9 @@
                         <td class="py-3.5 px-3 text-sky-700 font-semibold">${cleanActivityDate}</td>
                         <td class="py-3.5 px-3 text-slate-600">${location}</td>
                         <td class="py-3.5 px-3 text-slate-600" title="${pkg}">${pkg}</td>
-                        <td class="py-3.5 px-3 text-slate-800 font-medium">${total}</td>
-                        <td class="py-3.5 px-3 text-emerald-600 font-medium">${deposit}</td>
-                        <td class="py-3.5 px-3 text-rose-600 font-bold">${balance}</td>
+                        <td class="py-3.5 px-3 text-slate-800 font-medium">RM${total}</td>
+                        <td class="py-3.5 px-3 text-emerald-600 font-medium">RM${deposit}</td>
+                        <td class="py-3.5 px-3 text-rose-600 font-bold">RM${balance}</td>
                         <td class="py-3.5 px-3 text-slate-500">${paymentMethod}</td>
                         <td class="py-3.5 px-3"><span class="${badgeClass}">${rawStatus}</span></td>
                         <td class="py-3.5 px-3 text-slate-500 truncate max-w-[150px]" title="${remarks}">${remarks}</td>
