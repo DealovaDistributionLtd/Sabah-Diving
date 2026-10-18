@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistant Commission Payout Portal | 助理提成结算后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc;
+        }
+        .light-panel {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        .light-input {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
+        }
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white">
+
+    <div class="max-w-[95%] md:max-w-[85%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
+        <!-- Header Section -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 light-panel p-6 sm:p-8 rounded-3xl gap-4">
+            <div class="flex items-center gap-4 text-center md:text-left">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-2xl shadow-lg shadow-orange-500/20 text-white shrink-0">
+                    💰
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 flex items-center justify-center md:justify-start gap-2">
+                        Assistant Commission Portal
+                    </h1>
+                    <p class="text-slate-500 text-xs sm:text-sm mt-0.5">
+                        助理提成结算后台与明细审计系统
+                    </p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="px-4 py-2.5 text-xs font-bold rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition shadow-sm flex items-center gap-2">
+                    <span>⬅️</span> Back to Bookings / 返回预订总表
+                </a>
+            </div>
+        </header>
+
+        <!-- Commission Dashboard Content -->
+        <div class="light-panel p-6 sm:p-8 rounded-3xl space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-6">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-sm text-orange-600">📊</span>
+                        Commission Payout Summary / 提成结算汇总
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">
+                        基于已确认及已完成预订自动计算 (Snorkeling: RM15 | DSD: RM25 | Fun Dive: RM35 | Course: RM70)
+                    </p>
+                </div>
+                
+                <!-- Commission Summary Cards -->
+                <div class="flex flex-wrap gap-3">
+                    <div class="light-input px-4 py-3 rounded-2xl flex flex-col min-w-[130px]">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Confirmed Pax / 总确认人数</span>
+                        <span id="commTotalPax" class="text-lg font-bold text-slate-900 mt-0.5">0 Pax</span>
+                    </div>
+                    <div class="light-input px-4 py-3 rounded-2xl flex flex-col bg-emerald-50/50 border-emerald-200 min-w-[150px]">
+                        <span class="text-[10px] font-bold text-emerald-600 uppercase">Total Commission Owed / 应付总提成</span>
+                        <span id="commTotalPayout" class="text-lg font-bold text-emerald-700 mt-0.5">RM0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Commission Breakdown Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+                    <thead>
+                        <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
+                            <th class="py-3.5 px-3">活动日期</th>
+                            <th class="py-3.5 px-3">客户姓名 (Client Name)</th>
+                            <th class="py-3.5 px-3">预订项目 (Package Type)</th>
+                            <th class="py-3.5 px-3 text-center">人数 (Pax)</th>
+                            <th class="py-3.5 px-3">订单状态 (Status)</th>
+                            <th class="py-3.5 px-3">单人提成标准 (Rate/Pax)</th>
+                            <th class="py-3.5 px-3 text-right">总提成金额 (Commission Earned)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="commissionTableBody" class="divide-y divide-slate-100">
+                        <tr><td colspan="7" class="py-8 text-center text-slate-400 text-sm">Loading commission data... / 正在加载提成数据...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
+
+        window.onload = function() {
+            fetchCommissionData();
+        };
+
+        async function fetchCommissionData() {
+            try {
+                const response = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    renderCommissionTable(data);
+                }
+            } catch (err) {
+                console.error("Fetch error:", err);
+                document.getElementById('commissionTableBody').innerHTML = `<tr><td colspan="7" class="py-8 text-center text-rose-500 text-sm">Failed to load live data from Google Sheet.</td></tr>`;
+            }
+        }
+
+        function getCommissionRate(pkg) {
+            const p = (pkg || '').toLowerCase();
+            if (p.includes('snorkeling')) return { rate: 15, label: 'RM15 / pax (Snorkeling)' };
+            if (p.includes('dsd')) return { rate: 25, label: 'RM25 / pax (DSD)' };
+            if (p.includes('fun dive')) return { rate: 35, label: 'RM35 / pax (Fun Dive)' };
+            if (p.includes('course') || p.includes('open water')) return { rate: 70, label: 'RM70 / student (Course)' };
+            return { rate: 20, label: 'RM20 / pax (Standard)' };
+        }
+
+        function renderCommissionTable(bookings) {
+            const tbody = document.getElementById('commissionTableBody');
+            tbody.innerHTML = '';
+
+            const validBookings = bookings.filter(b => {
+                const status = (b["Status"] || '').toLowerCase();
+                return status.includes('confirm') || status.includes('complet');
+            });
+
+            if (validBookings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400 text-sm">No confirmed bookings eligible for commission yet. 暂无已确认的提成记录。</td></tr>`;
+                document.getElementById('commTotalPax').innerText = `0 Pax`;
+                document.getElementById('commTotalPayout').innerText = `RM0.00`;
+                return;
+            }
+
+            let totalPaxCount = 0;
+            let totalPayoutAmount = 0;
+
+            validBookings.slice().reverse().forEach(b => {
+                const cleanActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
+                const name = b["Full Name"] || '';
+                const pkg = b["Package"] || '';
+                const pax = parseInt(b["Pax"]) || 1;
+                const status = b["Status"] || '';
+
+                const { rate, label } = getCommissionRate(pkg);
+                const commissionEarned = pax * rate;
+
+                totalPaxCount += pax;
+                totalPayoutAmount += commissionEarned;
+
+                let badgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg font-semibold";
+                if (status.toLowerCase().includes('complet')) {
+                    badgeClass = "bg-sky-50 text-sky-700 border border-sky-200 px-2.5 py-1 rounded-lg font-semibold";
+                }
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/85 transition">
+                        <td class="py-3.5 px-3 text-slate-600">${cleanActivityDate}</td>
+                        <td class="py-3.5 px-3 font-bold text-slate-900">${name}</td>
+                        <td class="py-3.5 px-3 text-slate-600">${pkg}</td>
+                        <td class="py-3.5 px-3 text-center font-bold text-sky-700">${pax}</td>
+                        <td class="py-3.5 px-3"><span class="${badgeClass}">${status}</span></td>
+                        <td class="py-3.5 px-3 text-slate-500">${label}</td>
+                        <td class="py-3.5 px-3 text-right font-bold text-emerald-600 text-sm">RM${commissionEarned.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('commTotalPax').innerText = `${totalPaxCount} Pax`;
+            document.getElementById('commTotalPayout').innerText = `RM${totalPayoutAmount.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
