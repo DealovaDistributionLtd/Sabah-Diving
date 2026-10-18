@@ -64,7 +64,7 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Commission System v2.5
+            Commission System v2.6
         </div>
     </div>
 
@@ -101,7 +101,7 @@
                         Commission Payout Summary / 提成结算汇总
                     </h2>
                     <p class="text-xs text-slate-500 mt-1">
-                        基于已确认及已完成预订自动计算 (Snorkeling: RM15 | DSD: RM25 | Fun Dive: RM35 | Course: RM70)
+                        基于已确认及已完成预订自动计算 (Snorkeling: 无提成 | DSD: RM25 | Fun Dive: RM35 | Course: RM70)
                     </p>
                 </div>
                 
@@ -172,7 +172,7 @@
 
         function getCommissionRate(pkg) {
             const p = (pkg || '').toLowerCase();
-            if (p.includes('snorkeling')) return { rate: 15, label: 'RM15 / pax (Snorkeling)' };
+            if (p.includes('snorkeling')) return { rate: 0, label: 'RM0.00 (Snorkeling - No Comm)' };
             if (p.includes('dsd')) return { rate: 25, label: 'RM25 / pax (DSD)' };
             if (p.includes('fun dive')) return { rate: 35, label: 'RM35 / pax (Fun Dive)' };
             if (p.includes('course') || p.includes('open water')) return { rate: 70, label: 'RM70 / student (Course)' };
