@@ -52,10 +52,19 @@
                 </button>
             </div>
 
-            <!-- Links -->
+            <!-- Unified Drawer Links -->
             <nav class="space-y-2">
                 <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
                     <span>📋</span> Master Bookings / 预订总表
+                </a>
+                <a href="manifest.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>🚤</span> Daily Manifest / 每日船期清单
+                </a>
+                <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>📅</span> Master Calendar / 全屏日程表
+                </a>
+                <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>📈</span> Financial Ledger / 财务利润报表
                 </a>
                 <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-amber-50 text-amber-700 font-bold text-xs shadow-sm">
                     <span>💰</span> Assistant Commission / 助理提成
@@ -64,7 +73,7 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Commission System v2.7
+            Commission System v3.0
         </div>
     </div>
 
@@ -86,7 +95,7 @@
                         Assistant Commission & Payout Portal
                     </h1>
                     <p class="text-slate-500 text-xs mt-0.5">
-                        助理提成结算、发放状态追踪与明细审计系统
+                        助理提成结算（Snorkeling无提成）、发放状态追踪与明细审计系统
                     </p>
                 </div>
             </div>
@@ -227,7 +236,6 @@
                 const { rate, label } = getCommissionRate(pkg);
                 const commissionEarned = pax * rate;
 
-                // Retrieve saved settlement status from localStorage (default: Unpaid)
                 const payoutStatus = localStorage.getItem(`sabah_payout_status_${rowIndex}`) || 'Unpaid';
 
                 totalPaxCount += pax;
