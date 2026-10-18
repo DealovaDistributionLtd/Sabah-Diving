@@ -64,11 +64,11 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Commission System v2.6
+            Commission System v2.7
         </div>
     </div>
 
-    <div class="max-w-[95%] md:max-w-[85%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
+    <div class="max-w-[95%] md:max-w-[88%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
         <!-- Header -->
         <header class="flex justify-between items-center mb-8 light-panel p-5 sm:p-6 rounded-3xl gap-4">
             <div class="flex items-center gap-3.5">
@@ -83,10 +83,10 @@
                 </div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-                        Assistant Commission Portal
+                        Assistant Commission & Payout Portal
                     </h1>
                     <p class="text-slate-500 text-xs mt-0.5">
-                        助理提成结算后台与明细审计系统
+                        助理提成结算、发放状态追踪与明细审计系统
                     </p>
                 </div>
             </div>
@@ -98,21 +98,26 @@
                 <div>
                     <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2.5">
                         <span class="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-sm text-orange-600">📊</span>
-                        Commission Payout Summary / 提成结算汇总
+                        Payout Ledger & Settlement / 提成发放台账
                     </h2>
                     <p class="text-xs text-slate-500 mt-1">
-                        基于已确认及已完成预订自动计算 (Snorkeling: 无提成 | DSD: RM25 | Fun Dive: RM35 | Course: RM70)
+                        点击结算状态可随时切换【待发放 Unpaid】与【已结算 Settled】
                     </p>
                 </div>
                 
+                <!-- Commission Summary Cards -->
                 <div class="flex flex-wrap gap-3">
-                    <div class="light-input px-4 py-3 rounded-2xl flex flex-col min-w-[130px]">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase">Confirmed Pax / 总确认人数</span>
-                        <span id="commTotalPax" class="text-lg font-bold text-slate-900 mt-0.5">0 Pax</span>
+                    <div class="light-input px-4 py-3 rounded-2xl flex flex-col min-w-[120px]">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Confirmed Pax / 确认人数</span>
+                        <span id="commTotalPax" class="text-base font-bold text-slate-900 mt-0.5">0 Pax</span>
                     </div>
-                    <div class="light-input px-4 py-3 rounded-2xl flex flex-col bg-emerald-50/50 border-emerald-200 min-w-[150px]">
-                        <span class="text-[10px] font-bold text-emerald-600 uppercase">Total Commission Owed / 应付总提成</span>
-                        <span id="commTotalPayout" class="text-lg font-bold text-emerald-700 mt-0.5">RM0.00</span>
+                    <div class="light-input px-4 py-3 rounded-2xl flex flex-col bg-amber-50/50 border-amber-200 min-w-[140px]">
+                        <span class="text-[10px] font-bold text-amber-600 uppercase">Pending Owed / 待发放金额</span>
+                        <span id="commTotalUnpaid" class="text-base font-bold text-amber-700 mt-0.5">RM0.00</span>
+                    </div>
+                    <div class="light-input px-4 py-3 rounded-2xl flex flex-col bg-emerald-50/50 border-emerald-200 min-w-[140px]">
+                        <span class="text-[10px] font-bold text-emerald-600 uppercase">Settled Paid / 已发放金额</span>
+                        <span id="commTotalSettled" class="text-base font-bold text-emerald-700 mt-0.5">RM0.00</span>
                     </div>
                 </div>
             </div>
@@ -125,13 +130,14 @@
                             <th class="py-3.5 px-3">客户姓名 (Client Name)</th>
                             <th class="py-3.5 px-3">预订项目 (Package Type)</th>
                             <th class="py-3.5 px-3 text-center">人数 (Pax)</th>
-                            <th class="py-3.5 px-3">订单状态 (Status)</th>
-                            <th class="py-3.5 px-3">单人提成标准 (Rate/Pax)</th>
-                            <th class="py-3.5 px-3 text-right">总提成金额 (Commission Earned)</th>
+                            <th class="py-3.5 px-3">订单状态</th>
+                            <th class="py-3.5 px-3">单人提成标准</th>
+                            <th class="py-3.5 px-3 text-right">总提成金额</th>
+                            <th class="py-3.5 px-3 text-center">发放状态 (Payout)</th>
                         </tr>
                     </thead>
                     <tbody id="commissionTableBody" class="divide-y divide-slate-100">
-                        <tr><td colspan="7" class="py-8 text-center text-slate-400 text-sm">Loading commission data... / 正在加载提成数据...</td></tr>
+                        <tr><td colspan="8" class="py-8 text-center text-slate-400 text-sm">Loading commission ledger... / 正在加载提成台账...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -140,6 +146,7 @@
 
     <script>
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
+        let rawBookings = [];
 
         function toggleCommMenu() {
             const drawer = document.getElementById('commDrawer');
@@ -162,43 +169,55 @@
                 const response = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
                 const data = await response.json();
                 if (Array.isArray(data)) {
-                    renderCommissionTable(data);
+                    rawBookings = data;
+                    renderCommissionTable();
                 }
             } catch (err) {
                 console.error("Fetch error:", err);
-                document.getElementById('commissionTableBody').innerHTML = `<tr><td colspan="7" class="py-8 text-center text-rose-500 text-sm">Failed to load live data from Google Sheet.</td></tr>`;
+                document.getElementById('commissionTableBody').innerHTML = `<tr><td colspan="8" class="py-8 text-center text-rose-500 text-sm">Failed to load live data from Google Sheet.</td></tr>`;
             }
         }
 
         function getCommissionRate(pkg) {
             const p = (pkg || '').toLowerCase();
-            if (p.includes('snorkeling')) return { rate: 0, label: 'RM0.00 (Snorkeling - No Comm)' };
+            if (p.includes('snorkeling')) return { rate: 0, label: 'RM0.00 (Snorkeling - 无提成)' };
             if (p.includes('dsd')) return { rate: 25, label: 'RM25 / pax (DSD)' };
             if (p.includes('fun dive')) return { rate: 35, label: 'RM35 / pax (Fun Dive)' };
             if (p.includes('course') || p.includes('open water')) return { rate: 70, label: 'RM70 / student (Course)' };
             return { rate: 20, label: 'RM20 / pax (Standard)' };
         }
 
-        function renderCommissionTable(bookings) {
+        function togglePayoutStatus(rowIndex) {
+            const storageKey = `sabah_payout_status_${rowIndex}`;
+            const currentStatus = localStorage.getItem(storageKey) || 'Unpaid';
+            const newStatus = currentStatus === 'Unpaid' ? 'Settled' : 'Unpaid';
+            localStorage.setItem(storageKey, newStatus);
+            renderCommissionTable();
+        }
+
+        function renderCommissionTable() {
             const tbody = document.getElementById('commissionTableBody');
             tbody.innerHTML = '';
 
-            const validBookings = bookings.filter(b => {
+            const validBookings = rawBookings.filter(b => {
                 const status = (b["Status"] || '').toLowerCase();
                 return status.includes('confirm') || status.includes('complet');
             });
 
             if (validBookings.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400 text-sm">No confirmed bookings eligible for commission yet. 暂无已确认的提成记录。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-400 text-sm">No confirmed bookings eligible for commission yet. 暂无已确认的提成记录。</td></tr>`;
                 document.getElementById('commTotalPax').innerText = `0 Pax`;
-                document.getElementById('commTotalPayout').innerText = `RM0.00`;
+                document.getElementById('commTotalUnpaid').innerText = `RM0.00`;
+                document.getElementById('commTotalSettled').innerText = `RM0.00`;
                 return;
             }
 
             let totalPaxCount = 0;
-            let totalPayoutAmount = 0;
+            let totalUnpaidAmount = 0;
+            let totalSettledAmount = 0;
 
             validBookings.slice().reverse().forEach(b => {
+                const rowIndex = b._rowIndex;
                 const cleanActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
                 const name = b["Full Name"] || '';
                 const pkg = b["Package"] || '';
@@ -208,12 +227,26 @@
                 const { rate, label } = getCommissionRate(pkg);
                 const commissionEarned = pax * rate;
 
+                // Retrieve saved settlement status from localStorage (default: Unpaid)
+                const payoutStatus = localStorage.getItem(`sabah_payout_status_${rowIndex}`) || 'Unpaid';
+
                 totalPaxCount += pax;
-                totalPayoutAmount += commissionEarned;
+                if (payoutStatus === 'Settled') {
+                    totalSettledAmount += commissionEarned;
+                } else {
+                    totalUnpaidAmount += commissionEarned;
+                }
 
                 let badgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg font-semibold";
                 if (status.toLowerCase().includes('complet')) {
                     badgeClass = "bg-sky-50 text-sky-700 border border-sky-200 px-2.5 py-1 rounded-lg font-semibold";
+                }
+
+                let payoutButtonHTML = '';
+                if (payoutStatus === 'Settled') {
+                    payoutButtonHTML = `<button onclick="togglePayoutStatus('${rowIndex}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">🟢 Settled / 已发放</button>`;
+                } else {
+                    payoutButtonHTML = `<button onclick="togglePayoutStatus('${rowIndex}')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-300 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-sm">🔴 Unpaid / 待发放</button>`;
                 }
 
                 tbody.innerHTML += `
@@ -224,13 +257,15 @@
                         <td class="py-3.5 px-3 text-center font-bold text-sky-700">${pax}</td>
                         <td class="py-3.5 px-3"><span class="${badgeClass}">${status}</span></td>
                         <td class="py-3.5 px-3 text-slate-500">${label}</td>
-                        <td class="py-3.5 px-3 text-right font-bold text-emerald-600 text-sm">RM${commissionEarned.toFixed(2)}</td>
+                        <td class="py-3.5 px-3 text-right font-bold text-slate-800 text-sm">RM${commissionEarned.toFixed(2)}</td>
+                        <td class="py-3.5 px-3 text-center">${payoutButtonHTML}</td>
                     </tr>
                 `;
             });
 
             document.getElementById('commTotalPax').innerText = `${totalPaxCount} Pax`;
-            document.getElementById('commTotalPayout').innerText = `RM${totalPayoutAmount.toFixed(2)}`;
+            document.getElementById('commTotalUnpaid').innerText = `RM${totalUnpaidAmount.toFixed(2)}`;
+            document.getElementById('commTotalSettled').innerText = `RM${totalSettledAmount.toFixed(2)}`;
         }
     </script>
 </body>
