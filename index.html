@@ -79,7 +79,7 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Sabah Diving System v3.3
+            Sabah Diving System v3.4
         </div>
     </div>
 
@@ -102,7 +102,7 @@
                         Sabah Diving Operations
                     </h1>
                     <p class="text-slate-500 text-xs mt-0.5">
-                        高端客户预订、动态套餐价格匹配与 Google 日历自动化管理系统
+                        高端客户预订、智能价格联动与 Google 日历自动化管理系统
                     </p>
                 </div>
             </div>
@@ -161,7 +161,7 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1.5">人数 (Number of Pax)</label>
-                            <input type="number" id="pax" min="1" value="1" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                            <input type="number" id="pax" min="1" value="1" oninput="onPaxOrPackageChange()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
                         </div>
 
                         <div>
@@ -171,7 +171,7 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1.5">地点 (Location)</label>
-                            <select id="location" onchange="updatePackageOptions()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                            <select id="location" onchange="onLocationChange()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
                                 <option value="Semporna & Bum Bum">Semporna & Bum Bum (仙本那/邦邦岛)</option>
                                 <option value="Tun Sakaran Marine Park">Tun Sakaran Marine Park (敦沙卡兰公园)</option>
                                 <option value="Dreamer Island (淘梦岛)">Dreamer Island (淘梦岛)</option>
@@ -180,8 +180,8 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1.5">项目类型 (Package Type)</label>
-                            <select id="packageType" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
-                                <!-- Populated dynamically by updatePackageOptions() -->
+                            <select id="packageType" onchange="onPaxOrPackageChange()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                                <!-- Populated dynamically -->
                             </select>
                         </div>
 
@@ -197,18 +197,18 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">总价 (Total Price - RM / RMB)</label>
-                            <input type="number" id="totalPrice" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="0.00">
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">总价 (Total Price - Editable)</label>
+                            <input type="number" id="totalPrice" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none font-bold text-sky-700" placeholder="0.00">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">已付定金 (Deposit Paid - RM / RMB)</label>
+                            <label class="block text-xs font-bold text-slate-600 mb-1.5">已付定金 (Deposit Paid)</label>
                             <input type="number" id="depositPaid" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="0.00">
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1.5">尾款 (Balance Due)</label>
-                            <input type="number" id="balanceDue" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-sky-700 font-bold" placeholder="0.00">
+                            <input type="number" id="balanceDue" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-emerald-700 font-bold" placeholder="0.00">
                         </div>
 
                         <div>
@@ -377,41 +377,41 @@
         let currentTab = 'All';
         let navDate = new Date();
 
-        // Location-based package options mapping based on official pricing sheet
+        // Location-based package options mapping with standard base unit prices (RMB/MYR values based on your pricing sheet)
         const locationPackages = {
             "Semporna & Bum Bum": [
-                "DSD: 1 Day/2 Dives (Bum Bum Island)",
-                "DSD: 1 Day/3 Dives (Outer Reef)",
-                "DSD: 1 Day/3 Dives + Hike (Tun Sakaran)",
-                "Fun Dive: 1 Day / 6 Dives",
-                "Fun Dive: 2 Days / 9 Dives",
-                "Fun Dive: 2 Days / 9 Dives (1D Sipadan)",
-                "Fun Dive: 3 Days / 12 Dives",
-                "Fun Dive: 3 Days / 12 Dives (1D Sipadan)",
-                "Fun Dive: 4 Days / 15 Dives",
-                "Fun Dive: 4 Days / 15 Dives (1D Sipadan)",
-                "Fun Dive: 4 Days / 15 Dives (2D Sipadan)",
-                "Fun Dive: 5 Days / 18 Dives",
-                "Fun Dive: 5 Days / 18 Dives (1D Sipadan)",
-                "Fun Dive: 5 Days / 18 Dives (2D Sipadan)",
-                "PADI Course: 2 Days Open Water",
-                "PADI Course: 3 Days OW + 3 Fun Dives",
-                "PADI Course: 2 Days AOW + 3 Fun Dives",
-                "PADI Course: 2 Days AOW + Sipadan",
-                "PADI Course: 3 Days Rescue + EFR",
-                "PADI Course: 6D5N OW + AOW Combo"
+                { name: "DSD: 1 Day/2 Dives (Bum Bum Island)", price: 1000.22 },
+                { name: "DSD: 1 Day/3 Dives (Outer Reef)", price: 1171.20 },
+                { name: "DSD: 1 Day/3 Dives + Hike (Tun Sakaran)", price: 1598.64 },
+                { name: "Fun Dive: 1 Day / 6 Dives", price: 1533.67 },
+                { name: "Fun Dive: 2 Days / 9 Dives", price: 2467.20 },
+                { name: "Fun Dive: 2 Days / 9 Dives (1D Sipadan)", price: 3559.75 },
+                { name: "Fun Dive: 3 Days / 12 Dives", price: 3400.74 },
+                { name: "Fun Dive: 3 Days / 12 Dives (1D Sipadan)", price: 4493.29 },
+                { name: "Fun Dive: 4 Days / 15 Dives", price: 4334.28 },
+                { name: "Fun Dive: 4 Days / 15 Dives (1D Sipadan)", price: 5426.82 },
+                { name: "Fun Dive: 4 Days / 15 Dives (2D Sipadan)", price: 6519.37 },
+                { name: "Fun Dive: 5 Days / 18 Dives", price: 5267.81 },
+                { name: "Fun Dive: 5 Days / 18 Dives (1D Sipadan)", price: 6360.36 },
+                { name: "Fun Dive: 5 Days / 18 Dives (2D Sipadan)", price: 7452.90 },
+                { name: "PADI Course: 2 Days Open Water", price: 3128.89 },
+                { name: "PADI Course: 3 Days OW + 3 Fun Dives", price: 4062.42 },
+                { name: "PADI Course: 2 Days AOW + 3 Fun Dives", price: 3267.38 },
+                { name: "PADI Course: 2 Days AOW + Sipadan", price: 4496.71 },
+                { name: "PADI Course: 3 Days Rescue + EFR", price: 4146.20 },
+                { name: "PADI Course: 6D5N OW + AOW Combo", price: 6396.26 }
             ],
             "Tun Sakaran Marine Park": [
-                "TSMP: Snorkel + Hike (Adult)",
-                "TSMP: Snorkel + Hike (Child)",
-                "TSMP: Snorkel (No Hike) (Adult)",
-                "TSMP: Snorkel (No Hike) (Child)",
-                "TSMP: DSD Experience Diving",
-                "TSMP: Fun Dive"
+                { name: "TSMP: Snorkel + Hike (Adult)", price: 369.80 },
+                { name: "TSMP: Snorkel + Hike (Child)", price: 223.60 },
+                { name: "TSMP: Snorkel (No Hike) (Adult)", price: 249.40 },
+                { name: "TSMP: Snorkel (No Hike) (Child)", price: 163.40 },
+                { name: "TSMP: DSD Experience Diving", price: 1040.60 },
+                { name: "TSMP: Fun Dive", price: 1255.60 }
             ],
             "Dreamer Island (淘梦岛)": [
-                "Dreamer Island: Package A (MYR 520 - 2 DSD + Lunch + Gear + Drone)",
-                "Dreamer Island: Package B (MYR 620 - 2 DSD + Lunch + Gear + Drone + Edited Footage)"
+                { name: "Dreamer Island: Package A (2 DSD + Lunch + Gear + Drone)", price: 520 },
+                { name: "Dreamer Island: Package B (2 DSD + Lunch + Gear + Drone + Edited Footage)", price: 620 }
             ]
         };
 
@@ -429,7 +429,7 @@
 
         window.onload = function() {
             setTodayDates();
-            updatePackageOptions();
+            onLocationChange();
             
             ['bookingDate', 'activityDate'].forEach(id => {
                 const el = document.getElementById(id);
@@ -443,20 +443,37 @@
             fetchBookings();
         };
 
-        function updatePackageOptions() {
+        function onLocationChange() {
             const locSelect = document.getElementById('location');
             const pkgSelect = document.getElementById('packageType');
             const selectedLoc = locSelect.value;
             
             pkgSelect.innerHTML = '';
-            const options = locationPackages[selectedLoc] || [];
+            const items = locationPackages[selectedLoc] || [];
             
-            options.forEach(opt => {
+            items.forEach(item => {
                 const el = document.createElement('option');
-                el.value = opt;
-                el.textContent = opt;
+                el.value = item.name;
+                el.textContent = item.name;
+                el.setAttribute('data-price', item.price);
                 pkgSelect.appendChild(el);
             });
+
+            onPaxOrPackageChange();
+        }
+
+        function onPaxOrPackageChange() {
+            const pkgSelect = document.getElementById('packageType');
+            const selectedOption = pkgSelect.options[pkgSelect.selectedIndex];
+            
+            if (selectedOption) {
+                const unitPrice = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+                const pax = parseInt(document.getElementById('pax').value) || 1;
+                const calculatedTotal = unitPrice * pax;
+                
+                document.getElementById('totalPrice').value = calculatedTotal.toFixed(2);
+                calculateBalance();
+            }
         }
 
         function setTodayDates() {
@@ -662,7 +679,7 @@
             document.getElementById('activityDate').value = activityDate;
             
             document.getElementById('location').value = location;
-            updatePackageOptions();
+            onLocationChange();
             document.getElementById('packageType').value = pkg;
 
             document.getElementById('totalPrice').value = total;
@@ -696,7 +713,7 @@
             document.getElementById('bookingForm').reset();
             document.getElementById('editRowIndex').value = '';
             setTodayDates();
-            updatePackageOptions();
+            onLocationChange();
             document.getElementById('formTitle').innerHTML = '<span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">➕</span> New Booking Entry / 录入新预订';
             document.getElementById('submitBtn').innerText = "Save & Sync to Sheet & Calendar 🚀";
             document.getElementById('cancelEditBtn').classList.add('hidden');
