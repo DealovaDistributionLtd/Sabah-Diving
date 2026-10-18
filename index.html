@@ -83,7 +83,7 @@
         </div>
     </div>
 
-    <div class="max-w-[98%] md:max-w-[96%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
+    <div class="max-w-[96%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
         <!-- Header Section -->
         <header class="flex justify-between items-center mb-6 light-panel p-5 sm:p-6 rounded-3xl gap-4">
             <div class="flex items-center gap-3.5">
@@ -99,7 +99,7 @@
                 </div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-                        Sabah Diving Operations
+                        Sabah Diving Operations Dashboard
                     </h1>
                     <p class="text-slate-500 text-xs mt-0.5">
                         高端客户预订、MYR 智能价格联动与 Google 日历自动化管理系统
@@ -115,251 +115,183 @@
             </div>
         </header>
 
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6 sm:gap-8">
+        <!-- Main Dashboard Content (Full Width) -->
+        <div class="space-y-6 sm:space-y-8">
             
-            <!-- Left 3 Columns: Booking Form & Table -->
-            <div class="xl:col-span-3 space-y-6 sm:space-y-8">
+            <!-- Input Form Card -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="formTitle" class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">➕</span> 
+                        New Booking Entry / 录入新预订
+                    </h2>
+                    <button id="cancelEditBtn" onclick="resetFormMode()" class="hidden text-xs bg-rose-50 text-rose-600 border border-rose-200 px-3.5 py-1.5 rounded-xl hover:bg-rose-100 transition font-semibold">
+                        Cancel Edit / 取消编辑
+                    </button>
+                </div>
                 
-                <!-- Input Form Card -->
-                <div class="light-panel p-6 sm:p-8 rounded-3xl">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 id="formTitle" class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
-                            <span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">➕</span> 
-                            New Booking Entry / 录入新预订
-                        </h2>
-                        <button id="cancelEditBtn" onclick="resetFormMode()" class="hidden text-xs bg-rose-50 text-rose-600 border border-rose-200 px-3.5 py-1.5 rounded-xl hover:bg-rose-100 transition font-semibold">
-                            Cancel Edit / 取消编辑
+                <form id="bookingForm" onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                    
+                    <input type="hidden" id="editRowIndex" value="">
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">预定日期 (Booking Date)</label>
+                        <input type="date" id="bookingDate" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">全名 (Full Name - 中/拼音)</label>
+                        <input type="text" id="fullName" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Enter full name / 请输入全名">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">性别 (Gender)</label>
+                        <select id="gender" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                            <option value="Male / 男">Male / 男</option>
+                            <option value="Female / 女">Female / 女</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">护照号码 (Passport Number)</label>
+                        <input type="text" id="passport" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Enter passport number / 请输入护照号">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">人数 (Number of Pax)</label>
+                        <input type="number" id="pax" min="1" value="1" oninput="onPaxOrPackageChange()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">活动日期 (Activity Date)</label>
+                        <input type="date" id="activityDate" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">地点 (Location)</label>
+                        <select id="location" onchange="onLocationChange()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                            <option value="Semporna & Bum Bum">Semporna & Bum Bum (仙本那/邦邦岛)</option>
+                            <option value="Tun Sakaran Marine Park">Tun Sakaran Marine Park (敦沙卡兰公园)</option>
+                            <option value="Dreamer Island (淘梦岛)">Dreamer Island (淘梦岛)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">项目类型 (Package Type)</label>
+                        <select id="packageType" onchange="onPaxOrPackageChange()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">收款方式 (Payment Method)</label>
+                        <select id="paymentMethod" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                            <option value="WeChat Pay">WeChat Pay (微信支付)</option>
+                            <option value="Alipay">Alipay (支付宝)</option>
+                            <option value="Bank Transfer">Bank Transfer (银行转账)</option>
+                            <option value="TNG (Touch 'n Go)">TNG (Touch 'n Go)</option>
+                            <option value="Cash">Cash (现金)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">总价 (Total Price - RM / Editable)</label>
+                        <input type="number" id="totalPrice" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none font-bold text-sky-700" placeholder="0.00">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">已付定金 (Deposit Paid - RM)</label>
+                        <input type="number" id="depositPaid" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="0.00">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">尾款 (Balance Due - RM)</label>
+                        <input type="number" id="balanceDue" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-emerald-700 font-bold" placeholder="0.00">
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">状态 (Status)</label>
+                        <select id="status" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                            <option value="Confirmed / 已确认">Confirmed / 已确认</option>
+                            <option value="Pending / 待定">Pending / 待定</option>
+                            <option value="Completed / 已完成">Completed / 已完成</option>
+                            <option value="Cancelled / 已取消">Cancelled / 已取消</option>
+                        </select>
+                    </div>
+
+                    <!-- Hotel Pick-up & Remarks Section -->
+                    <div class="sm:col-span-2 flex flex-col gap-3">
+                        <label class="block text-xs font-bold text-slate-600">Hotel Pick-up & Remarks (酒店接送与备注)</label>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="flex items-center gap-2.5 light-input px-3.5 py-3 rounded-xl shrink-0">
+                                <input type="checkbox" id="hotelPickupToggle" onchange="toggleHotelInput()" class="w-4 h-4 accent-sky-600 cursor-pointer rounded">
+                                <label for="hotelPickupToggle" class="text-xs font-semibold text-slate-700 cursor-pointer">Hotel Pick-up / 需要酒店接送</label>
+                            </div>
+                            <input type="text" id="hotelName" disabled placeholder="Enter hotel name / 请输入酒店名称" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-400 cursor-not-allowed">
+                        </div>
+                        <input type="text" id="remarks" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Additional remarks (e.g. equipment size, dietary requirements)">
+                    </div>
+
+                    <div class="sm:col-span-4 flex justify-end mt-3">
+                        <button type="submit" id="submitBtn" class="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-400 hover:to-cyan-500 text-white font-bold px-8 py-3.5 rounded-xl text-sm transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2">
+                            Save & Sync to Sheet & Calendar 🚀
                         </button>
                     </div>
-                    
-                    <form id="bookingForm" onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                        
-                        <input type="hidden" id="editRowIndex" value="">
 
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">预定日期 (Booking Date)</label>
-                            <input type="date" id="bookingDate" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">全名 (Full Name - 中/拼音)</label>
-                            <input type="text" id="fullName" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Enter full name / 请输入全名">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">性别 (Gender)</label>
-                            <select id="gender" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
-                                <option value="Male / 男">Male / 男</option>
-                                <option value="Female / 女">Female / 女</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">护照号码 (Passport Number)</label>
-                            <input type="text" id="passport" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Enter passport number / 请输入护照号">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">人数 (Number of Pax)</label>
-                            <input type="number" id="pax" min="1" value="1" oninput="onPaxOrPackageChange()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">活动日期 (Activity Date)</label>
-                            <input type="date" id="activityDate" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">地点 (Location)</label>
-                            <select id="location" onchange="onLocationChange()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
-                                <option value="Semporna & Bum Bum">Semporna & Bum Bum (仙本那/邦邦岛)</option>
-                                <option value="Tun Sakaran Marine Park">Tun Sakaran Marine Park (敦沙卡兰公园)</option>
-                                <option value="Dreamer Island (淘梦岛)">Dreamer Island (淘梦岛)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">项目类型 (Package Type)</label>
-                            <select id="packageType" onchange="onPaxOrPackageChange()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
-                                <!-- Populated dynamically -->
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">收款方式 (Payment Method)</label>
-                            <select id="paymentMethod" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
-                                <option value="WeChat Pay">WeChat Pay (微信支付)</option>
-                                <option value="Alipay">Alipay (支付宝)</option>
-                                <option value="Bank Transfer">Bank Transfer (银行转账)</option>
-                                <option value="TNG (Touch 'n Go)">TNG (Touch 'n Go)</option>
-                                <option value="Cash">Cash (现金)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">总价 (Total Price - RM / Editable)</label>
-                            <input type="number" id="totalPrice" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none font-bold text-sky-700" placeholder="0.00">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">已付定金 (Deposit Paid - RM)</label>
-                            <input type="number" id="depositPaid" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="0.00">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">尾款 (Balance Due - RM)</label>
-                            <input type="number" id="balanceDue" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-emerald-700 font-bold" placeholder="0.00">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">状态 (Status)</label>
-                            <select id="status" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
-                                <option value="Confirmed / 已确认">Confirmed / 已确认</option>
-                                <option value="Pending / 待定">Pending / 待定</option>
-                                <option value="Completed / 已完成">Completed / 已完成</option>
-                                <option value="Cancelled / 已取消">Cancelled / 已取消</option>
-                            </select>
-                        </div>
-
-                        <!-- Hotel Pick-up & Remarks Section -->
-                        <div class="sm:col-span-2 flex flex-col gap-3">
-                            <label class="block text-xs font-bold text-slate-600">Hotel Pick-up & Remarks (酒店接送与备注)</label>
-                            <div class="flex flex-col sm:flex-row gap-3">
-                                <div class="flex items-center gap-2.5 light-input px-3.5 py-3 rounded-xl shrink-0">
-                                    <input type="checkbox" id="hotelPickupToggle" onchange="toggleHotelInput()" class="w-4 h-4 accent-sky-600 cursor-pointer rounded">
-                                    <label for="hotelPickupToggle" class="text-xs font-semibold text-slate-700 cursor-pointer">Hotel Pick-up / 需要酒店接送</label>
-                                </div>
-                                <input type="text" id="hotelName" disabled placeholder="Enter hotel name / 请输入酒店名称" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-400 cursor-not-allowed">
-                            </div>
-                            <input type="text" id="remarks" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Additional remarks (e.g. equipment size, dietary requirements)">
-                        </div>
-
-                        <div class="xl:col-span-3 flex justify-end mt-3">
-                            <button type="submit" id="submitBtn" class="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-400 hover:to-cyan-500 text-white font-bold px-8 py-3.5 rounded-xl text-sm transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2">
-                                Save & Sync to Sheet & Calendar 🚀
-                            </button>
-                        </div>
-
-                    </form>
-                </div>
-
-                <!-- Bookings Table Card with Search & Filter Tabs -->
-                <div class="light-panel p-6 sm:p-8 rounded-3xl">
-                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
-                        <h2 class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
-                            <span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">📋</span> 
-                            Master Booking Database / 预订总表
-                        </h2>
-
-                        <!-- Search Bar & Filter Tabs Container -->
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-                            <!-- Live Search Input -->
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-xs">🔍</span>
-                                <input type="text" id="searchQuery" oninput="renderTable()" placeholder="Search name, passport, hotel..." class="light-input rounded-2xl pl-9 pr-4 py-2 text-xs w-full sm:w-56 focus:outline-none">
-                            </div>
-
-                            <!-- Quick Filter Tabs -->
-                            <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
-                                <button onclick="filterTab('All')" id="tab-All" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-sky-600 text-white shadow-sm transition">All</button>
-                                <button onclick="filterTab('Confirmed')" id="tab-Confirmed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Confirmed</button>
-                                <button onclick="filterTab('Pending')" id="tab-Pending" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Pending</button>
-                                <button onclick="filterTab('Completed')" id="tab-Completed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Completed</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
-                            <thead>
-                                <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
-                                    <th class="py-3.5 px-3">预定日期</th>
-                                    <th class="py-3.5 px-3">姓名 (Name)</th>
-                                    <th class="py-3.5 px-3">性别</th>
-                                    <th class="py-3.5 px-3">护照号</th>
-                                    <th class="py-3.5 px-3">人数</th>
-                                    <th class="py-3.5 px-3">活动日期</th>
-                                    <th class="py-3.5 px-3">地点</th>
-                                    <th class="py-3.5 px-3">套餐</th>
-                                    <th class="py-3.5 px-3">总价</th>
-                                    <th class="py-3.5 px-3">定金</th>
-                                    <th class="py-3.5 px-3">尾款</th>
-                                    <th class="py-3.5 px-3">付款方式</th>
-                                    <th class="py-3.5 px-3">Status</th>
-                                    <th class="py-3.5 px-3">Remarks</th>
-                                    <th class="py-3.5 px-3 text-center">Actions / 操作</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bookingTableBody" class="divide-y divide-slate-100">
-                                <!-- Dynamic rows populate here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Password Protected Financial KPI Summary Cards -->
-                <div class="light-panel p-6 sm:p-8 rounded-3xl">
-                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                        <h2 class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
-                            <span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">🔒</span> 
-                            Financial Summary / 财务报表
-                        </h2>
-                        <div id="lockSection" class="flex items-center gap-2.5 w-full sm:w-auto">
-                            <input type="password" id="kpiPassword" placeholder="Enter password / 输入密码" class="light-input rounded-xl px-3.5 py-2 text-xs focus:outline-none">
-                            <button onclick="unlockKPIs()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-5 py-2 rounded-xl text-xs transition shadow-sm">Unlock / 解锁</button>
-                        </div>
-                    </div>
-
-                    <div id="kpiContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-5 hidden">
-                        <div class="light-input p-5 rounded-2xl shadow-sm flex flex-col justify-between border-slate-200">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Revenue / 总收入</span>
-                            <div class="text-2xl font-bold text-sky-600 mt-3" id="kpiTotalRevenue">RM0.00</div>
-                        </div>
-                        <div class="light-input p-5 rounded-2xl shadow-sm flex flex-col justify-between border-slate-200">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Deposits Collected / 已收定金</span>
-                            <div class="text-2xl font-bold text-emerald-600 mt-3" id="kpiTotalDeposits">RM0.00</div>
-                        </div>
-                        <div class="light-input p-5 rounded-2xl shadow-sm flex flex-col justify-between border-slate-200">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Outstanding Balance / 待收尾款</span>
-                            <div class="text-2xl font-bold text-rose-600 mt-3" id="kpiTotalBalance">RM0.00</div>
-                        </div>
-                    </div>
-                    <div id="lockedMessage" class="text-center py-8 text-slate-400 text-xs font-semibold">
-                        🔒 Financial statistics are locked. Enter password to view. / 财务数据已锁定，请输入密码查看。
-                    </div>
-                </div>
-
+                </form>
             </div>
 
-            <!-- Right Column: Custom Team Calendar -->
-            <div class="xl:col-span-1 light-panel p-6 sm:p-8 rounded-3xl flex flex-col">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2">
-                        <span>📅</span> Team Calendar
+            <!-- Bookings Table Card with Search & Filter Tabs -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
+                    <h2 class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">📋</span> 
+                        Master Booking Database / 预订总表
                     </h2>
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="changeMonth(-1)" class="p-2 light-input rounded-xl hover:border-sky-400 text-xs px-3 transition font-bold">◀</button>
-                        <span id="calMonthYear" class="text-xs font-bold text-sky-700 px-2"></span>
-                        <button onclick="changeMonth(1)" class="p-2 light-input rounded-xl hover:border-sky-400 text-xs px-3 transition font-bold">▶</button>
+
+                    <!-- Search Bar & Filter Tabs Container -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+                        <!-- Live Search Input -->
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-xs">🔍</span>
+                            <input type="text" id="searchQuery" oninput="renderTable()" placeholder="Search name, passport, hotel..." class="light-input rounded-2xl pl-9 pr-4 py-2 text-xs w-full sm:w-56 focus:outline-none">
+                        </div>
+
+                        <!-- Quick Filter Tabs -->
+                        <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                            <button onclick="filterTab('All')" id="tab-All" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-sky-600 text-white shadow-sm transition">All</button>
+                            <button onclick="filterTab('Confirmed')" id="tab-Confirmed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Confirmed</button>
+                            <button onclick="filterTab('Pending')" id="tab-Pending" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Pending</button>
+                            <button onclick="filterTab('Completed')" id="tab-Completed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Completed</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Calendar Grid Header -->
-                <div class="grid grid-cols-7 gap-1.5 text-center text-[11px] font-bold text-slate-400 mb-3">
-                    <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
-                </div>
-
-                <!-- Calendar Days Grid -->
-                <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1.5 text-xs">
-                    <!-- Dynamic Days Populate Here -->
-                </div>
-
-                <!-- Selected Day Manifest Preview -->
-                <div class="mt-6 pt-5 border-t border-slate-200 flex-1 flex flex-col">
-                    <h3 id="selectedDateTitle" class="text-xs font-bold text-slate-700 mb-3">Select a date to view manifest / 点击日期查看行程</h3>
-                    <div id="selectedDateManifest" class="space-y-2.5 overflow-y-auto max-h-[250px] pr-1">
-                        <p class="text-slate-400 text-xs italic">No date selected.</p>
-                    </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
+                                <th class="py-3.5 px-3">预定日期</th>
+                                <th class="py-3.5 px-3">姓名 (Name)</th>
+                                <th class="py-3.5 px-3">性别</th>
+                                <th class="py-3.5 px-3">护照号</th>
+                                <th class="py-3.5 px-3">人数</th>
+                                <th class="py-3.5 px-3">活动日期</th>
+                                <th class="py-3.5 px-3">地点</th>
+                                <th class="py-3.5 px-3">套餐</th>
+                                <th class="py-3.5 px-3">总价</th>
+                                <th class="py-3.5 px-3">定金</th>
+                                <th class="py-3.5 px-3">尾款</th>
+                                <th class="py-3.5 px-3">付款方式</th>
+                                <th class="py-3.5 px-3">Status</th>
+                                <th class="py-3.5 px-3">Remarks</th>
+                                <th class="py-3.5 px-3 text-center">Actions / 操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingTableBody" class="divide-y divide-slate-100">
+                            <!-- Dynamic rows populate here -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -371,11 +303,9 @@
 
     <script>
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
-        const ADMIN_PASSWORD = "sabah2026";
 
         let bookings = [];
         let currentTab = 'All';
-        let navDate = new Date();
 
         const locationPackages = {
             "Semporna & Bum Bum": [
@@ -513,121 +443,11 @@
                 const data = await response.json();
                 if (Array.isArray(data)) {
                     bookings = data;
-                    updateKPIs(bookings);
                     renderTable();
-                    renderCustomCalendar();
                 }
             } catch (err) {
                 console.error("Fetch error:", err);
             }
-        }
-
-        function changeMonth(direction) {
-            navDate.setMonth(navDate.getMonth() + direction);
-            renderCustomCalendar();
-        }
-
-        function renderCustomCalendar() {
-            const year = navDate.getFullYear();
-            const month = navDate.getMonth();
-            
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            document.getElementById('calMonthYear').innerText = `${monthNames[month]} ${year}`;
-
-            const grid = document.getElementById('calendarDaysGrid');
-            grid.innerHTML = '';
-
-            const firstDayIndex = new Date(year, month, 1).getDay();
-            const totalDays = new Date(year, month + 1, 0).getDate();
-            const todayStr = new Date().toLocaleDateString('en-CA');
-
-            for (let i = 0; i < firstDayIndex; i++) {
-                grid.innerHTML += `<div class="aspect-square bg-slate-100 rounded-xl opacity-40"></div>`;
-            }
-
-            for (let day = 1; day <= totalDays; day++) {
-                const monthStr = String(month + 1).padStart(2, '0');
-                const dayStr = String(day).padStart(2, '0');
-                const dateKey = `${year}-${monthStr}-${dayStr}`;
-
-                const dayBookings = bookings.filter(b => {
-                    const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
-                    const status = (b["Status"] || '').toLowerCase();
-                    return actDate === dateKey && !status.includes('cancelled');
-                });
-
-                let isToday = (dateKey === todayStr);
-                let dayBg = isToday ? 'bg-sky-50 border-sky-400 shadow-sm' : 'bg-slate-50 border-slate-200 hover:border-slate-300';
-                
-                let indicatorHTML = '';
-                if (dayBookings.length > 0) {
-                    indicatorHTML = `<div class="flex justify-center gap-0.5 mt-1 flex-wrap"><span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span><span class="text-[9px] text-sky-700 font-bold">${dayBookings.length}</span></div>`;
-                }
-
-                grid.innerHTML += `
-                    <div onclick="selectCalendarDate('${dateKey}')" class="aspect-square ${dayBg} border rounded-xl p-1 flex flex-col justify-between cursor-pointer transition text-center select-none">
-                        <span class="text-[11px] font-bold ${isToday ? 'text-sky-600' : 'text-slate-700'}">${day}</span>
-                        ${indicatorHTML}
-                    </div>
-                `;
-            }
-        }
-
-        function selectCalendarDate(dateStr) {
-            document.getElementById('selectedDateTitle').innerText = `Manifest for / 行程清单: ${dateStr}`;
-            const container = document.getElementById('selectedDateManifest');
-            container.innerHTML = '';
-
-            const dayBookings = bookings.filter(b => {
-                const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
-                return actDate === dateStr;
-            });
-
-            if (dayBookings.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 text-xs italic">No dives scheduled on this date.</p>`;
-                return;
-            }
-
-            dayBookings.forEach(b => {
-                container.innerHTML += `
-                    <div class="light-input p-3 rounded-xl border-slate-200 text-[11px] shadow-sm">
-                        <div class="font-bold text-sky-700">${b["Full Name"]} (${b["Pax"]} Pax)</div>
-                        <div class="text-slate-600 mt-1">📍 ${b["Location"]} | 🏊 ${b["Package"]}</div>
-                        <div class="text-slate-500 text-[10px] mt-0.5">📌 ${b["Status"]} | 🏨 ${b["Remarks"]}</div>
-                    </div>
-                `;
-            });
-        }
-
-        function unlockKPIs() {
-            const inputVal = document.getElementById('kpiPassword').value;
-            if (inputVal === ADMIN_PASSWORD) {
-                document.getElementById('kpiContainer').classList.remove('hidden');
-                document.getElementById('lockedMessage').classList.add('hidden');
-                document.getElementById('lockSection').innerHTML = '<span class="text-xs text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl">🔓 Unlocked / 已解锁</span>';
-            } else {
-                alert("Incorrect password! / 密码错误！");
-                document.getElementById('kpiPassword').value = '';
-            }
-        }
-
-        function updateKPIs(dataArray) {
-            let totalRev = 0;
-            let totalDep = 0;
-            let totalBal = 0;
-
-            dataArray.forEach(b => {
-                const status = (b["Status"] || '').toLowerCase();
-                if (!status.includes('cancelled')) {
-                    totalRev += parseFloat(b["Total Price"]) || 0;
-                    totalDep += parseFloat(b["Deposit Paid"]) || 0;
-                    totalBal += parseFloat(b["Balance Due"]) || 0;
-                }
-            });
-
-            document.getElementById('kpiTotalRevenue').innerText = `RM${totalRev.toFixed(2)}`;
-            document.getElementById('kpiTotalDeposits').innerText = `RM${totalDep.toFixed(2)}`;
-            document.getElementById('kpiTotalBalance').innerText = `RM${totalBal.toFixed(2)}`;
         }
 
         function filterTab(tabName) {
