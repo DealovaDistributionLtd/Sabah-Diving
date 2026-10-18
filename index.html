@@ -58,7 +58,6 @@
                 </button>
             </div>
 
-            <!-- Unified Drawer Links -->
             <nav class="space-y-2">
                 <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-sky-50 text-sky-700 font-bold text-xs shadow-sm">
                     <span>📋</span> Master Bookings / 预订总表
@@ -72,14 +71,10 @@
                 <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
                     <span>📈</span> Financial Ledger / 财务利润报表
                 </a>
-                <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
-                    <span>💰</span> Assistant Commission / 助理提成
-                </a>
             </nav>
         </div>
-
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Sabah Diving System v3.5
+            Sabah Diving System v4.0 (GitHub Native)
         </div>
     </div>
 
@@ -87,39 +82,34 @@
         <!-- Header Section -->
         <header class="flex justify-between items-center mb-6 light-panel p-5 sm:p-6 rounded-3xl gap-4">
             <div class="flex items-center gap-3.5">
-                <!-- Hamburger Button -->
                 <button onclick="toggleMenu()" class="p-2.5 rounded-2xl light-input hover:border-sky-400 text-slate-700 transition flex items-center justify-center shadow-sm" title="Open Menu">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
-
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-600 hidden sm:flex items-center justify-center text-xl shadow-lg shadow-sky-500/20 text-white shrink-0">
                     🌊
                 </div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-                        Sabah Diving Operations
+                        Sabah Diving Operations (GitHub Native)
                     </h1>
                     <p class="text-slate-500 text-xs mt-0.5">
-                        高端客户预订、MYR 智能价格联动与 Google 日历自动化管理系统
+                        高端客户预订、中国大陆无障碍直连管理系统
                     </p>
                 </div>
             </div>
-            
             <div class="flex items-center gap-3">
                 <div id="syncStatus" class="hidden sm:flex text-xs px-3.5 py-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold items-center gap-2 shadow-sm">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Sync Active
+                    GitHub Sync Active
                 </div>
             </div>
         </header>
 
         <div class="grid grid-cols-1 xl:grid-cols-4 gap-6 sm:gap-8">
-            
             <!-- Left 3 Columns: Booking Form & Table -->
             <div class="xl:col-span-3 space-y-6 sm:space-y-8">
-                
                 <!-- Input Form Card -->
                 <div class="light-panel p-6 sm:p-8 rounded-3xl">
                     <div class="flex justify-between items-center mb-6">
@@ -133,7 +123,6 @@
                     </div>
                     
                     <form id="bookingForm" onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                        
                         <input type="hidden" id="editRowIndex" value="">
 
                         <div>
@@ -221,7 +210,6 @@
                             </select>
                         </div>
 
-                        <!-- Hotel Pick-up & Remarks Section -->
                         <div class="sm:col-span-2 flex flex-col gap-3">
                             <label class="block text-xs font-bold text-slate-600">Hotel Pick-up & Remarks (酒店接送与备注)</label>
                             <div class="flex flex-col sm:flex-row gap-3">
@@ -231,19 +219,18 @@
                                 </div>
                                 <input type="text" id="hotelName" disabled placeholder="Enter hotel name / 请输入酒店名称" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-400 cursor-not-allowed">
                             </div>
-                            <input type="text" id="remarks" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Additional remarks (e.g. equipment size, dietary requirements)">
+                            <input type="text" id="remarks" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Additional remarks">
                         </div>
 
                         <div class="xl:col-span-3 flex justify-end mt-3">
                             <button type="submit" id="submitBtn" class="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-400 hover:to-cyan-500 text-white font-bold px-8 py-3.5 rounded-xl text-sm transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2">
-                                Save & Sync to Sheet & Calendar 🚀
+                                Save & Sync to GitHub 🚀
                             </button>
                         </div>
-
                     </form>
                 </div>
 
-                <!-- Bookings Table Card with Search & Filter Tabs -->
+                <!-- Bookings Table Card -->
                 <div class="light-panel p-6 sm:p-8 rounded-3xl">
                     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
                         <h2 class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
@@ -251,15 +238,12 @@
                             Master Booking Database / 预订总表
                         </h2>
 
-                        <!-- Search Bar & Filter Tabs Container -->
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-                            <!-- Live Search Input -->
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-xs">🔍</span>
-                                <input type="text" id="searchQuery" oninput="renderTable()" placeholder="Search name, passport, hotel..." class="light-input rounded-2xl pl-9 pr-4 py-2 text-xs w-full sm:w-56 focus:outline-none">
+                                <input type="text" id="searchQuery" oninput="renderTable()" placeholder="Search name, passport..." class="light-input rounded-2xl pl-9 pr-4 py-2 text-xs w-full sm:w-56 focus:outline-none">
                             </div>
 
-                            <!-- Quick Filter Tabs -->
                             <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
                                 <button onclick="filterTab('All')" id="tab-All" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-sky-600 text-white shadow-sm transition">All</button>
                                 <button onclick="filterTab('Confirmed')" id="tab-Confirmed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Confirmed</button>
@@ -297,7 +281,7 @@
                     </div>
                 </div>
 
-                <!-- Password Protected Financial KPI Summary Cards -->
+                <!-- Financial KPI Summary Cards -->
                 <div class="light-panel p-6 sm:p-8 rounded-3xl">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                         <h2 class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
@@ -325,13 +309,12 @@
                         </div>
                     </div>
                     <div id="lockedMessage" class="text-center py-8 text-slate-400 text-xs font-semibold">
-                        🔒 Financial statistics are locked. Enter password to view. / 财务数据已锁定，请输入密码查看。
+                        🔒 Financial statistics are locked. Enter password to view.
                     </div>
                 </div>
-
             </div>
 
-            <!-- Right Column: Custom Team Calendar -->
+            <!-- Right Column: Calendar -->
             <div class="xl:col-span-1 light-panel p-6 sm:p-8 rounded-3xl flex flex-col">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2">
@@ -344,17 +327,14 @@
                     </div>
                 </div>
 
-                <!-- Calendar Grid Header -->
                 <div class="grid grid-cols-7 gap-1.5 text-center text-[11px] font-bold text-slate-400 mb-3">
                     <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
                 </div>
 
-                <!-- Calendar Days Grid -->
                 <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1.5 text-xs">
                     <!-- Dynamic Days Populate Here -->
                 </div>
 
-                <!-- Selected Day Manifest Preview -->
                 <div class="mt-6 pt-5 border-t border-slate-200 flex-1 flex flex-col">
                     <h3 id="selectedDateTitle" class="text-xs font-bold text-slate-700 mb-3">Select a date to view manifest / 点击日期查看行程</h3>
                     <div id="selectedDateManifest" class="space-y-2.5 overflow-y-auto max-h-[250px] pr-1">
@@ -362,22 +342,20 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- Hidden Iframe to guarantee Google Apps Script POST success -->
-    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-
     <script>
-       const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
+        // --- GITHUB CONFIGURATION ---
+        const GITHUB_USER = "YOUR_GITHUB_USERNAME"; // e.g. desmondmaker
+        const GITHUB_REPO = "YOUR_REPOSITORY_NAME"; // e.g. sabah-diving
+        const GITHUB_TOKEN = "YOUR_GITHUB_PERSONAL_ACCESS_TOKEN"; // Paste PAT token here
+        
         const ADMIN_PASSWORD = "sabah2026";
-
         let bookings = [];
         let currentTab = 'All';
         let navDate = new Date();
 
-        // Location-based package options mapping with standard base unit prices cleanly converted & set in Malaysian Ringgit (MYR)
         const locationPackages = {
             "Semporna & Bum Bum": [
                 { name: "DSD: 1 Day/2 Dives (Bum Bum Island)", price: 610.00 },
@@ -430,48 +408,30 @@
         window.onload = function() {
             setTodayDates();
             onLocationChange();
-            
-            ['bookingDate', 'activityDate'].forEach(id => {
-                const el = document.getElementById(id);
-                el.addEventListener('click', function() {
-                    if (this.showPicker) {
-                        try { this.showPicker(); } catch (e) {}
-                    }
-                });
-            });
-
             fetchBookings();
         };
 
         function onLocationChange() {
             const locSelect = document.getElementById('location');
             const pkgSelect = document.getElementById('packageType');
-            const selectedLoc = locSelect.value;
-            
             pkgSelect.innerHTML = '';
-            const items = locationPackages[selectedLoc] || [];
-            
-            items.forEach(item => {
+            (locationPackages[locSelect.value] || []).forEach(item => {
                 const el = document.createElement('option');
                 el.value = item.name;
                 el.textContent = item.name;
                 el.setAttribute('data-price', item.price);
                 pkgSelect.appendChild(el);
             });
-
             onPaxOrPackageChange();
         }
 
         function onPaxOrPackageChange() {
             const pkgSelect = document.getElementById('packageType');
             const selectedOption = pkgSelect.options[pkgSelect.selectedIndex];
-            
             if (selectedOption) {
                 const unitPrice = parseFloat(selectedOption.getAttribute('data-price')) || 0;
                 const pax = parseInt(document.getElementById('pax').value) || 1;
-                const calculatedTotal = unitPrice * pax;
-                
-                document.getElementById('totalPrice').value = calculatedTotal.toFixed(2);
+                document.getElementById('totalPrice').value = (unitPrice * pax).toFixed(2);
                 calculateBalance();
             }
         }
@@ -480,25 +440,14 @@
             const todayStr = new Date().toLocaleDateString('en-CA');
             document.getElementById('bookingDate').value = todayStr;
             document.getElementById('activityDate').value = todayStr;
-            document.getElementById('hotelPickupToggle').checked = false;
-            toggleHotelInput();
         }
 
         function toggleHotelInput() {
             const toggle = document.getElementById('hotelPickupToggle');
             const hotelInput = document.getElementById('hotelName');
-            if (toggle.checked) {
-                hotelInput.disabled = false;
-                hotelInput.required = true;
-                hotelInput.classList.remove('text-slate-400', 'cursor-not-allowed');
-                hotelInput.classList.add('text-slate-900');
-            } else {
-                hotelInput.disabled = true;
-                hotelInput.required = false;
-                hotelInput.value = '';
-                hotelInput.classList.add('text-slate-400', 'cursor-not-allowed');
-                hotelInput.classList.remove('text-slate-900');
-            }
+            hotelInput.disabled = !toggle.checked;
+            hotelInput.required = toggle.checked;
+            hotelInput.className = toggle.checked ? "w-full light-input rounded-xl px-3.5 py-3 text-sm text-slate-900" : "w-full light-input rounded-xl px-3.5 py-3 text-sm text-slate-400 cursor-not-allowed";
         }
 
         function calculateBalance() {
@@ -508,9 +457,10 @@
             document.getElementById('balanceDue').value = balance >= 0 ? balance.toFixed(2) : "0.00";
         }
 
+        // Fetch bookings from GitHub bookings.json
         async function fetchBookings() {
             try {
-                const response = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
+                const response = await fetch(`https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/bookings.json?t=` + new Date().getTime());
                 const data = await response.json();
                 if (Array.isArray(data)) {
                     bookings = data;
@@ -523,273 +473,62 @@
             }
         }
 
-        function changeMonth(direction) {
-            navDate.setMonth(navDate.getMonth() + direction);
-            renderCustomCalendar();
-        }
-
-        function renderCustomCalendar() {
-            const year = navDate.getFullYear();
-            const month = navDate.getMonth();
-            
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            document.getElementById('calMonthYear').innerText = `${monthNames[month]} ${year}`;
-
-            const grid = document.getElementById('calendarDaysGrid');
-            grid.innerHTML = '';
-
-            const firstDayIndex = new Date(year, month, 1).getDay();
-            const totalDays = new Date(year, month + 1, 0).getDate();
-            const todayStr = new Date().toLocaleDateString('en-CA');
-
-            for (let i = 0; i < firstDayIndex; i++) {
-                grid.innerHTML += `<div class="aspect-square bg-slate-100 rounded-xl opacity-40"></div>`;
-            }
-
-            for (let day = 1; day <= totalDays; day++) {
-                const monthStr = String(month + 1).padStart(2, '0');
-                const dayStr = String(day).padStart(2, '0');
-                const dateKey = `${year}-${monthStr}-${dayStr}`;
-
-                const dayBookings = bookings.filter(b => {
-                    const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
-                    const status = (b["Status"] || '').toLowerCase();
-                    return actDate === dateKey && !status.includes('cancelled');
+        // Save bookings array back to GitHub bookings.json
+        async function saveBookingsToGitHub() {
+            const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/bookings.json`;
+            try {
+                // 1. Get current file sha
+                const getRes = await fetch(apiUrl, {
+                    headers: { "Authorization": `token ${GITHUB_TOKEN}` }
                 });
+                const fileData = await getRes.json();
+                const sha = fileData.sha;
 
-                let isToday = (dateKey === todayStr);
-                let dayBg = isToday ? 'bg-sky-50 border-sky-400 shadow-sm' : 'bg-slate-50 border-slate-200 hover:border-slate-300';
-                
-                let indicatorHTML = '';
-                if (dayBookings.length > 0) {
-                    indicatorHTML = `<div class="flex justify-center gap-0.5 mt-1 flex-wrap"><span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span><span class="text-[9px] text-sky-700 font-bold">${dayBookings.length}</span></div>`;
-                }
-
-                grid.innerHTML += `
-                    <div onclick="selectCalendarDate('${dateKey}')" class="aspect-square ${dayBg} border rounded-xl p-1 flex flex-col justify-between cursor-pointer transition text-center select-none">
-                        <span class="text-[11px] font-bold ${isToday ? 'text-sky-600' : 'text-slate-700'}">${day}</span>
-                        ${indicatorHTML}
-                    </div>
-                `;
+                // 2. Commit updated array
+                const contentEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(bookings, null, 2))));
+                const putRes = await fetch(apiUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `token ${GITHUB_TOKEN}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: "Update bookings database via web interface",
+                        content: contentEncoded,
+                        sha: sha
+                    })
+                });
+                return putRes.ok;
+            } catch (err) {
+                console.error("GitHub save error:", err);
+                return false;
             }
         }
 
-        function selectCalendarDate(dateStr) {
-            document.getElementById('selectedDateTitle').innerText = `Manifest for / 行程清单: ${dateStr}`;
-            const container = document.getElementById('selectedDateManifest');
-            container.innerHTML = '';
-
-            const dayBookings = bookings.filter(b => {
-                const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
-                return actDate === dateStr;
-            });
-
-            if (dayBookings.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 text-xs italic">No dives scheduled on this date.</p>`;
-                return;
-            }
-
-            dayBookings.forEach(b => {
-                container.innerHTML += `
-                    <div class="light-input p-3 rounded-xl border-slate-200 text-[11px] shadow-sm">
-                        <div class="font-bold text-sky-700">${b["Full Name"]} (${b["Pax"]} Pax)</div>
-                        <div class="text-slate-600 mt-1">📍 ${b["Location"]} | 🏊 ${b["Package"]}</div>
-                        <div class="text-slate-500 text-[10px] mt-0.5">📌 ${b["Status"]} | 🏨 ${b["Remarks"]}</div>
-                    </div>
-                `;
-            });
-        }
-
-        function unlockKPIs() {
-            const inputVal = document.getElementById('kpiPassword').value;
-            if (inputVal === ADMIN_PASSWORD) {
-                document.getElementById('kpiContainer').classList.remove('hidden');
-                document.getElementById('lockedMessage').classList.add('hidden');
-                document.getElementById('lockSection').innerHTML = '<span class="text-xs text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl">🔓 Unlocked / 已解锁</span>';
-            } else {
-                alert("Incorrect password! / 密码错误！");
-                document.getElementById('kpiPassword').value = '';
-            }
-        }
-
-        function updateKPIs(dataArray) {
-            let totalRev = 0;
-            let totalDep = 0;
-            let totalBal = 0;
-
-            dataArray.forEach(b => {
-                const status = (b["Status"] || '').toLowerCase();
-                if (!status.includes('cancelled')) {
-                    totalRev += parseFloat(b["Total Price"]) || 0;
-                    totalDep += parseFloat(b["Deposit Paid"]) || 0;
-                    totalBal += parseFloat(b["Balance Due"]) || 0;
-                }
-            });
-
-            document.getElementById('kpiTotalRevenue').innerText = `RM${totalRev.toFixed(2)}`;
-            document.getElementById('kpiTotalDeposits').innerText = `RM${totalDep.toFixed(2)}`;
-            document.getElementById('kpiTotalBalance').innerText = `RM${totalBal.toFixed(2)}`;
-        }
-
-        function filterTab(tabName) {
-            currentTab = tabName;
-            ['All', 'Confirmed', 'Pending', 'Completed'].forEach(t => {
-                const btn = document.getElementById(`tab-${t}`);
-                if (t === tabName) {
-                    btn.className = "px-3.5 py-1.5 text-xs font-bold rounded-xl bg-sky-600 text-white shadow-sm transition";
-                } else {
-                    btn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition";
-                }
-            });
-            renderTable();
-        }
-
-        function shareBooking(name, actDate, location, pkg, pax, total, balance, status, remarks) {
-            const message = 
-`🌊 【沙巴潜水预定确认单 / Sabah Diving Confirmation】
------------------------------------
-👤 贵宾姓名 (Name): ${name}
-👥 人数 (Pax): ${pax} 位
-📅 活动日期 (Date): ${actDate}
-📍 活动地点 (Location): ${location}
-🏊 项目 (Package): ${pkg}
-🏨 备注/接送 (Remarks): ${remarks}
------------------------------------
-💰 订单总额: RM${total}
-🏷️ 待付尾款: RM${balance}
-📌 Status (状态): ${status}
------------------------------------
-💡 温馨提示：请提前准备好泳衣, 毛巾及个人随身物品。期待与您开启精彩的沙巴海洋之旅！`;
-
-            navigator.clipboard.writeText(message).then(() => {
-                alert(`✅ Confirmation text copied for ${name}!\n已成功复制给【${name}】的确认单，可直接粘贴至微信或WhatsApp！`);
-            }).catch(err => {
-                console.error("Failed to copy text: ", err);
-                alert("Failed to copy confirmation text.");
-            });
-        }
-
-        function editBooking(rowIndex, bookingDate, fullName, gender, passport, pax, activityDate, location, pkg, total, deposit, paymentMethod, status, remarks) {
-            document.getElementById('editRowIndex').value = rowIndex;
-            document.getElementById('bookingDate').value = bookingDate;
-            document.getElementById('fullName').value = fullName;
-            document.getElementById('gender').value = gender;
-            document.getElementById('passport').value = passport;
-            document.getElementById('pax').value = pax;
-            document.getElementById('activityDate').value = activityDate;
-            
-            document.getElementById('location').value = location;
-            onLocationChange();
-            document.getElementById('packageType').value = pkg;
-
-            document.getElementById('totalPrice').value = total;
-            document.getElementById('depositPaid').value = deposit;
-            document.getElementById('paymentMethod').value = paymentMethod;
-            document.getElementById('status').value = status;
-
-            if (remarks.includes('[Hotel Pick-up / 酒店接送:')) {
-                const match = remarks.match(/\[Hotel Pick-up \/ 酒店接送: (.*?)\]/);
-                if (match && match[1]) {
-                    document.getElementById('hotelPickupToggle').checked = true;
-                    toggleHotelInput();
-                    document.getElementById('hotelName').value = match[1];
-                    document.getElementById('remarks').value = remarks.replace(match[0], '').replace(/^ - /, '').trim();
-                }
-            } else {
-                document.getElementById('hotelPickupToggle').checked = false;
-                toggleHotelInput();
-                document.getElementById('remarks').value = remarks;
-            }
-
-            calculateBalance();
-
-            document.getElementById('formTitle').innerText = `✏️ Edit Booking (Row ${rowIndex}) / 修改预定`;
-            document.getElementById('submitBtn').innerText = "Update Booking 🔄";
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        }
-
-        function resetFormMode() {
-            document.getElementById('bookingForm').reset();
-            document.getElementById('editRowIndex').value = '';
-            setTodayDates();
-            onLocationChange();
-            document.getElementById('formTitle').innerHTML = '<span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">➕</span> New Booking Entry / 录入新预订';
-            document.getElementById('submitBtn').innerText = "Save & Sync to Sheet & Calendar 🚀";
-            document.getElementById('cancelEditBtn').classList.add('hidden');
-        }
-
-        async function deleteBooking(rowIndex, name) {
-            if (!confirm(`Are you sure you want to delete the booking for [${name}]?\n您确定要删除【${name}】的预定吗？`)) {
-                return;
-            }
-
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = APPS_SCRIPT_URL;
-            form.target = 'hidden_iframe';
-
-            const inputAction = document.createElement('input');
-            inputAction.type = 'hidden';
-            inputAction.name = 'action';
-            inputAction.value = 'delete';
-            form.appendChild(inputAction);
-
-            const inputRow = document.createElement('input');
-            inputRow.type = 'hidden';
-            inputRow.name = 'rowIndex';
-            inputRow.value = rowIndex;
-            form.appendChild(inputRow);
-
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
-
-            setTimeout(() => {
-                alert("Booking deleted successfully!");
-                fetchBookings();
-            }, 2000);
-        }
-
-        function handleFormSubmit(event) {
+        async function handleFormSubmit(event) {
             event.preventDefault();
-            
             const submitBtn = document.getElementById('submitBtn');
-            const editRowIndex = document.getElementById('editRowIndex').value;
-            const isEditing = editRowIndex !== '';
-
-            submitBtn.innerText = isEditing ? "Updating Booking... / 正在更新..." : "Syncing to Sheet & Calendar... / 正在同步...";
+            const editIndex = document.getElementById('editRowIndex').value;
+            submitBtn.innerText = "Syncing to GitHub... / 正在同步...";
             submitBtn.disabled = true;
 
-            const bDateVal = document.getElementById('bookingDate').value;
-            const aDateVal = document.getElementById('activityDate').value;
-
             let remarksVal = document.getElementById('remarks').value.trim();
-            const isHotelChecked = document.getElementById('hotelPickupToggle').checked;
-            const hotelVal = document.getElementById('hotelName').value.trim();
-
-            if (isHotelChecked && hotelVal) {
-                const hotelString = `[Hotel Pick-up / 酒店接送: ${hotelVal}]`;
+            if (document.getElementById('hotelPickupToggle').checked && document.getElementById('hotelName').value.trim()) {
+                const hotelString = `[Hotel Pick-up: ${document.getElementById('hotelName').value.trim()}]`;
                 remarksVal = remarksVal ? `${hotelString} - ${remarksVal}` : hotelString;
             } else if (!remarksVal) {
                 remarksVal = '-';
             }
 
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = APPS_SCRIPT_URL;
-            form.target = 'hidden_iframe';
-
-            const fields = {
-                "action": isEditing ? "update" : "create",
-                "rowIndex": editRowIndex,
+            const newEntry = {
+                _rowIndex: editIndex !== "" ? parseInt(editIndex) : Date.now(),
                 "Timestamp": new Date().toISOString(),
-                "Booking Date": bDateVal,
+                "Booking Date": document.getElementById('bookingDate').value,
                 "Full Name": document.getElementById('fullName').value,
                 "Gender": document.getElementById('gender').value,
                 "Passport": document.getElementById('passport').value,
                 "Pax": document.getElementById('pax').value,
-                "Activity Date": aDateVal,
+                "Activity Date": document.getElementById('activityDate').value,
                 "Location": document.getElementById('location').value,
                 "Package": document.getElementById('packageType').value,
                 "Total Price": document.getElementById('totalPrice').value,
@@ -800,108 +539,160 @@
                 "Remarks": remarksVal
             };
 
-            for (const key in fields) {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                input.value = fields[key];
-                form.appendChild(input);
+            if (editIndex !== "") {
+                const idx = bookings.findIndex(b => b._rowIndex == editIndex);
+                if (idx !== -1) bookings[idx] = newEntry;
+            } else {
+                bookings.push(newEntry);
             }
 
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
-
-            setTimeout(() => {
-                alert(isEditing ? "Booking updated successfully!" : "Booking saved & Google Calendar synced successfully!");
+            const success = await saveBookingsToGitHub();
+            if (success) {
+                alert("Booking saved successfully to GitHub!");
                 resetFormMode();
                 fetchBookings();
-                submitBtn.disabled = false;
-            }, 2500);
+            } else {
+                alert("Failed to save to GitHub. Check your token permissions.");
+            }
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Save & Sync to GitHub 🚀";
+        }
+
+        async function deleteBooking(rowIndex, name) {
+            if (!confirm(`Are you sure you want to delete the booking for [${name}]?`)) return;
+            bookings = bookings.filter(b => b._rowIndex != rowIndex);
+            const success = await saveBookingsToGitHub();
+            if (success) {
+                alert("Booking deleted successfully!");
+                fetchBookings();
+            } else {
+                alert("Failed to delete from GitHub.");
+            }
+        }
+
+        function editBooking(rowIndex, bDate, name, gender, passport, pax, aDate, location, pkg, total, deposit, paymentMethod, status, remarks) {
+            document.getElementById('editRowIndex').value = rowIndex;
+            document.getElementById('bookingDate').value = bDate;
+            document.getElementById('fullName').value = name;
+            document.getElementById('gender').value = gender;
+            document.getElementById('passport').value = passport;
+            document.getElementById('pax').value = pax;
+            document.getElementById('activityDate').value = aDate;
+            document.getElementById('location').value = location;
+            onLocationChange();
+            document.getElementById('packageType').value = pkg;
+            document.getElementById('totalPrice').value = total;
+            document.getElementById('depositPaid').value = deposit;
+            document.getElementById('paymentMethod').value = paymentMethod;
+            document.getElementById('status').value = status;
+            document.getElementById('remarks').value = remarks;
+            calculateBalance();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function resetFormMode() {
+            document.getElementById('bookingForm').reset();
+            document.getElementById('editRowIndex').value = '';
+            setTodayDates();
+            onLocationChange();
         }
 
         function renderTable() {
             const tbody = document.getElementById('bookingTableBody');
             tbody.innerHTML = '';
-
             const searchTerm = (document.getElementById('searchQuery').value || '').toLowerCase();
 
             let filtered = bookings.filter(b => {
                 const status = (b["Status"] || '').toLowerCase();
-                const matchesTab = (currentTab === 'All' || status.includes(currentTab.toLowerCase()));
-                
-                if (!matchesTab) return false;
-
+                if (currentTab !== 'All' && !status.includes(currentTab.toLowerCase())) return false;
                 if (searchTerm) {
-                    const name = (b["Full Name"] || '').toLowerCase();
-                    const passport = (b["Passport"] || '').toLowerCase();
-                    const remarks = (b["Remarks"] || '').toLowerCase();
-                    const location = (b["Location"] || '').toLowerCase();
-                    return name.includes(searchTerm) || passport.includes(searchTerm) || remarks.includes(searchTerm) || location.includes(searchTerm);
+                    return (b["Full Name"] || '').toLowerCase().includes(searchTerm) || (b["Passport"] || '').toLowerCase().includes(searchTerm);
                 }
                 return true;
             });
 
-            if (!filtered || filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="15" class="py-8 text-center text-slate-400 text-sm">No matching bookings found. 暂无符合条件的预订记录。</td></tr>`;
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="15" class="py-8 text-center text-slate-400 text-sm">No matching bookings found.</td></tr>`;
                 return;
             }
 
             filtered.slice().reverse().forEach(b => {
-                const rowIndex = b._rowIndex;
-                const cleanBookingDate = (b["Booking Date"] || '').toString().replace(/^'/, '');
-                const cleanActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
-                const rawStatus = b["Status"] || '';
-                const name = b["Full Name"] || '';
-                const gender = b["Gender"] || '';
-                const passport = b["Passport"] || '';
-                const location = b["Location"] || '';
-                const pkg = b["Package"] || '';
-                const pax = b["Pax"] || 1;
-                const total = b["Total Price"] || 0;
-                const deposit = b["Deposit Paid"] || 0;
-                const balance = b["Balance Due"] || 0;
-                const paymentMethod = b["Payment Method"] || '';
-                const remarks = b["Remarks"] || '-';
-
-                let badgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg font-semibold";
-                if (rawStatus.toLowerCase().includes('pending')) {
-                    badgeClass = "bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-lg font-semibold";
-                } else if (rawStatus.toLowerCase().includes('cancel')) {
-                    badgeClass = "bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-lg font-semibold";
-                } else if (rawStatus.toLowerCase().includes('complet')) {
-                    badgeClass = "bg-sky-50 text-sky-700 border border-sky-200 px-2.5 py-1 rounded-lg font-semibold";
-                }
-
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80 transition">
-                        <td class="py-3.5 px-3 text-slate-600">${cleanBookingDate}</td>
-                        <td class="py-3.5 px-3 font-bold text-slate-900">${name}</td>
-                        <td class="py-3.5 px-3 text-slate-500">${gender}</td>
-                        <td class="py-3.5 px-3 text-slate-500">${passport}</td>
-                        <td class="py-3.5 px-3 text-center text-sky-700 font-bold">${pax}</td>
-                        <td class="py-3.5 px-3 text-sky-700 font-semibold">${cleanActivityDate}</td>
-                        <td class="py-3.5 px-3 text-slate-600">${location}</td>
-                        <td class="py-3.5 px-3 text-slate-600" title="${pkg}">${pkg}</td>
-                        <td class="py-3.5 px-3 text-slate-800 font-medium">RM${total}</td>
-                        <td class="py-3.5 px-3 text-emerald-600 font-medium">RM${deposit}</td>
-                        <td class="py-3.5 px-3 text-rose-600 font-bold">RM${balance}</td>
-                        <td class="py-3.5 px-3 text-slate-500">${paymentMethod}</td>
-                        <td class="py-3.5 px-3"><span class="${badgeClass}">${rawStatus}</span></td>
-                        <td class="py-3.5 px-3 text-slate-500 truncate max-w-[150px]" title="${remarks}">${remarks}</td>
+                        <td class="py-3.5 px-3 text-slate-600">${b["Booking Date"]}</td>
+                        <td class="py-3.5 px-3 font-bold text-slate-900">${b["Full Name"]}</td>
+                        <td class="py-3.5 px-3 text-slate-500">${b["Gender"]}</td>
+                        <td class="py-3.5 px-3 text-slate-500">${b["Passport"]}</td>
+                        <td class="py-3.5 px-3 text-center text-sky-700 font-bold">${b["Pax"]}</td>
+                        <td class="py-3.5 px-3 text-sky-700 font-semibold">${b["Activity Date"]}</td>
+                        <td class="py-3.5 px-3 text-slate-600">${b["Location"]}</td>
+                        <td class="py-3.5 px-3 text-slate-600">${b["Package"]}</td>
+                        <td class="py-3.5 px-3 text-slate-800 font-medium">RM${b["Total Price"]}</td>
+                        <td class="py-3.5 px-3 text-emerald-600 font-medium">RM${b["Deposit Paid"]}</td>
+                        <td class="py-3.5 px-3 text-rose-600 font-bold">RM${b["Balance Due"]}</td>
+                        <td class="py-3.5 px-3 text-slate-500">${b["Payment Method"]}</td>
+                        <td class="py-3.5 px-3"><span class="px-2.5 py-1 rounded-lg font-semibold bg-emerald-50 text-emerald-700">${b["Status"]}</span></td>
+                        <td class="py-3.5 px-3 text-slate-500 truncate max-w-[150px]">${b["Remarks"]}</td>
                         <td class="py-3.5 px-3 text-center flex items-center justify-center gap-1.5">
-                            <button onclick="shareBooking('${name.replace(/'/g, "\\'")}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${balance}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Copy confirmation message">
-                                💬 Share
-                            </button>
-                            <button onclick="editBooking('${rowIndex}', '${cleanBookingDate}', '${name.replace(/'/g, "\\'")}', '${gender}', '${passport}', '${pax}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${total}', '${deposit}', '${paymentMethod}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Edit booking">
-                                ✏️ Edit
-                            </button>
-                            <button onclick="deleteBooking('${rowIndex}', '${name.replace(/'/g, "\\'")}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Delete booking">
-                                🗑️ Delete
-                            </button>
+                            <button onclick="editBooking('${b._rowIndex}', '${b["Booking Date"]}', '${b["Full Name"]}', '${b["Gender"]}', '${b["Passport"]}', '${b["Pax"]}', '${b["Activity Date"]}', '${b["Location"]}', '${b["Package"]}', '${b["Total Price"]}', '${b["Deposit Paid"]}', '${b["Payment Method"]}', '${b["Status"]}', '${b["Remarks"]}')" class="bg-sky-50 text-sky-700 px-2.5 py-1 rounded-xl text-xs font-bold">✏️ Edit</button>
+                            <button onclick="deleteBooking('${b._rowIndex}', '${b["Full Name"]}')" class="bg-rose-50 text-rose-700 px-2.5 py-1 rounded-xl text-xs font-bold">🗑️ Delete</button>
                         </td>
                     </tr>
                 `;
+            });
+        }
+
+        function filterTab(tabName) {
+            currentTab = tabName;
+            ['All', 'Confirmed', 'Pending', 'Completed'].forEach(t => {
+                document.getElementById(`tab-${t}`).className = t === tabName ? "px-3.5 py-1.5 text-xs font-bold rounded-xl bg-sky-600 text-white shadow-sm transition" : "px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition";
+            });
+            renderTable();
+        }
+
+        function unlockKPIs() {
+            if (document.getElementById('kpiPassword').value === ADMIN_PASSWORD) {
+                document.getElementById('kpiContainer').classList.remove('hidden');
+                document.getElementById('lockedMessage').classList.add('hidden');
+            } else { alert("Incorrect password!"); }
+        }
+
+        function updateKPIs(dataArray) {
+            let rev = 0, dep = 0, bal = 0;
+            dataArray.forEach(b => {
+                if (!String(b["Status"]).toLowerCase().includes('cancelled')) {
+                    rev += parseFloat(b["Total Price"]) || 0;
+                    dep += parseFloat(b["Deposit Paid"]) || 0;
+                    bal += parseFloat(b["Balance Due"]) || 0;
+                }
+            });
+            document.getElementById('kpiTotalRevenue').innerText = `RM${rev.toFixed(2)}`;
+            document.getElementById('kpiTotalDeposits').innerText = `RM${dep.toFixed(2)}`;
+            document.getElementById('kpiTotalBalance').innerText = `RM${bal.toFixed(2)}`;
+        }
+
+        function changeMonth(dir) { navDate.setMonth(navDate.getMonth() + dir); renderCustomCalendar(); }
+        function renderCustomCalendar() {
+            const year = navDate.getFullYear(), month = navDate.getMonth();
+            document.getElementById('calMonthYear').innerText = `${["January","February","March","April","May","June","July","August","September","October","November","December"][month]} ${year}`;
+            const grid = document.getElementById('calendarDaysGrid');
+            grid.innerHTML = '';
+            const firstDay = new Date(year, month, 1).getDay(), totalDays = new Date(year, month + 1, 0).getDate();
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="aspect-square bg-slate-100 rounded-xl opacity-40"></div>`;
+            for (let day = 1; day <= totalDays; day++) {
+                const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const count = bookings.filter(b => (b["Activity Date"]||'').trim() === dateKey && !String(b["Status"]).toLowerCase().includes('cancelled')).length;
+                grid.innerHTML += `<div onclick="selectCalendarDate('${dateKey}')" class="aspect-square bg-slate-50 border border-slate-200 rounded-xl p-1 flex flex-col justify-between cursor-pointer text-center"><span class="text-[11px] font-bold text-slate-700">${day}</span>${count > 0 ? `<span class="text-[9px] text-sky-700 font-bold">${count} dives</span>` : ''}</div>`;
+            }
+        }
+        function selectCalendarDate(dateStr) {
+            document.getElementById('selectedDateTitle').innerText = `Manifest: ${dateStr}`;
+            const container = document.getElementById('selectedDateManifest');
+            container.innerHTML = '';
+            const list = bookings.filter(b => (b["Activity Date"]||'').trim() === dateStr);
+            if (list.length === 0) { container.innerHTML = `<p class="text-slate-400 text-xs italic">No dives scheduled.</p>`; return; }
+            list.forEach(b => {
+                container.innerHTML += `<div class="light-input p-3 rounded-xl border-slate-200 text-[11px] shadow-sm"><div class="font-bold text-sky-700">${b["Full Name"]} (${b["Pax"]} Pax)</div><div class="text-slate-600 mt-1">📍 ${b["Location"]} | 🏊 ${b["Package"]}</div></div>`;
             });
         }
     </script>
