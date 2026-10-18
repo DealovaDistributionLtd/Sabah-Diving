@@ -79,7 +79,7 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Sabah Diving System v3.0
+            Sabah Diving System v3.2
         </div>
     </div>
 
@@ -102,7 +102,7 @@
                         Sabah Diving Operations
                     </h1>
                     <p class="text-slate-500 text-xs mt-0.5">
-                        高端客户预订、财务清算与 Google 日历自动化管理系统
+                        高端客户预订、实时搜索、财务清算与 Google 日历自动化管理系统
                     </p>
                 </div>
             </div>
@@ -247,19 +247,29 @@
                     </form>
                 </div>
 
-                <!-- Bookings Table Card with Quick Filter Tabs -->
+                <!-- Bookings Table Card with Search & Filter Tabs -->
                 <div class="light-panel p-6 sm:p-8 rounded-3xl">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
                         <h2 class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
                             <span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">📋</span> 
                             Master Booking Database / 预订总表
                         </h2>
-                        <!-- Quick Filter Tabs -->
-                        <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
-                            <button onclick="filterTab('All')" id="tab-All" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-sky-600 text-white shadow-sm transition">All / 全部</button>
-                            <button onclick="filterTab('Confirmed')" id="tab-Confirmed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Confirmed / 已确认</button>
-                            <button onclick="filterTab('Pending')" id="tab-Pending" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Pending / 待定</button>
-                            <button onclick="filterTab('Completed')" id="tab-Completed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Completed / 已完成</button>
+
+                        <!-- Search Bar & Filter Tabs Container -->
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+                            <!-- Live Search Input -->
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-xs">🔍</span>
+                                <input type="text" id="searchQuery" oninput="renderTable()" placeholder="Search name, passport, hotel..." class="light-input rounded-2xl pl-9 pr-4 py-2 text-xs w-full sm:w-56 focus:outline-none">
+                            </div>
+
+                            <!-- Quick Filter Tabs -->
+                            <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                                <button onclick="filterTab('All')" id="tab-All" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-sky-600 text-white shadow-sm transition">All</button>
+                                <button onclick="filterTab('Confirmed')" id="tab-Confirmed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Confirmed</button>
+                                <button onclick="filterTab('Pending')" id="tab-Pending" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Pending</button>
+                                <button onclick="filterTab('Completed')" id="tab-Completed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Completed</button>
+                            </div>
                         </div>
                     </div>
 
@@ -579,7 +589,7 @@
 -----------------------------------
 💰 订单总额 (Total): RM${total}
 🏷️ 待付尾款 (Balance Due): RM${balance}
-📌 状态 (Status): ${status}
+📌 Status (状态): ${status}
 -----------------------------------
 💡 温馨提示：请提前准备好泳衣, 毛巾及个人随身物品。期待与您开启精彩的沙巴海洋之旅！`;
 
@@ -742,13 +752,26 @@
             const tbody = document.getElementById('bookingTableBody');
             tbody.innerHTML = '';
 
-            let filtered = bookings;
-            if (currentTab !== 'All') {
-                filtered = bookings.filter(b => (b["Status"] || '').toLowerCase().includes(currentTab.toLowerCase()));
-            }
+            const searchTerm = (document.getElementById('searchQuery').value || '').toLowerCase();
+
+            let filtered = bookings.filter(b => {
+                const status = (b["Status"] || '').toLowerCase();
+                const matchesTab = (currentTab === 'All' || status.includes(currentTab.toLowerCase()));
+                
+                if (!matchesTab) return false;
+
+                if (searchTerm) {
+                    const name = (b["Full Name"] || '').toLowerCase();
+                    const passport = (b["Passport"] || '').toLowerCase();
+                    const remarks = (b["Remarks"] || '').toLowerCase();
+                    const location = (b["Location"] || '').toLowerCase();
+                    return name.includes(searchTerm) || passport.includes(searchTerm) || remarks.includes(searchTerm) || location.includes(searchTerm);
+                }
+                return true;
+            });
 
             if (!filtered || filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="15" class="py-8 text-center text-slate-400 text-sm">No bookings recorded yet. 暂无预订记录。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="15" class="py-8 text-center text-slate-400 text-sm">No matching bookings found. 暂无符合条件的预订记录。</td></tr>`;
                 return;
             }
 
