@@ -39,12 +39,19 @@
                 
                 <!-- Input Form Card -->
                 <div class="bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-2xl border border-slate-800">
-                    <h2 class="text-base sm:text-lg font-semibold text-cyan-300 mb-4 sm:mb-6 flex items-center gap-2">
-                        <span>➕</span> New Booking Entry / 录入新预订
-                    </h2>
+                    <div class="flex justify-between items-center mb-4 sm:mb-6">
+                        <h2 id="formTitle" class="text-base sm:text-lg font-semibold text-cyan-300 flex items-center gap-2">
+                            <span>➕</span> New Booking Entry / 录入新预订
+                        </h2>
+                        <button id="cancelEditBtn" onclick="resetFormMode()" class="hidden text-xs bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1 rounded-lg hover:bg-rose-500/30 transition">
+                            Cancel Edit / 取消编辑
+                        </button>
+                    </div>
                     
-                    <form id="bookingForm" onsubmit="addBooking(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                    <form id="bookingForm" onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                         
+                        <input type="hidden" id="editRowIndex" value="">
+
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1.5">预定日期 (Booking Date)</label>
                             <input type="date" id="bookingDate" required class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-3 text-sm focus:outline-none focus:border-cyan-400 text-slate-200 cursor-pointer">
@@ -187,7 +194,7 @@
                                     <th class="py-3 px-2">付款方式</th>
                                     <th class="py-3 px-2">Status</th>
                                     <th class="py-3 px-2">Remarks</th>
-                                    <th class="py-3 px-2 text-center">WeChat / WhatsApp 确认单</th>
+                                    <th class="py-3 px-2 text-center">Actions / 操作</th>
                                 </tr>
                             </thead>
                             <tbody id="bookingTableBody" class="divide-y divide-slate-800/60">
@@ -321,7 +328,6 @@
 
         async function fetchBookings() {
             try {
-                // Fetches data directly via Apps Script doGet()
                 const response = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
                 const data = await response.json();
                 if (Array.isArray(data)) {
@@ -481,11 +487,93 @@
             });
         }
 
-        function addBooking(event) {
+        function editBooking(rowIndex, bookingDate, fullName, gender, passport, pax, activityDate, location, pkg, total, deposit, paymentMethod, status, remarks) {
+            document.getElementById('editRowIndex').value = rowIndex;
+            document.getElementById('bookingDate').value = bookingDate;
+            document.getElementById('fullName').value = fullName;
+            document.getElementById('gender').value = gender;
+            document.getElementById('passport').value = passport;
+            document.getElementById('pax').value = pax;
+            document.getElementById('activityDate').value = activityDate;
+            document.getElementById('location').value = location;
+            document.getElementById('packageType').value = pkg;
+            document.getElementById('totalPrice').value = total;
+            document.getElementById('depositPaid').value = deposit;
+            document.getElementById('paymentMethod').value = paymentMethod;
+            document.getElementById('status').value = status;
+
+            // Handle hotel pick-up extraction from remarks
+            if (remarks.includes('[Hotel Pick-up / 酒店接送:')) {
+                const match = remarks.match(/\[Hotel Pick-up \/ 酒店接送: (.*?)\]/);
+                if (match && match[1]) {
+                    document.getElementById('hotelPickupToggle').checked = true;
+                    toggleHotelInput();
+                    document.getElementById('hotelName').value = match[1];
+                    document.getElementById('remarks').value = remarks.replace(match[0], '').replace(/^ - /, '').trim();
+                }
+            } else {
+                document.getElementById('hotelPickupToggle').checked = false;
+                toggleHotelInput();
+                document.getElementById('remarks').value = remarks;
+            }
+
+            calculateBalance();
+
+            document.getElementById('formTitle').innerText = `✏️ Edit Booking (Row ${rowIndex}) / 修改预定`;
+            document.getElementById('submitBtn').innerText = "Update Booking 🔄";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function resetFormMode() {
+            document.getElementById('bookingForm').reset();
+            document.getElementById('editRowIndex').value = '';
+            setTodayDates();
+            document.getElementById('formTitle').innerText = "➕ New Booking Entry / 录入新预订";
+            document.getElementById('submitBtn').innerText = "Save & Sync to Sheet & Calendar 🚀";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+        }
+
+        async function deleteBooking(rowIndex, name) {
+            if (!confirm(`Are you sure you want to delete the booking for [${name}]?\n您确定要删除【${name}】的预定吗？`)) {
+                return;
+            }
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = APPS_SCRIPT_URL;
+            form.target = 'hidden_iframe';
+
+            const inputAction = document.createElement('input');
+            inputAction.type = 'hidden';
+            inputAction.name = 'action';
+            inputAction.value = 'delete';
+            form.appendChild(inputAction);
+
+            const inputRow = document.createElement('input');
+            inputRow.type = 'hidden';
+            inputRow.name = 'rowIndex';
+            inputRow.value = rowIndex;
+            form.appendChild(inputRow);
+
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+
+            setTimeout(() => {
+                alert("Booking deleted successfully!");
+                fetchBookings();
+            }, 2000);
+        }
+
+        function handleFormSubmit(event) {
             event.preventDefault();
             
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.innerText = "Syncing to Sheet & Calendar... / 正在同步...";
+            const editRowIndex = document.getElementById('editRowIndex').value;
+            const isEditing = editRowIndex !== '';
+
+            submitBtn.innerText = isEditing ? "Updating Booking... / 正在更新..." : "Syncing to Sheet & Calendar... / 正在同步...";
             submitBtn.disabled = true;
 
             const bDateVal = document.getElementById('bookingDate').value;
@@ -502,13 +590,14 @@
                 remarksVal = '-';
             }
 
-            // Post directly to Apps Script via hidden iframe to bypass CORS
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = APPS_SCRIPT_URL;
             form.target = 'hidden_iframe';
 
             const fields = {
+                "action": isEditing ? "update" : "create",
+                "rowIndex": editRowIndex,
                 "Timestamp": new Date().toISOString(),
                 "Booking Date": bDateVal,
                 "Full Name": document.getElementById('fullName').value,
@@ -539,11 +628,9 @@
             document.body.removeChild(form);
 
             setTimeout(() => {
-                alert("Booking saved & Google Calendar synced successfully!");
-                document.getElementById('bookingForm').reset();
-                setTodayDates();
+                alert(isEditing ? "Booking updated successfully!" : "Booking saved & Google Calendar synced successfully!");
+                resetFormMode();
                 fetchBookings();
-                submitBtn.innerText = "Save & Sync to Sheet & Calendar 🚀";
                 submitBtn.disabled = false;
             }, 2500);
         }
@@ -563,15 +650,20 @@
             }
 
             filtered.slice().reverse().forEach(b => {
+                const rowIndex = b._rowIndex;
                 const cleanBookingDate = (b["Booking Date"] || '').toString().replace(/^'/, '');
                 const cleanActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
                 const rawStatus = b["Status"] || '';
                 const name = b["Full Name"] || '';
+                const gender = b["Gender"] || '';
+                const passport = b["Passport"] || '';
                 const location = b["Location"] || '';
                 const pkg = b["Package"] || '';
                 const pax = b["Pax"] || 1;
                 const total = b["Total Price"] || 0;
+                const deposit = b["Deposit Paid"] || 0;
                 const balance = b["Balance Due"] || 0;
+                const paymentMethod = b["Payment Method"] || '';
                 const remarks = b["Remarks"] || '-';
 
                 let badgeClass = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-md";
@@ -587,21 +679,27 @@
                     <tr class="hover:bg-slate-800/50 transition">
                         <td class="py-3 px-2 text-slate-300">${cleanBookingDate}</td>
                         <td class="py-3 px-2 font-semibold text-slate-100">${name}</td>
-                        <td class="py-3 px-2 text-slate-400">${b["Gender"] || ''}</td>
-                        <td class="py-3 px-2 text-slate-400">${b["Passport"] || ''}</td>
+                        <td class="py-3 px-2 text-slate-400">${gender}</td>
+                        <td class="py-3 px-2 text-slate-400">${passport}</td>
                         <td class="py-3 px-2 text-center text-cyan-300 font-bold">${pax}</td>
                         <td class="py-3 px-2 text-cyan-400 font-medium">${cleanActivityDate}</td>
                         <td class="py-3 px-2 text-slate-300">${location}</td>
                         <td class="py-3 px-2 text-slate-300">${pkg}</td>
                         <td class="py-3 px-2 text-slate-200">RM${total}</td>
-                        <td class="py-3 px-2 text-emerald-400">RM${b["Deposit Paid"] || 0}</td>
+                        <td class="py-3 px-2 text-emerald-400">RM${deposit}</td>
                         <td class="py-3 px-2 text-rose-400 font-semibold">RM${balance}</td>
-                        <td class="py-3 px-2 text-slate-400">${b["Payment Method"] || ''}</td>
+                        <td class="py-3 px-2 text-slate-400">${paymentMethod}</td>
                         <td class="py-3 px-2"><span class="${badgeClass}">${rawStatus}</span></td>
                         <td class="py-3 px-2 text-slate-400 truncate max-w-[150px]" title="${remarks}">${remarks}</td>
-                        <td class="py-3 px-2 text-center">
-                            <button onclick="shareBooking('${name.replace(/'/g, "\\'")}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${balance}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 px-3 py-1 rounded-lg text-xs font-semibold transition flex items-center gap-1 mx-auto">
+                        <td class="py-3 px-2 text-center flex items-center justify-center gap-1.5">
+                            <button onclick="shareBooking('${name.replace(/'/g, "\\'")}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${balance}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 px-2.5 py-1 rounded-lg text-xs font-semibold transition" title="Copy confirmation message">
                                 💬 Share
+                            </button>
+                            <button onclick="editBooking('${rowIndex}', '${cleanBookingDate}', '${name.replace(/'/g, "\\'")}', '${gender}', '${passport}', '${pax}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${total}', '${deposit}', '${paymentMethod}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 border border-cyan-500/40 px-2.5 py-1 rounded-lg text-xs font-semibold transition" title="Edit booking">
+                                ✏️ Edit
+                            </button>
+                            <button onclick="deleteBooking('${rowIndex}', '${name.replace(/'/g, "\\'")}')" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/40 px-2.5 py-1 rounded-lg text-xs font-semibold transition" title="Delete booking">
+                                🗑️ Delete
                             </button>
                         </td>
                     </tr>
