@@ -79,7 +79,7 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Sabah Diving System v3.2
+            Sabah Diving System v3.3
         </div>
     </div>
 
@@ -102,7 +102,7 @@
                         Sabah Diving Operations
                     </h1>
                     <p class="text-slate-500 text-xs mt-0.5">
-                        高端客户预订、实时搜索、财务清算与 Google 日历自动化管理系统
+                        高端客户预订、动态套餐价格联动与系统管理中心
                     </p>
                 </div>
             </div>
@@ -171,21 +171,17 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1.5">地点 (Location)</label>
-                            <select id="location" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                            <select id="location" onchange="updatePackagesAndPrice()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
                                 <option value="Semporna & Bum Bum">Semporna & Bum Bum (仙本那/邦邦岛)</option>
                                 <option value="Tun Sakaran Marine Park">Tun Sakaran Marine Park (敦沙卡兰公园)</option>
-                                <option value="Kota Kinabalu">Kota Kinabalu (亚庇)</option>
                                 <option value="Dreamer Island (淘梦岛)">Dreamer Island (淘梦岛)</option>
                             </select>
                         </div>
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1.5">项目类型 (Package Type)</label>
-                            <select id="packageType" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
-                                <option value="DSD (Discover Scuba Diving)">DSD (体验潜水)</option>
-                                <option value="Fun Dive (3 Dives)">Fun Dive (3 潜)</option>
-                                <option value="Open Water Course">Open Water Course (OW 考证)</option>
-                                <option value="Snorkeling">Snorkeling (浮潜)</option>
+                            <select id="packageType" onchange="updateDefaultPrice()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                                <!-- Populated dynamically based on location -->
                             </select>
                         </div>
 
@@ -377,6 +373,26 @@
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
         const ADMIN_PASSWORD = "sabah2026";
 
+        // Location-specific package mapping with default standard pricing (RM)
+        const locationPackages = {
+            "Semporna & Bum Bum": [
+                { name: "Fun Dive (3 Dives)", price: 450 },
+                { name: "DSD (Discover Scuba Diving)", price: 350 },
+                { name: "Open Water Course", price: 1600 },
+                { name: "Island Hopping Day Trip", price: 200 }
+            ],
+            "Tun Sakaran Marine Park": [
+                { name: "Tun Sakaran Fun Dive", price: 480 },
+                { name: "Tun Sakaran Snorkeling", price: 220 },
+                { name: "Bohey Dulang Hiking & Snorkeling", price: 250 }
+            ],
+            "Dreamer Island (淘梦岛)": [
+                { name: "Dreamer Island Leisure & Snorkeling", price: 280 },
+                { name: "Dreamer Island DSD (Experience)", price: 380 },
+                { name: "Dreamer Island Fun Dive", price: 450 }
+            ]
+        };
+
         let bookings = [];
         let currentTab = 'All';
         let navDate = new Date();
@@ -395,6 +411,7 @@
 
         window.onload = function() {
             setTodayDates();
+            updatePackagesAndPrice();
             
             ['bookingDate', 'activityDate'].forEach(id => {
                 const el = document.getElementById(id);
@@ -414,6 +431,38 @@
             document.getElementById('activityDate').value = todayStr;
             document.getElementById('hotelPickupToggle').checked = false;
             toggleHotelInput();
+        }
+
+        // Dynamically update package dropdown options based on selected location
+        function updatePackagesAndPrice() {
+            const locSelect = document.getElementById('location');
+            const pkgSelect = document.getElementById('packageType');
+            const selectedLoc = locSelect.value;
+
+            pkgSelect.innerHTML = '';
+            const pkgs = locationPackages[selectedLoc] || [];
+
+            pkgs.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.name;
+                opt.textContent = `${p.name} (RM ${p.price})`;
+                opt.dataset.price = p.price;
+                pkgSelect.appendChild(opt);
+            });
+
+            updateDefaultPrice();
+        }
+
+        // Automatically set total price input based on selected package default rate
+        function updateDefaultPrice() {
+            const pkgSelect = document.getElementById('packageType');
+            const selectedOpt = pkgSelect.options[pkgSelect.selectedIndex];
+            if (selectedOpt && selectedOpt.dataset.price) {
+                const paxCount = parseInt(document.getElementById('pax').value) || 1;
+                const basePrice = parseFloat(selectedOpt.dataset.price) || 0;
+                document.getElementById('totalPrice').value = (basePrice * paxCount).toFixed(2);
+                calculateBalance();
+            }
         }
 
         function toggleHotelInput() {
@@ -437,7 +486,7 @@
             const total = parseFloat(document.getElementById('totalPrice').value) || 0;
             const deposit = parseFloat(document.getElementById('depositPaid').value) || 0;
             const balance = total - deposit;
-            document.getElementById('balanceDue').value = balance >= 0 ? balance : 0;
+            document.getElementById('balanceDue').value = balance >= 0 ? balance.toFixed(2) : "0.00";
         }
 
         async function fetchBookings() {
@@ -609,7 +658,11 @@
             document.getElementById('passport').value = passport;
             document.getElementById('pax').value = pax;
             document.getElementById('activityDate').value = activityDate;
+            
+            // Set location and update its corresponding packages
             document.getElementById('location').value = location;
+            updatePackagesAndPrice();
+            
             document.getElementById('packageType').value = pkg;
             document.getElementById('totalPrice').value = total;
             document.getElementById('depositPaid').value = deposit;
@@ -642,6 +695,7 @@
             document.getElementById('bookingForm').reset();
             document.getElementById('editRowIndex').value = '';
             setTodayDates();
+            updatePackagesAndPrice();
             document.getElementById('formTitle').innerHTML = '<span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">➕</span> New Booking Entry / 录入新预订';
             document.getElementById('submitBtn').innerText = "Save & Sync to Sheet & Calendar 🚀";
             document.getElementById('cancelEditBtn').classList.add('hidden');
