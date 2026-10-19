@@ -75,6 +75,17 @@
 </head>
 <body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white">
 
+    <!-- GLOBAL LOADING SPINNER OVERLAY -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-opacity">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 flex flex-col items-center gap-4 max-w-xs w-full mx-4">
+            <div class="w-12 h-12 border-4 border-sky-200 border-t-sky-600 rounded-full animate-spin"></div>
+            <div class="text-center">
+                <h3 id="loadingText" class="font-bold text-slate-900 text-sm">Loading Data...</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Please wait while we sync with the cloud 🌊</p>
+            </div>
+        </div>
+    </div>
+
     <!-- MOBILE / HAMBURGER NAVIGATION DRAWER OVERLAY -->
     <div id="drawerOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-opacity"></div>
 
@@ -158,7 +169,7 @@
                 </div>
                 <div class="flex justify-between py-1.5 border-b border-slate-100">
                     <span class="text-slate-400">Payment Method / 收款方式:</span>
-                    <span id="modalPaymentMethod" class="text-slate-800">-</span>
+                    <span id="modalPaymentMethod" class="text-slate-800">-</strong>
                 </div>
             </div>
 
@@ -448,6 +459,19 @@
             ]
         };
 
+        function showLoading(text = "Loading Data...") {
+            document.getElementById('loadingText').innerText = text;
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100');
+        }
+
         function toggleMenu() {
             const drawer = document.getElementById('mobileDrawer');
             const overlay = document.getElementById('drawerOverlay');
@@ -542,6 +566,7 @@
         }
 
         async function fetchBookings() {
+            showLoading("Loading Bookings / 正在加载预订数据...");
             try {
                 const response = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
                 const data = await response.json();
@@ -551,6 +576,8 @@
                 }
             } catch (err) {
                 console.error("Fetch error:", err);
+            } finally {
+                hideLoading();
             }
         }
 
@@ -669,6 +696,8 @@
                 return;
             }
 
+            showLoading("Deleting Booking / 正在删除预订...");
+
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = APPS_SCRIPT_URL;
@@ -691,6 +720,7 @@
             document.body.removeChild(form);
 
             setTimeout(() => {
+                hideLoading();
                 alert("Booking deleted successfully!");
                 fetchBookings();
             }, 2000);
@@ -703,7 +733,6 @@
             const editRowIndex = document.getElementById('editRowIndex').value;
             const isEditing = editRowIndex !== '';
 
-            // 1. Clean & Format Inputs
             const fullNameInput = document.getElementById('fullName').value.trim();
             const passportInput = document.getElementById('passport').value.trim().toUpperCase();
             const aDateVal = document.getElementById('activityDate').value;
@@ -718,13 +747,11 @@
             const paymentMethodVal = document.getElementById('paymentMethod').value;
             const statusVal = document.getElementById('status').value;
 
-            // 2. Smart Form Validation: Check Activity Date vs Booking Date
             if (aDateVal < bDateVal) {
                 alert("⚠️ Warning: Activity Date cannot be earlier than Booking Date!");
                 return;
             }
 
-            // 3. Duplicate Guard (Only trigger for new entries or if changing details)
             if (!isEditing) {
                 const duplicateFound = bookings.some(b => {
                     const existingName = (b["Full Name"] || '').trim().toLowerCase();
@@ -732,7 +759,6 @@
                     const existingActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
                     const status = (b["Status"] || '').toLowerCase();
 
-                    // Ignore cancelled bookings for duplicate checks
                     if (status.includes('cancelled')) return false;
 
                     const matchesNameOrPassport = (existingPassport === passportInput) || (existingName === fullNameInput.toLowerCase());
@@ -749,7 +775,7 @@
                 }
             }
 
-            submitBtn.innerText = isEditing ? "Updating Booking... / 正在更新..." : "Syncing to Sheet & Calendar... / 正在同步...";
+            showLoading(isEditing ? "Updating Booking & Calendar... / 正在更新..." : "Syncing to Google Sheet & Calendar... / 正在同步...");
             submitBtn.disabled = true;
 
             let remarksVal = document.getElementById('remarks').value.trim();
@@ -801,9 +827,9 @@
             document.body.removeChild(form);
 
             setTimeout(() => {
+                hideLoading();
                 alert(isEditing ? "Booking updated successfully!" : "Booking saved & Google Calendar synced successfully!");
                 
-                // Automatically display the in-page voucher modal for the new/updated booking
                 generatePDFVoucher(fullNameInput, genderVal, passportInput, aDateVal, locationVal, pkgVal, paxVal, totalVal, depositVal, balanceVal, paymentMethodVal, statusVal, remarksVal);
 
                 resetFormMode();
