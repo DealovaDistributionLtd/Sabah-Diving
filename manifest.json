@@ -1,0 +1,15 @@
+{
+  "name": "Sabah Diving Operations",
+  "short_name": "SabahDiving",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0284c7",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3159/3159310.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
