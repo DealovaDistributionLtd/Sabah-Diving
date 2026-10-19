@@ -606,7 +606,6 @@
             const shareBtn = document.getElementById('shareImgBtn');
             const originalText = shareBtn.innerHTML;
 
-            // Temporarily override max-height and overflow so html2canvas captures the full height without truncation
             const originalMaxHeight = voucherElement.style.maxHeight;
             const originalOverflow = voucherElement.style.overflow;
             voucherElement.style.maxHeight = 'none';
@@ -617,14 +616,13 @@
                 shareBtn.innerHTML = "⏳ Generating Full Image / 正在生成完整长图...";
 
                 const canvas = await html2canvas(voucherElement, {
-                    scale: 2, // High resolution for clear text
+                    scale: 2,
                     useCORS: true,
                     backgroundColor: '#ffffff',
                     windowWidth: voucherElement.scrollWidth,
                     windowHeight: voucherElement.scrollHeight
                 });
 
-                // Restore styles
                 voucherElement.style.maxHeight = originalMaxHeight;
                 voucherElement.style.overflow = originalOverflow;
 
@@ -652,7 +650,6 @@
                         }
                     }
 
-                    // Fallback: Download image for easy WeChat forwarding
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
                     link.download = fileName;
@@ -914,12 +911,24 @@
                 return true;
             });
 
+            // SORTING: Sort bookings by Activity Date (Upcoming / Newest first, past dates further down)
+            // If activity dates match, sort by row index descending (newly entered bookings on top)
+            filtered.sort((a, b) => {
+                const dateA = (a["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                const dateB = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                
+                if (dateA !== dateB) {
+                    return dateA.localeCompare(dateB); // Ascending: earliest/upcoming date first
+                }
+                return parseInt(b._rowIndex || 0) - parseInt(a._rowIndex || 0); // Descending row index
+            });
+
             if (!filtered || filtered.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="15" class="py-8 text-center text-slate-400 text-sm">No matching bookings found. 暂无符合条件的预订记录。</td></tr>`;
                 return;
             }
 
-            filtered.slice().reverse().forEach(b => {
+            filtered.forEach(b => {
                 const rowIndex = b._rowIndex;
                 const cleanBookingDate = (b["Booking Date"] || '').toString().replace(/^'/, '');
                 const cleanActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
