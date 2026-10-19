@@ -76,7 +76,7 @@
 <body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white">
 
     <!-- GLOBAL LOADING SPINNER OVERLAY -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-opacity">
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-opacity opacity-0 pointer-events-none">
         <div class="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 flex flex-col items-center gap-4 max-w-xs w-full mx-4">
             <div class="w-12 h-12 border-4 border-sky-200 border-t-sky-600 rounded-full animate-spin"></div>
             <div class="text-center">
@@ -169,7 +169,7 @@
                 </div>
                 <div class="flex justify-between py-1.5 border-b border-slate-100">
                     <span class="text-slate-400">Payment Method / 收款方式:</span>
-                    <span id="modalPaymentMethod" class="text-slate-800">-</span>
+                    <span id="modalPaymentMethod" class="text-slate-800">-</strong>
                 </div>
             </div>
 
@@ -187,7 +187,7 @@
             <div class="no-print flex flex-col gap-3 pt-3 border-t border-slate-100">
                 <div class="flex flex-col sm:flex-row gap-2">
                     <button onclick="shareModalBooking()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-1.5">
-                        💬 Copy Confirmation Text / 复制客户确认单
+                        🔗 Share / 分享确认单
                     </button>
                     <button onclick="window.print()" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-1.5">
                         🖨️ Print / Save PDF
@@ -599,7 +599,7 @@
             renderTable();
         }
 
-        function shareModalBooking() {
+        async function shareModalBooking() {
             const name = document.getElementById('modalName').innerText;
             const pax = document.getElementById('modalPax').innerText.replace(' Pax', '');
             const actDate = document.getElementById('modalActivityDate').innerText;
@@ -626,6 +626,23 @@
 -----------------------------------
 💡 温馨提示：请提前准备好泳衣, 毛巾及个人随身物品。期待与您开启精彩的沙巴海洋之旅！`;
 
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: `Sabah Diving Confirmation - ${name}`,
+                        text: message
+                    });
+                    return;
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        console.log('Share API failed, fallback to clipboard', err);
+                    } else {
+                        return;
+                    }
+                }
+            }
+
+            // Fallback to clipboard copy
             navigator.clipboard.writeText(message).then(() => {
                 alert(`✅ Confirmation text copied for ${name}!\n已成功复制给【${name}】的确认单，可直接粘贴至微信或WhatsApp！`);
             }).catch(err => {
