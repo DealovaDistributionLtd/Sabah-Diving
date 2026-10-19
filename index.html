@@ -35,9 +35,29 @@
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
         @media print {
-            body * { visibility: hidden; }
-            #voucherModalContent, #voucherModalContent * { visibility: visible; }
-            #voucherModalContent { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; border: none; }
+            body * { visibility: hidden !important; }
+            #voucherModal, #voucherModal * { visibility: visible !important; }
+            #voucherModal {
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: white !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                z-index: 9999 !important;
+                padding: 0 !important;
+            }
+            #voucherModalContent {
+                box-shadow: none !important;
+                border: none !important;
+                max-height: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 20px !important;
+            }
             .no-print { display: none !important; }
         }
     </style>
@@ -90,14 +110,14 @@
         </div>
     </div>
 
-    <!-- IN-PAGE VOUCHER MODAL OVERLAY -->
-    <div id="voucherModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
-        <div id="voucherModalContent" class="bg-white w-full max-w-xl p-6 sm:p-8 rounded-3xl shadow-2xl border border-slate-200 relative my-8">
-            <button onclick="closeVoucherModal()" class="no-print absolute top-6 right-6 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm transition">
+    <!-- IN-PAGE VOUCHER MODAL OVERLAY (Scrollable & Mobile Optimized) -->
+    <div id="voucherModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div id="voucherModalContent" class="bg-white w-full max-w-xl p-5 sm:p-8 rounded-3xl shadow-2xl border border-slate-200 relative my-auto max-h-[90vh] overflow-y-auto">
+            <button onclick="closeVoucherModal()" class="no-print absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm transition">
                 ✕
             </button>
             
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-5 mb-5 gap-3">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-4 mb-4 gap-2">
                 <div>
                     <h1 class="text-sm sm:text-base font-bold text-sky-700">Deso_89 | Underwater photography & Dive Guide</h1>
                     <p class="text-[11px] text-slate-500 font-medium mt-0.5">Deso_89 | 水下摄影与潜水向导 • Official Voucher / 官方预订确认凭证</p>
@@ -105,44 +125,44 @@
                 <span id="modalStatus" class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold shrink-0">Confirmed</span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs mb-5 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs mb-4 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
                 <div><span class="text-slate-400">Guest Name / 姓名:</span> <strong id="modalName" class="text-slate-900">-</strong></div>
                 <div><span class="text-slate-400">Gender / 性别:</span> <span id="modalGender" class="text-slate-700">-</span></div>
                 <div><span class="text-slate-400">Passport / 护照号:</span> <span id="modalPassport" class="text-slate-700">-</span></div>
                 <div><span class="text-slate-400">Number of Pax / 人数:</span> <strong id="modalPax" class="text-sky-700">-</strong></div>
             </div>
 
-            <div class="space-y-3 text-xs mb-5">
-                <div class="flex justify-between py-2 border-b border-slate-100">
+            <div class="space-y-2.5 text-xs mb-4">
+                <div class="flex justify-between py-1.5 border-b border-slate-100">
                     <span class="text-slate-400">Activity Date / 活动日期:</span>
                     <strong id="modalActivityDate" class="text-sky-700 text-sm">-</strong>
                 </div>
-                <div class="flex justify-between py-2 border-b border-slate-100">
+                <div class="flex justify-between py-1.5 border-b border-slate-100">
                     <span class="text-slate-400">Location / 活动地点:</span>
                     <strong id="modalLocation" class="text-slate-800">-</strong>
                 </div>
-                <div class="flex justify-between py-2 border-b border-slate-100">
+                <div class="flex justify-between py-1.5 border-b border-slate-100">
                     <span class="text-slate-400">Package / 预订套餐:</span>
                     <strong id="modalPackage" class="text-slate-800">-</strong>
                 </div>
-                <div class="flex justify-between py-2 border-b border-slate-100">
+                <div class="flex justify-between py-1.5 border-b border-slate-100">
                     <span class="text-slate-400">Payment Method / 收款方式:</span>
                     <span id="modalPaymentMethod" class="text-slate-800">-</span>
                 </div>
             </div>
 
-            <div class="bg-sky-50/50 p-4 rounded-2xl border border-sky-100 text-xs mb-5 space-y-2">
+            <div class="bg-sky-50/50 p-3.5 rounded-2xl border border-sky-100 text-xs mb-4 space-y-1.5">
                 <div class="flex justify-between"><span class="text-slate-600">Total Price / 总价:</span> <span id="modalTotal" class="font-bold text-slate-900">-</span></div>
                 <div class="flex justify-between"><span class="text-slate-600">Deposit Paid / 已付定金:</span> <span id="modalDeposit" class="font-bold text-emerald-600">-</span></div>
-                <div class="flex justify-between border-t border-sky-200/60 pt-2"><span class="font-bold text-slate-700">Balance Due / 待付尾款:</span> <span id="modalBalance" class="font-bold text-rose-600 text-sm">-</span></div>
+                <div class="flex justify-between border-t border-sky-200/60 pt-1.5"><span class="font-bold text-slate-700">Balance Due / 待付尾款:</span> <span id="modalBalance" class="font-bold text-rose-600 text-sm">-</span></div>
             </div>
 
-            <div class="text-xs mb-6">
+            <div class="text-xs mb-5">
                 <span class="text-slate-400 block mb-1">Remarks & Hotel Pick-up / 备注与接送:</span>
                 <div id="modalRemarks" class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-700">-</div>
             </div>
 
-            <div class="no-print flex flex-col sm:flex-row justify-between items-center pt-4 border-t border-slate-100 gap-3">
+            <div class="no-print flex flex-col sm:flex-row justify-between items-center pt-3 border-t border-slate-100 gap-3">
                 <p class="text-[10px] text-slate-400 text-center sm:text-left">Deso_89 Operations System • Please present this voucher upon arrival.</p>
                 <div class="flex items-center gap-2 w-full sm:w-auto">
                     <button onclick="window.print()" class="flex-1 sm:flex-initial bg-sky-600 hover:bg-sky-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-md">
