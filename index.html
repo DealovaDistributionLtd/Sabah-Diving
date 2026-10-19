@@ -606,16 +606,27 @@
             const shareBtn = document.getElementById('shareImgBtn');
             const originalText = shareBtn.innerHTML;
 
+            // Temporarily override max-height and overflow so html2canvas captures the full height without truncation
+            const originalMaxHeight = voucherElement.style.maxHeight;
+            const originalOverflow = voucherElement.style.overflow;
+            voucherElement.style.maxHeight = 'none';
+            voucherElement.style.overflow = 'visible';
+
             try {
                 shareBtn.disabled = true;
-                shareBtn.innerHTML = "⏳ Generating Image / 正在生成图片...";
+                shareBtn.innerHTML = "⏳ Generating Full Image / 正在生成完整长图...";
 
-                // Temporarily hide close button or unnecessary print elements if needed
                 const canvas = await html2canvas(voucherElement, {
-                    scale: 2, // High resolution for clear text and sharing
+                    scale: 2, // High resolution for clear text
                     useCORS: true,
-                    backgroundColor: '#ffffff'
+                    backgroundColor: '#ffffff',
+                    windowWidth: voucherElement.scrollWidth,
+                    windowHeight: voucherElement.scrollHeight
                 });
+
+                // Restore styles
+                voucherElement.style.maxHeight = originalMaxHeight;
+                voucherElement.style.overflow = originalOverflow;
 
                 canvas.toBlob(async function(blob) {
                     const guestName = document.getElementById('modalName').innerText || 'Guest';
@@ -649,11 +660,13 @@
 
                     shareBtn.innerHTML = originalText;
                     shareBtn.disabled = false;
-                    alert("✅ Voucher image downloaded successfully!\n凭证图片已成功下载，您可以直接发到微信或保存转发！");
+                    alert("✅ Full voucher image generated & downloaded successfully!\n完整确认单长图已生成并下载，可直接转发至微信！");
                 }, 'image/png');
 
             } catch (err) {
                 console.error("Error generating image:", err);
+                voucherElement.style.maxHeight = originalMaxHeight;
+                voucherElement.style.overflow = originalOverflow;
                 alert("Failed to generate voucher image.");
                 shareBtn.innerHTML = originalText;
                 shareBtn.disabled = false;
