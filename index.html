@@ -33,6 +33,13 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        @media print {
+            body * { visibility: hidden; }
+            #voucherModalContent, #voucherModalContent * { visibility: visible; }
+            #voucherModalContent { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; border: none; }
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white">
@@ -80,6 +87,72 @@
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
             Sabah Diving System v3.5
+        </div>
+    </div>
+
+    <!-- IN-PAGE VOUCHER MODAL OVERLAY -->
+    <div id="voucherModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div id="voucherModalContent" class="bg-white w-full max-w-xl p-6 sm:p-8 rounded-3xl shadow-2xl border border-slate-200 relative my-8">
+            <button onclick="closeVoucherModal()" class="no-print absolute top-6 right-6 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm transition">
+                ✕
+            </button>
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-5 mb-5 gap-3">
+                <div>
+                    <h1 class="text-sm sm:text-base font-bold text-sky-700">Deso_89 | Underwater photography & Dive Guide</h1>
+                    <p class="text-[11px] text-slate-500 font-medium mt-0.5">Deso_89 | 水下摄影与潜水向导 • Official Voucher / 官方预订确认凭证</p>
+                </div>
+                <span id="modalStatus" class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold shrink-0">Confirmed</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs mb-5 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                <div><span class="text-slate-400">Guest Name / 姓名:</span> <strong id="modalName" class="text-slate-900">-</strong></div>
+                <div><span class="text-slate-400">Gender / 性别:</span> <span id="modalGender" class="text-slate-700">-</span></div>
+                <div><span class="text-slate-400">Passport / 护照号:</span> <span id="modalPassport" class="text-slate-700">-</span></div>
+                <div><span class="text-slate-400">Number of Pax / 人数:</span> <strong id="modalPax" class="text-sky-700">-</strong></div>
+            </div>
+
+            <div class="space-y-3 text-xs mb-5">
+                <div class="flex justify-between py-2 border-b border-slate-100">
+                    <span class="text-slate-400">Activity Date / 活动日期:</span>
+                    <strong id="modalActivityDate" class="text-sky-700 text-sm">-</strong>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-100">
+                    <span class="text-slate-400">Location / 活动地点:</span>
+                    <strong id="modalLocation" class="text-slate-800">-</strong>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-100">
+                    <span class="text-slate-400">Package / 预订套餐:</span>
+                    <strong id="modalPackage" class="text-slate-800">-</strong>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-100">
+                    <span class="text-slate-400">Payment Method / 收款方式:</span>
+                    <span id="modalPaymentMethod" class="text-slate-800">-</span>
+                </div>
+            </div>
+
+            <div class="bg-sky-50/50 p-4 rounded-2xl border border-sky-100 text-xs mb-5 space-y-2">
+                <div class="flex justify-between"><span class="text-slate-600">Total Price / 总价:</span> <span id="modalTotal" class="font-bold text-slate-900">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-600">Deposit Paid / 已付定金:</span> <span id="modalDeposit" class="font-bold text-emerald-600">-</span></div>
+                <div class="flex justify-between border-t border-sky-200/60 pt-2"><span class="font-bold text-slate-700">Balance Due / 待付尾款:</span> <span id="modalBalance" class="font-bold text-rose-600 text-sm">-</span></div>
+            </div>
+
+            <div class="text-xs mb-6">
+                <span class="text-slate-400 block mb-1">Remarks & Hotel Pick-up / 备注与接送:</span>
+                <div id="modalRemarks" class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-700">-</div>
+            </div>
+
+            <div class="no-print flex flex-col sm:flex-row justify-between items-center pt-4 border-t border-slate-100 gap-3">
+                <p class="text-[10px] text-slate-400 text-center sm:text-left">Deso_89 Operations System • Please present this voucher upon arrival.</p>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button onclick="window.print()" class="flex-1 sm:flex-initial bg-sky-600 hover:bg-sky-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-md">
+                        🖨️ Print / Save PDF
+                    </button>
+                    <button onclick="closeVoucherModal()" class="flex-1 sm:flex-initial bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-5 py-2.5 rounded-xl text-xs transition">
+                        Close / 关闭
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -489,77 +562,25 @@
         }
 
         function generatePDFVoucher(name, gender, passport, actDate, location, pkg, pax, total, deposit, balance, paymentMethod, status, remarks) {
-            const voucherWindow = window.open('', '_blank');
-            voucherWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Booking Voucher - ${name}</title>
-                    <script src="https://cdn.tailwindcss.com"><\/script>
-                    <style>
-                        body { background-color: #f1f5f9; margin: 0; padding: 16px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-                    </style>
-                </head>
-                <body class="font-sans text-slate-800">
-                    <div class="w-full max-w-lg bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 my-auto">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-5 mb-5 gap-3">
-                            <div>
-                                <h1 class="text-sm sm:text-base font-bold text-sky-700">Deso_89 | Underwater photography & Dive Guide</h1>
-                                <p class="text-[11px] text-slate-500 font-medium mt-0.5">Deso_89 | 水下摄影与潜水向导 • Official Voucher / 官方预订确认凭证</p>
-                            </div>
-                            <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold shrink-0">${status}</span>
-                        </div>
+            document.getElementById('modalName').innerText = name;
+            document.getElementById('modalGender').innerText = gender;
+            document.getElementById('modalPassport').innerText = passport;
+            document.getElementById('modalPax').innerText = `${pax} Pax`;
+            document.getElementById('modalActivityDate').innerText = actDate;
+            document.getElementById('modalLocation').innerText = location;
+            document.getElementById('modalPackage').innerText = pkg;
+            document.getElementById('modalPaymentMethod').innerText = paymentMethod;
+            document.getElementById('modalTotal').innerText = `RM${total}`;
+            document.getElementById('modalDeposit').innerText = `RM${deposit}`;
+            document.getElementById('modalBalance').innerText = `RM${balance}`;
+            document.getElementById('modalStatus').innerText = status;
+            document.getElementById('modalRemarks').innerText = remarks;
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs mb-5 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                            <div><span class="text-slate-400">Guest Name / 姓名:</span> <strong class="text-slate-900">${name}</strong></div>
-                            <div><span class="text-slate-400">Gender / 性别:</span> <span class="text-slate-700">${gender}</span></div>
-                            <div><span class="text-slate-400">Passport / 护照号:</span> <span class="text-slate-700">${passport}</span></div>
-                            <div><span class="text-slate-400">Number of Pax / 人数:</span> <strong class="text-sky-700">${pax} Pax</strong></div>
-                        </div>
+            document.getElementById('voucherModal').classList.remove('hidden');
+        }
 
-                        <div class="space-y-3 text-xs mb-5">
-                            <div class="flex justify-between py-2 border-b border-slate-100">
-                                <span class="text-slate-400">Activity Date / 活动日期:</span>
-                                <strong class="text-sky-700 text-sm">${actDate}</strong>
-                            </div>
-                            <div class="flex justify-between py-2 border-b border-slate-100">
-                                <span class="text-slate-400">Location / 活动地点:</span>
-                                <strong class="text-slate-800">${location}</strong>
-                            </div>
-                            <div class="flex justify-between py-2 border-b border-slate-100">
-                                <span class="text-slate-400">Package / 预订套餐:</span>
-                                <strong class="text-slate-800">${pkg}</strong>
-                            </div>
-                            <div class="flex justify-between py-2 border-b border-slate-100">
-                                <span class="text-slate-400">Payment Method / 收款方式:</span>
-                                <span class="text-slate-800">${paymentMethod}</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-sky-50/50 p-4 rounded-2xl border border-sky-100 text-xs mb-5 space-y-2">
-                            <div class="flex justify-between"><span class="text-slate-600">Total Price / 总价:</span> <span class="font-bold text-slate-900">RM${total}</span></div>
-                            <div class="flex justify-between"><span class="text-slate-600">Deposit Paid / 已付定金:</span> <span class="font-bold text-emerald-600">RM${deposit}</span></div>
-                            <div class="flex justify-between border-t border-sky-200/60 pt-2"><span class="font-bold text-slate-700">Balance Due / 待付尾款:</span> <span class="font-bold text-rose-600 text-sm">RM${balance}</span></div>
-                        </div>
-
-                        <div class="text-xs mb-6">
-                            <span class="text-slate-400 block mb-1">Remarks & Hotel Pick-up / 备注与接送:</span>
-                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-700">${remarks}</div>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row justify-between items-center pt-4 border-t border-slate-100 gap-3">
-                            <p class="text-[10px] text-slate-400 text-center sm:text-left">Deso_89 Operations System • Please present this voucher upon arrival.</p>
-                            <button onclick="window.print()" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-md print:hidden">
-                                🖨️ Print / Save as PDF
-                            </button>
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `);
-            voucherWindow.document.close();
+        function closeVoucherModal() {
+            document.getElementById('voucherModal').classList.add('hidden');
         }
 
         function editBooking(rowIndex, bookingDate, fullName, gender, passport, pax, activityDate, location, pkg, total, deposit, paymentMethod, status, remarks) {
@@ -751,7 +772,7 @@
             setTimeout(() => {
                 alert(isEditing ? "Booking updated successfully!" : "Booking saved & Google Calendar synced successfully!");
                 
-                // Automatically generate and open the voucher popup for the new/updated booking
+                // Automatically display the in-page voucher modal for the new/updated booking
                 generatePDFVoucher(fullNameInput, genderVal, passportInput, aDateVal, locationVal, pkgVal, paxVal, totalVal, depositVal, balanceVal, paymentMethodVal, statusVal, remarksVal);
 
                 resetFormMode();
