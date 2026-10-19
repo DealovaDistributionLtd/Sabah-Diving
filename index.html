@@ -171,7 +171,7 @@
                 </div>
                 <div class="flex justify-between py-1.5 border-b border-slate-100">
                     <span class="text-slate-400">Payment Method / 收款方式:</span>
-                    <span id="modalPaymentMethod" class="text-slate-800">-</strong>
+                    <span id="modalPaymentMethod" class="text-slate-800">-</span>
                 </div>
             </div>
 
@@ -256,10 +256,8 @@
                     
                     <input type="hidden" id="editRowIndex" value="">
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1.5">预定日期 (Booking Date)</label>
-                        <input type="date" id="bookingDate" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
-                    </div>
+                    <!-- 隐藏预定日期输入框，系统自动带入当天日期提交以保证后端和日历逻辑完整 -->
+                    <input type="hidden" id="bookingDate">
 
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1.5">全名 (Full Name - 中/拼音)</label>
@@ -393,7 +391,6 @@
                     <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
                         <thead>
                             <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
-                                <th class="py-3.5 px-3">预定日期</th>
                                 <th class="py-3.5 px-3">姓名 (Name)</th>
                                 <th class="py-3.5 px-3">性别</th>
                                 <th class="py-3.5 px-3">护照号</th>
@@ -495,7 +492,7 @@
             setTodayDates();
             onLocationChange();
             
-            ['bookingDate', 'activityDate'].forEach(id => {
+            ['activityDate'].forEach(id => {
                 const el = document.getElementById(id);
                 el.addEventListener('click', function() {
                     if (this.showPicker) {
@@ -694,7 +691,7 @@
 
         function editBooking(rowIndex, bookingDate, fullName, gender, passport, pax, activityDate, location, pkg, total, deposit, paymentMethod, status, remarks) {
             document.getElementById('editRowIndex').value = rowIndex;
-            document.getElementById('bookingDate').value = bookingDate;
+            document.getElementById('bookingDate').value = bookingDate || new Date().toLocaleDateString('en-CA');
             document.getElementById('fullName').value = fullName;
             document.getElementById('gender').value = gender;
             document.getElementById('passport').value = passport;
@@ -787,7 +784,7 @@
             const fullNameInput = document.getElementById('fullName').value.trim();
             const passportInput = document.getElementById('passport').value.trim().toUpperCase();
             const aDateVal = document.getElementById('activityDate').value;
-            const bDateVal = document.getElementById('bookingDate').value;
+            const bDateVal = document.getElementById('bookingDate').value || new Date().toLocaleDateString('en-CA');
             const genderVal = document.getElementById('gender').value;
             const paxVal = document.getElementById('pax').value;
             const locationVal = document.getElementById('location').value;
@@ -797,11 +794,6 @@
             const balanceVal = document.getElementById('balanceDue').value;
             const paymentMethodVal = document.getElementById('paymentMethod').value;
             const statusVal = document.getElementById('status').value;
-
-            if (aDateVal < bDateVal) {
-                alert("⚠️ Warning: Activity Date cannot be earlier than Booking Date!");
-                return;
-            }
 
             if (!isEditing) {
                 const duplicateFound = bookings.some(b => {
@@ -912,7 +904,6 @@
             });
 
             // SORTING: Sort bookings by Activity Date (Upcoming / Newest first, past dates further down)
-            // If activity dates match, sort by row index descending (newly entered bookings on top)
             filtered.sort((a, b) => {
                 const dateA = (a["Activity Date"] || '').toString().replace(/^'/, '').trim();
                 const dateB = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
@@ -924,7 +915,7 @@
             });
 
             if (!filtered || filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="15" class="py-8 text-center text-slate-400 text-sm">No matching bookings found. 暂无符合条件的预订记录。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="14" class="py-8 text-center text-slate-400 text-sm">No matching bookings found. 暂无符合条件的预订记录。</td></tr>`;
                 return;
             }
 
@@ -956,7 +947,6 @@
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80 transition">
-                        <td class="py-3.5 px-3 text-slate-600">${cleanBookingDate}</td>
                         <td class="py-3.5 px-3 font-bold text-slate-900">${name}</td>
                         <td class="py-3.5 px-3 text-slate-500">${gender}</td>
                         <td class="py-3.5 px-3 text-slate-500">${passport}</td>
