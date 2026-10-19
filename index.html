@@ -489,34 +489,34 @@
         }
 
         function generatePDFVoucher(name, gender, passport, actDate, location, pkg, pax, total, deposit, balance, paymentMethod, status, remarks) {
-            const voucherWindow = window.open('', '_blank', 'width=800,height=900');
+            const voucherWindow = window.open('', '_blank');
             voucherWindow.document.write(`
                 <!DOCTYPE html>
                 <html>
                 <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>Booking Voucher - ${name}</title>
                     <script src="https://cdn.tailwindcss.com"><\/script>
                 </head>
-                <body class="bg-slate-100 p-8 text-slate-800 font-sans">
-                    <div class="max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-xl border border-slate-200">
-                        <div class="flex justify-between items-center border-b border-slate-100 pb-6 mb-6">
+                <body class="bg-slate-100 p-4 sm:p-8 text-slate-800 font-sans min-h-screen flex items-center justify-center">
+                    <div class="w-full max-w-xl mx-auto bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-5 mb-5 gap-3">
                             <div>
-                                <h1 class="text-xl font-bold text-sky-700">🌊 Sabah Professional Diving</h1>
-                                <p class="text-xs text-slate-400 mt-0.5">Official Booking & Activity Voucher / 官方预订确认凭证</p>
+                                <h1 class="text-base sm:text-lg font-bold text-sky-700">Deso_89 | Underwater photography & Dive Guide</h1>
+                                <p class="text-xs text-slate-500 font-medium mt-0.5">Deso_89 | 水下摄影与潜水向导 • Official Voucher / 官方预订确认凭证</p>
                             </div>
-                            <div class="text-right">
-                                <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold">${status}</span>
-                            </div>
+                            <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold shrink-0">${status}</span>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4 text-xs mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs mb-5 bg-slate-50 p-4 rounded-2xl border border-slate-100">
                             <div><span class="text-slate-400">Guest Name / 姓名:</span> <strong class="text-slate-900">${name}</strong></div>
                             <div><span class="text-slate-400">Gender / 性别:</span> <span class="text-slate-700">${gender}</span></div>
                             <div><span class="text-slate-400">Passport / 护照号:</span> <span class="text-slate-700">${passport}</span></div>
                             <div><span class="text-slate-400">Number of Pax / 人数:</span> <strong class="text-sky-700">${pax} Pax</strong></div>
                         </div>
 
-                        <div class="space-y-3 text-xs mb-6">
+                        <div class="space-y-3 text-xs mb-5">
                             <div class="flex justify-between py-2 border-b border-slate-100">
                                 <span class="text-slate-400">Activity Date / 活动日期:</span>
                                 <strong class="text-sky-700 text-sm">${actDate}</strong>
@@ -535,20 +535,20 @@
                             </div>
                         </div>
 
-                        <div class="bg-sky-50/50 p-4 rounded-2xl border border-sky-100 text-xs mb-6 space-y-2">
+                        <div class="bg-sky-50/50 p-4 rounded-2xl border border-sky-100 text-xs mb-5 space-y-2">
                             <div class="flex justify-between"><span class="text-slate-600">Total Price / 总价:</span> <span class="font-bold text-slate-900">RM${total}</span></div>
                             <div class="flex justify-between"><span class="text-slate-600">Deposit Paid / 已付定金:</span> <span class="font-bold text-emerald-600">RM${deposit}</span></div>
                             <div class="flex justify-between border-t border-sky-200/60 pt-2"><span class="font-bold text-slate-700">Balance Due / 待付尾款:</span> <span class="font-bold text-rose-600 text-sm">RM${balance}</span></div>
                         </div>
 
-                        <div class="text-xs mb-8">
+                        <div class="text-xs mb-6">
                             <span class="text-slate-400 block mb-1">Remarks & Hotel Pick-up / 备注与接送:</span>
                             <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-700">${remarks}</div>
                         </div>
 
-                        <div class="flex justify-between items-center pt-4 border-t border-slate-100">
-                            <p class="text-[10px] text-slate-400">Sabah Diving Operations System • Please present this voucher upon arrival.</p>
-                            <button onclick="window.print()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-5 py-2 rounded-xl text-xs transition shadow-md print:hidden">
+                        <div class="flex flex-col sm:flex-row justify-between items-center pt-4 border-t border-slate-100 gap-3">
+                            <p class="text-[10px] text-slate-400 text-center sm:text-left">Deso_89 Operations System • Please present this voucher upon arrival.</p>
+                            <button onclick="window.print()" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-md print:hidden">
                                 🖨️ Print / Save as PDF
                             </button>
                         </div>
@@ -653,6 +653,15 @@
             const passportInput = document.getElementById('passport').value.trim().toUpperCase();
             const aDateVal = document.getElementById('activityDate').value;
             const bDateVal = document.getElementById('bookingDate').value;
+            const genderVal = document.getElementById('gender').value;
+            const paxVal = document.getElementById('pax').value;
+            const locationVal = document.getElementById('location').value;
+            const pkgVal = document.getElementById('packageType').value;
+            const totalVal = document.getElementById('totalPrice').value;
+            const depositVal = document.getElementById('depositPaid').value;
+            const balanceVal = document.getElementById('balanceDue').value;
+            const paymentMethodVal = document.getElementById('paymentMethod').value;
+            const statusVal = document.getElementById('status').value;
 
             // 2. Smart Form Validation: Check Activity Date vs Booking Date
             if (aDateVal < bDateVal) {
@@ -710,17 +719,17 @@
                 "Timestamp": new Date().toISOString(),
                 "Booking Date": bDateVal,
                 "Full Name": fullNameInput,
-                "Gender": document.getElementById('gender').value,
+                "Gender": genderVal,
                 "Passport": passportInput,
-                "Pax": document.getElementById('pax').value,
+                "Pax": paxVal,
                 "Activity Date": aDateVal,
-                "Location": document.getElementById('location').value,
-                "Package": document.getElementById('packageType').value,
-                "Total Price": document.getElementById('totalPrice').value,
-                "Deposit Paid": document.getElementById('depositPaid').value,
-                "Balance Due": document.getElementById('balanceDue').value,
-                "Payment Method": document.getElementById('paymentMethod').value,
-                "Status": document.getElementById('status').value,
+                "Location": locationVal,
+                "Package": pkgVal,
+                "Total Price": totalVal,
+                "Deposit Paid": depositVal,
+                "Balance Due": balanceVal,
+                "Payment Method": paymentMethodVal,
+                "Status": statusVal,
                 "Remarks": remarksVal
             };
 
@@ -738,6 +747,10 @@
 
             setTimeout(() => {
                 alert(isEditing ? "Booking updated successfully!" : "Booking saved & Google Calendar synced successfully!");
+                
+                // Automatically generate and open the voucher popup for the new/updated booking
+                generatePDFVoucher(fullNameInput, genderVal, passportInput, aDateVal, locationVal, pkgVal, paxVal, totalVal, depositVal, balanceVal, paymentMethodVal, statusVal, remarksVal);
+
                 resetFormMode();
                 fetchBookings();
                 submitBtn.disabled = false;
