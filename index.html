@@ -169,7 +169,7 @@
                 </div>
                 <div class="flex justify-between py-1.5 border-b border-slate-100">
                     <span class="text-slate-400">Payment Method / 收款方式:</span>
-                    <span id="modalPaymentMethod" class="text-slate-800">-</strong>
+                    <span id="modalPaymentMethod" class="text-slate-800">-</span>
                 </div>
             </div>
 
@@ -184,13 +184,18 @@
                 <div id="modalRemarks" class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-700">-</div>
             </div>
 
-            <div class="no-print flex flex-col sm:flex-row justify-between items-center pt-3 border-t border-slate-100 gap-3">
-                <p class="text-[10px] text-slate-400 text-center sm:text-left">Deso_89 Operations System • Please present this voucher upon arrival.</p>
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <button onclick="window.print()" class="flex-1 sm:flex-initial bg-sky-600 hover:bg-sky-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-md">
+            <div class="no-print flex flex-col gap-3 pt-3 border-t border-slate-100">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <button onclick="shareModalBooking()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-1.5">
+                        💬 Copy Confirmation Text / 复制客户确认单
+                    </button>
+                    <button onclick="window.print()" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-1.5">
                         🖨️ Print / Save PDF
                     </button>
-                    <button onclick="closeVoucherModal()" class="flex-1 sm:flex-initial bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-5 py-2.5 rounded-xl text-xs transition">
+                </div>
+                <div class="flex justify-between items-center">
+                    <p class="text-[10px] text-slate-400">Deso_89 Operations System</p>
+                    <button onclick="closeVoucherModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-5 py-2 rounded-xl text-xs transition">
                         Close / 关闭
                     </button>
                 </div>
@@ -594,7 +599,17 @@
             renderTable();
         }
 
-        function shareBooking(name, actDate, location, pkg, pax, total, balance, status, remarks) {
+        function shareModalBooking() {
+            const name = document.getElementById('modalName').innerText;
+            const pax = document.getElementById('modalPax').innerText.replace(' Pax', '');
+            const actDate = document.getElementById('modalActivityDate').innerText;
+            const location = document.getElementById('modalLocation').innerText;
+            const pkg = document.getElementById('modalPackage').innerText;
+            const remarks = document.getElementById('modalRemarks').innerText;
+            const total = document.getElementById('modalTotal').innerText.replace('RM', '');
+            const balance = document.getElementById('modalBalance').innerText.replace('RM', '');
+            const status = document.getElementById('modalStatus').innerText;
+
             const message = 
 `🌊 【沙巴潜水预定确认单 / Sabah Diving Confirmation】
 -----------------------------------
@@ -908,9 +923,6 @@
                         <td class="py-3.5 px-3"><span class="${badgeClass}">${rawStatus}</span></td>
                         <td class="py-3.5 px-3 text-slate-500 truncate max-w-[150px]" title="${remarks}">${remarks}</td>
                         <td class="py-3.5 px-3 text-center flex items-center justify-center gap-1.5">
-                            <button onclick="shareBooking('${name.replace(/'/g, "\\'")}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${balance}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Copy confirmation message">
-                                💬 Share
-                            </button>
                             <button onclick="generatePDFVoucher('${name.replace(/'/g, "\\'")}', '${gender}', '${passport}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${deposit}', '${balance}', '${paymentMethod}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Generate printable booking voucher">
                                 📄 Voucher
                             </button>
