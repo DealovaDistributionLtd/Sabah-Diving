@@ -1,0 +1,6 @@
+name = "sabah-diving-bridge"
+compatibility_date = "2026-01-01"
+
+[assets]
+directory = "."
+binding = "ASSETS"
