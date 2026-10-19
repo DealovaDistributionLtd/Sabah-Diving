@@ -498,13 +498,16 @@
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>Booking Voucher - ${name}</title>
                     <script src="https://cdn.tailwindcss.com"><\/script>
+                    <style>
+                        body { background-color: #f1f5f9; margin: 0; padding: 16px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+                    </style>
                 </head>
-                <body class="bg-slate-100 p-4 sm:p-8 text-slate-800 font-sans min-h-screen flex items-center justify-center">
-                    <div class="w-full max-w-xl mx-auto bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200">
+                <body class="font-sans text-slate-800">
+                    <div class="w-full max-w-lg bg-white p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-200 my-auto">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-5 mb-5 gap-3">
                             <div>
-                                <h1 class="text-base sm:text-lg font-bold text-sky-700">Deso_89 | Underwater photography & Dive Guide</h1>
-                                <p class="text-xs text-slate-500 font-medium mt-0.5">Deso_89 | 水下摄影与潜水向导 • Official Voucher / 官方预订确认凭证</p>
+                                <h1 class="text-sm sm:text-base font-bold text-sky-700">Deso_89 | Underwater photography & Dive Guide</h1>
+                                <p class="text-[11px] text-slate-500 font-medium mt-0.5">Deso_89 | 水下摄影与潜水向导 • Official Voucher / 官方预订确认凭证</p>
                             </div>
                             <span class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold shrink-0">${status}</span>
                         </div>
