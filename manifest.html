@@ -1,247 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Boat Manifest & Operations | 每日出海船期与调度中心</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .light-panel { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .light-input { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; }
-        #mobileDrawer { transition: transform 0.3s ease-in-out; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Boat Manifest & Operations | 每日出海船期与调度中心</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .light-panel { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .light-input { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; }
+        #mobileDrawer { transition: transform 0.3s ease-in-out; }
+    </style>
 </head>
 <body class="text-slate-800 min-h-screen antialiased selection:bg-cyan-500 selection:text-white">
 
-    <div id="drawerOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+    <div id="drawerOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-opacity"></div>
 
-    <!-- HAMBURGER DRAWER -->
-    <div id="mobileDrawer" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full">
-        <div>
-            <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-cyan-600 flex items-center justify-center text-lg text-white shadow-md">🌊</div>
-                    <div><h2 class="font-bold text-slate-900 text-sm">Sabah Operations</h2><p class="text-[10px] text-slate-400">Navigation Menu</p></div>
-                </div>
-                <button onclick="toggleMenu()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">✕</button>
-            </div>
-            <nav class="space-y-2">
-                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📋</span> Master Bookings / 预订总表</a>
-                <a href="manifest.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-sky-50 text-sky-700 font-bold text-xs shadow-sm"><span>🚤</span> Daily Manifest / 每日船期清单</a>
-                <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📅</span> Master Calendar / 全屏日程表</a>
-                <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📈</span> Financial Ledger / 财务利润报表</a>
-                <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>💰</span> Assistant Commission / 助理提成</a>
-            </nav>
-        </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.2</div>
-    </div>
+    <!-- HAMBURGER DRAWER -->
+    <div id="mobileDrawer" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full">
+        <div>
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-cyan-600 flex items-center justify-center text-lg text-white shadow-md">🌊</div>
+                    <div><h2 class="font-bold text-slate-900 text-sm">Sabah Operations</h2><p class="text-[10px] text-slate-400">Navigation Menu</p></div>
+                </div>
+                <button onclick="toggleMenu()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">✕</button>
+            </div>
+            <nav class="space-y-2">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📋</span> Master Bookings / 预订总表</a>
+                <a href="manifest.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-sky-50 text-sky-700 font-bold text-xs shadow-sm"><span>🚤</span> Daily Manifest / 每日船期清单</a>
+                <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📅</span> Master Calendar / 全屏日程表</a>
+                <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📈</span> Financial Ledger / 财务利润报表</a>
+                <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>💰</span> Assistant Commission / 助理提成</a>
+            </nav>
+        </div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.2</div>
+    </div>
 
-    <div class="max-w-[95%] md:max-w-[92%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
-        <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 light-panel p-5 sm:p-6 rounded-3xl gap-4">
-            <div class="flex items-center gap-3.5">
-                <button onclick="toggleMenu()" class="p-2.5 rounded-2xl light-input hover:border-sky-400 text-slate-700 transition flex items-center justify-center shadow-sm">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">🚤</div>
-                <div>
-                    <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Daily Boat & Island Manifest</h1>
-                    <p class="text-slate-500 text-xs mt-0.5">每日出海船期、酒店接送与潜水员调度指挥中心</p>
-                </div>
-            </div>
-            
-            <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-                <input type="date" id="manifestDateFilter" onchange="renderManifest()" class="light-input rounded-xl px-3.5 py-2 text-xs font-bold cursor-pointer">
-                <button onclick="copyCaptainText()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm flex items-center gap-1.5">
-                    <span>🚤</span> Copy Captain Text
-                </button>
-                <button onclick="copyDriverText()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm flex items-center gap-1.5">
-                    <span>🚐</span> Copy Driver Text
-                </button>
-            </div>
-        </header>
+    <div class="max-w-[95%] md:max-w-[92%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
+        <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 light-panel p-5 sm:p-6 rounded-3xl gap-4">
+            <div class="flex items-center gap-3.5">
+                <button onclick="toggleMenu()" class="p-2.5 rounded-2xl light-input hover:border-sky-400 text-slate-700 transition flex items-center justify-center shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">🚤</div>
+                <div>
+                    <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Daily Boat & Island Manifest</h1>
+                    <p class="text-slate-500 text-xs mt-0.5">每日出海船期、酒店接送与潜水员调度指挥中心</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
+                <input type="date" id="manifestDateFilter" onchange="renderManifest()" class="light-input rounded-xl px-3.5 py-2 text-xs font-bold cursor-pointer">
+                <button onclick="copyCaptainText()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm flex items-center gap-1.5">
+                    <span>🚤</span> Copy Captain Text
+                </button>
+                <button onclick="copyDriverText()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm flex items-center gap-1.5">
+                    <span>🚐</span> Copy Driver Text
+                </button>
+            </div>
+        </header>
 
-        <!-- Morning Hotel Pickup Summary Strip -->
-        <div class="light-panel p-5 rounded-3xl mb-6 space-y-3">
-            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                <span>🏨</span> Morning Hotel Pick-up Summary / 晨间酒店接送汇总
-            </h2>
-            <div id="hotelSummaryStrip" class="flex flex-wrap gap-2">
-                <!-- Populated dynamically -->
-            </div>
-        </div>
+        <!-- Morning Hotel Pickup Summary Strip -->
+        <div class="light-panel p-5 rounded-3xl mb-6 space-y-3">
+            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                <span>🏨</span> Morning Hotel Pick-up Summary / 晨间酒店接送汇总
+            </h2>
+            <div id="hotelSummaryStrip" class="flex flex-wrap gap-2">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
 
-        <!-- Location Cards Grid -->
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6" id="manifestContainer">
-            <!-- Dynamic Location Manifest Cards Populated Here -->
-        </div>
-    </div>
+        <!-- Location Cards Grid -->
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6" id="manifestContainer">
+            <!-- Dynamic Location Manifest Cards Populated Here -->
+        </div>
+    </div>
 
-    <script>
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
-        let allBookings = [];
+    <script>
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
+        let allBookings = [];
 
-        function toggleMenu() {
-            const drawer = document.getElementById('mobileDrawer');
-            const overlay = document.getElementById('drawerOverlay');
-            drawer.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
-        }
+        function toggleMenu() {
+            const drawer = document.getElementById('mobileDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            drawer.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
 
-        window.onload = function() {
-            document.getElementById('manifestDateFilter').value = new Date().toLocaleDateString('en-CA');
-            fetchData();
-        };
+        window.onload = function() {
+            document.getElementById('manifestDateFilter').value = new Date().toLocaleDateString('en-CA');
+            fetchData();
+        };
 
-        async function fetchData() {
-            try {
-                const res = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
-                allBookings = await res.json();
-                renderManifest();
-            } catch (e) {
-                console.error(e);
-            }
-        }
+        async function fetchData() {
+            try {
+                const res = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
+                allBookings = await res.json();
+                renderManifest();
+            } catch (e) {
+                console.error(e);
+            }
+        }
 
-        function renderManifest() {
-            const selectedDate = document.getElementById('manifestDateFilter').value;
-            const container = document.getElementById('manifestContainer');
-            container.innerHTML = '';
+        function renderManifest() {
+            const selectedDate = document.getElementById('manifestDateFilter').value;
+            const container = document.getElementById('manifestContainer');
+            container.innerHTML = '';
 
-            const locations = [
-                { name: "Semporna & Bum Bum", icon: "🏝️", zh: "仙本那 / 邦邦岛" },
-                { name: "Tun Sakaran Marine Park", icon: "🐠", zh: "敦沙卡兰海洋公园" },
-                { name: "Dreamer Island (淘梦岛)", icon: "🏖️", zh: "淘梦岛" },
-                { name: "Kota Kinabalu", icon: "🏙️", zh: "亚庇" }
-            ];
+            const locations = [
+                { name: "Semporna & Bum Bum", icon: "🏝️", zh: "仙本那 / 邦邦岛" },
+                { name: "Tun Sakaran Marine Park", icon: "🐠", zh: "敦沙卡兰海洋公园" },
+                { name: "Dreamer Island (淘梦岛)", icon: "🏖️", zh: "淘梦岛" },
+                { name: "Kota Kinabalu", icon: "🏙️", zh: "亚庇" }
+            ];
 
-            let allHotelStops = {};
-            let totalDiversToday = 0;
+            let allHotelStops = {};
 
-            locations.forEach(loc => {
-                const divers = allBookings.filter(b => {
-                    const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
-                    const status = (b["Status"] || '').toLowerCase();
-                    const bLoc = (b["Location"] || '').toLowerCase();
-                    return actDate === selectedDate && bLoc.includes(loc.name.toLowerCase().split(' ')[0]) && !status.includes('cancelled');
-                });
+            locations.forEach(loc => {
+                const divers = allBookings.filter(b => {
+                    const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                    const status = (b["Status"] || '').toLowerCase();
+                    const bLoc = (b["Location"] || '').toLowerCase();
+                    return actDate === selectedDate && bLoc.includes(loc.name.toLowerCase().split(' ')[0]) && !status.includes('cancelled');
+                });
 
-                totalDiversToday += divers.reduce((sum, b) => sum + (parseInt(b["Pax"]) || 1), 0);
+                let cardsHTML = '';
+                if (divers.length === 0) {
+                    cardsHTML = `<p class="text-xs text-slate-400 italic py-6 text-center">No divers scheduled.</p>`;
+                } else {
+                    divers.forEach(d => {
+                        const hotelMatch = (d["Remarks"] || '').match(/\[Hotel Pick-up \/ 酒店接送: (.*?)\]/);
+                        const hotelName = hotelMatch ? hotelMatch[1] : null;
+                        const cleanRemarks = (d["Remarks"] || '').replace(/\[Hotel Pick-up \/ 酒店接送:.*?\]/, '').replace(/^ - /, '').trim();
 
-                let cardsHTML = '';
-                if (divers.length === 0) {
-                    cardsHTML = `<p class="text-xs text-slate-400 italic py-6 text-center">No divers scheduled.</p>`;
-                } else {
-                    divers.forEach(d => {
-                        const hotelMatch = (d["Remarks"] || '').match(/\[Hotel Pick-up \/ 酒店接送: (.*?)\]/);
-                        const hotelName = hotelMatch ? hotelMatch[1] : null;
-                        const cleanRemarks = (d["Remarks"] || '').replace(/\[Hotel Pick-up \/ 酒店接送:.*?\]/, '').replace(/^ - /, '').trim();
+                        if (hotelName) {
+                            if (!allHotelStops[hotelName]) allHotelStops[hotelName] = 0;
+                            allHotelStops[hotelName] += parseInt(d["Pax"]) || 1;
+                        }
 
-                        if (hotelName) {
-                            if (!allHotelStops[hotelName]) allHotelStops[hotelName] = 0;
-                            allHotelStops[hotelName] += parseInt(d["Pax"]) || 1;
-                        }
+                        cardsHTML += `
+                            <div class="light-input p-3.5 rounded-2xl border-slate-200 text-xs space-y-2 shadow-sm">
+                                <div class="flex justify-between items-center font-bold text-slate-900">
+                                    <span>👤 ${d["Full Name"]} (${d["Pax"]} Pax)</span>
+                                    <span class="text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200">${d["Package"]}</span>
+                                </div>
+                                <div class="text-slate-600">🏨 <b>Pick-up:</b> ${hotelName || '<span class="text-slate-400 italic">Self-arrival / 自行前往</span>'}</div>
+                                <div class="text-slate-500 text-[11px]">📌 <b>Notes:</b> ${cleanRemarks || 'None'}</div>
+                                <div class="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[11px]">
+                                    <span class="text-slate-500">Gender/Pass: ${d["Gender"] || 'N/A'}</span>
+                                    <span class="font-bold text-emerald-600">${d["Payment Method"] || 'Cash'}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
 
-                        cardsHTML += `
-                            <div class="light-input p-3.5 rounded-2xl border-slate-200 text-xs space-y-2 shadow-sm">
-                                <div class="flex justify-between items-center font-bold text-slate-900">
-                                    <span>👤 ${d["Full Name"]} (${d["Pax"]} Pax)</span>
-                                    <span class="text-sky-700 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200">${d["Package"]}</span>
-                                </div>
-                                <div class="text-slate-600">🏨 <b>Pick-up:</b> ${hotelName || '<span class="text-slate-400 italic">Self-arrival / 自行前往</span>'}</div>
-                                <div class="text-slate-500 text-[11px]">📌 <b>Notes:</b> ${cleanRemarks || 'None'}</div>
-                                <div class="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[11px]">
-                                    <span class="text-slate-500">Gender/Pass: ${d["Gender"] || 'N/A'}</span>
-                                    <span class="font-bold text-emerald-600">${d["Payment Method"] || 'Cash'}</span>
-                                </div>
-                            </div>
-                        `;
-                    });
-                }
+                container.innerHTML += `
+                    <div class="light-panel p-6 rounded-3xl flex flex-col space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                            <h2 class="font-bold text-slate-900 flex items-center gap-2 text-xs sm:text-sm"><span>${loc.icon}</span> ${loc.name}</h2>
+                            <span class="text-[11px] font-bold text-sky-700 bg-sky-50 px-2.5 py-1 rounded-xl border border-sky-200">${divers.reduce((sum, b) => sum + (parseInt(b["Pax"])||1), 0)} Pax</span>
+                        </div>
+                        <div class="space-y-3 flex-1 overflow-y-auto max-h-[480px] pr-1">
+                            ${cardsHTML}
+                        </div>
+                    </div>
+                `;
+            });
 
-                container.innerHTML += `
-                    <div class="light-panel p-6 rounded-3xl flex flex-col space-y-4">
-                        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                            <h2 class="font-bold text-slate-900 flex items-center gap-2 text-xs sm:text-sm"><span>${loc.icon}</span> ${loc.name}</h2>
-                            <span class="text-[11px] font-bold text-sky-700 bg-sky-50 px-2.5 py-1 rounded-xl border border-sky-200">${divers.reduce((sum, b) => sum + (parseInt(b["Pax"])||1), 0)} Pax</span>
-                        </div>
-                        <div class="space-y-3 flex-1 overflow-y-auto max-h-[480px] pr-1">
-                            ${cardsHTML}
-                        </div>
-                    </div>
-                `;
-            });
+            const hotelStrip = document.getElementById('hotelSummaryStrip');
+            hotelStrip.innerHTML = '';
+            const hotelKeys = Object.keys(allHotelStops);
+            if (hotelKeys.length === 0) {
+                hotelStrip.innerHTML = `<span class="text-xs text-slate-400 italic">No hotel pickups requested for this date.</span>`;
+            } else {
+                hotelKeys.forEach(hotel => {
+                    hotelStrip.innerHTML += `
+                        <div class="bg-sky-50 border border-sky-200 text-sky-800 text-xs font-semibold px-3 py-1.5 rounded-xl shadow-xs">
+                            🏨 ${hotel}: <b class="text-sky-900">${allHotelStops[hotel]} Pax</b>
+                        </div>
+                    `;
+                });
+            }
+        }
 
-            // Populate Hotel Summary Strip
-            const hotelStrip = document.getElementById('hotelSummaryStrip');
-            hotelStrip.innerHTML = '';
-            const hotelKeys = Object.keys(allHotelStops);
-            if (hotelKeys.length === 0) {
-                hotelStrip.innerHTML = `<span class="text-xs text-slate-400 italic">No hotel pickups requested for this date.</span>`;
-            } else {
-                hotelKeys.forEach(hotel => {
-                    hotelStrip.innerHTML += `
-                        <div class="bg-sky-50 border border-sky-200 text-sky-800 text-xs font-semibold px-3 py-1.5 rounded-xl shadow-xs">
-                            🏨 ${hotel}: <b class="text-sky-900">${allHotelStops[hotel]} Pax</b>
-                        </div>
-                    `;
-                });
-            }
-        }
+        function copyCaptainText() {
+            const date = document.getElementById('manifestDateFilter').value;
+            let text = `🚤 【沙巴出海船长群通知 / Captain Manifest - ${date}】\n-----------------------------------\n`;
+            
+            const locations = ["Semporna", "Tun Sakaran", "Dreamer Island", "Kota Kinabalu"];
+            locations.forEach(loc => {
+                const divers = allBookings.filter(b => {
+                    const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                    const status = (b["Status"] || '').toLowerCase();
+                    return actDate === date && (b["Location"] || '').toLowerCase().includes(loc.toLowerCase().split(' ')[0]) && !status.includes('cancelled');
+                });
+                if (divers.length > 0) {
+                    text += `\n📍 ${loc} (${divers.reduce((s,b)=>s+(parseInt(b["Pax"])||1),0)} Pax Total):\n`;
+                    divers.forEach(d => {
+                        const hMatch = (d["Remarks"]||'').match(/\[Hotel Pick-up \/ 酒店接送: (.*?)\]/);
+                        const hName = hMatch ? hMatch[1] : 'Self-arrival';
+                        text += ` - ${d["Full Name"]} (${d["Pax"]}p) | ${d["Package"]} | 🏨 ${hName}\n`;
+                    });
+                }
+            });
+            text += `\n💡 请各位船长与向导提前检查装备及氧气瓶！`;
+            
+            navigator.clipboard.writeText(text).then(() => alert("✅ Captain manifest copied to clipboard!"));
+        }
 
-        function copyCaptainText() {
-            const date = document.getElementById('manifestDateFilter').value;
-            let text = `🚤 【沙巴出海船长群通知 / Captain Manifest - ${date}】\n-----------------------------------\n`;
-            
-            const locations = ["Semporna", "Tun Sakaran", "Dreamer Island", "Kota Kinabalu"];
-            locations.forEach(loc => {
-                const divers = allBookings.filter(b => {
-                    const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
-                    const status = (b["Status"] || '').toLowerCase();
-                    return actDate === date && (b["Location"] || '').toLowerCase().includes(loc.toLowerCase().split(' ')[0]) && !status.includes('cancelled');
-                });
-                if (divers.length > 0) {
-                    text += `\n📍 ${loc} (${divers.reduce((s,b)=>s+(parseInt(b["Pax"])||1),0)} Pax Total):\n`;
-                    divers.forEach(d => {
-                        const hMatch = (d["Remarks"]||'').match(/\[Hotel Pick-up \/ 酒店接送: (.*?)\]/);
-                        const hName = hMatch ? hMatch[1] : 'Self-arrival';
-                        text += ` - ${d["Full Name"]} (${d["Pax"]}p) | ${d["Package"]} | 🏨 ${hName}\n`;
-                    });
-                }
-            });
-            text += `\n💡 请各位船长与向导提前检查装备及氧气瓶！`;
-            
-            navigator.clipboard.writeText(text).then(() => alert("✅ Captain manifest copied to clipboard!"));
-        }
+        function copyDriverText() {
+            const date = document.getElementById('manifestDateFilter').value;
+            let text = `🚐 【沙巴司机接送群通知 / Driver Pickup Manifest - ${date}】\n-----------------------------------\n`;
+            
+            let pickupCount = 0;
+            allBookings.forEach(b => {
+                const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                const status = (b["Status"] || '').toLowerCase();
+                const remarks = b["Remarks"] || '';
+                const hMatch = remarks.match(/\[Hotel Pick-up \/ 酒店接送: (.*?)\]/);
+                
+                if (actDate === date && !status.includes('cancelled') && hMatch) {
+                    pickupCount++;
+                    text += `\n👤 ${b["Full Name"]} (${b["Pax"]}p)\n`;
+                    text += `    🏨 酒店: ${hMatch[1]}\n`;
+                    text += `    📍 地点: ${b["Location"]}\n`;
+                }
+            });
 
-        function copyDriverText() {
-            const date = document.getElementById('manifestDateFilter').value;
-            let text = `🚐 【沙巴司机接送群通知 / Driver Pickup Manifest - ${date}】\n-----------------------------------\n`;
-            
-            let pickupCount = 0;
-            allBookings.forEach(b => {
-                const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
-                const status = (b["Status"] || '').toLowerCase();
-                const remarks = b["Remarks"] || '';
-                const hMatch = remarks.match(/\[Hotel Pick-up \/ 酒店接送: (.*?)\]/);
-                
-                if (actDate === date && !status.includes('cancelled') && hMatch) {
-                    pickupCount++;
-                    text += `\n👤 ${b["Full Name"]} (${b["Pax"]}p)\n`;
-                    text += `   🏨 酒店: ${hMatch[1]}\n`;
-                    text += `   📍 地点: ${b["Location"]}\n`;
-                }
-            });
-
-            if (pickupCount === 0) {
-                text += `\n(No hotel pickups scheduled for this date.)`;
-            } else {
-                text += `\n💡 请各位司机准时前往指定酒店接送贵宾！`;
-            }
-            
-            navigator.clipboard.writeText(text).then(() => alert("✅ Driver pickup manifest copied to clipboard!"));
-        }
-    </script>
+            if (pickupCount === 0) {
+                text += `\n(No hotel pickups scheduled for this date.)`;
+            } else {
+                text += `\n💡 请各位司机准时前往指定酒店接送贵宾！`;
+            }
+            
+            navigator.clipboard.writeText(text).then(() => alert("✅ Driver pickup manifest copied to clipboard!"));
+        }
+    </script>
 </body>
 </html>
