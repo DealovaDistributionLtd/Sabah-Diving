@@ -10,7 +10,44 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .light-panel { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .light-input { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; }
+        .light-input:focus { border-color: #0284c7; background: #ffffff; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
         #mobileDrawer { transition: transform 0.3s ease-in-out; }
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body > * { display: none !important; }
+            #voucherModal {
+                display: block !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                background: white !important;
+                backdrop-filter: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                z-index: 99999 !important;
+                overflow: visible !important;
+            }
+            #voucherModalContent {
+                box-shadow: none !important;
+                border: none !important;
+                max-height: none !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 10px !important;
+                margin: 0 !important;
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
+            }
+            .no-print { display: none !important; }
+            @page { size: portrait; margin: 10mm; }
+        }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen antialiased selection:bg-cyan-500 selection:text-white">
@@ -35,7 +72,67 @@
                 <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>💰</span> Assistant Commission / 助理提成</a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.2</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.5</div>
+    </div>
+
+    <!-- IN-PAGE VOUCHER MODAL OVERLAY -->
+    <div id="voucherModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div id="voucherModalContent" class="bg-white w-full max-w-xl p-5 sm:p-8 rounded-3xl shadow-2xl border border-slate-200 relative my-auto max-h-[90vh] overflow-y-auto">
+            <button onclick="closeVoucherModal()" class="no-print absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm transition">✕</button>
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-4 mb-4 gap-2">
+                <div>
+                    <h1 class="text-sm sm:text-base font-bold text-sky-700">Deso_89 | Underwater photography & Dive Guide</h1>
+                    <p class="text-[11px] text-slate-500 font-medium mt-0.5">Deso_89 | 水下摄影与潜水向导 • Official Voucher / 官方预订确认凭证</p>
+                </div>
+                <span id="modalStatus" class="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold shrink-0">Confirmed</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs mb-4 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                <div><span class="text-slate-400">Guest Name / 姓名:</span> <strong id="modalName" class="text-slate-900">-</strong></div>
+                <div><span class="text-slate-400">Gender / 性别:</span> <span id="modalGender" class="text-slate-700">-</span></div>
+                <div><span class="text-slate-400">Passport / 护照号:</span> <span id="modalPassport" class="text-slate-700">-</span></div>
+                <div><span class="text-slate-400">Number of Pax / 人数:</span> <strong id="modalPax" class="text-sky-700">-</strong></div>
+            </div>
+
+            <div class="space-y-2.5 text-xs mb-4">
+                <div class="flex justify-between py-1.5 border-b border-slate-100">
+                    <span class="text-slate-400">Activity Date / 活动日期:</span>
+                    <strong id="modalActivityDate" class="text-sky-700 text-sm">-</strong>
+                </div>
+                <div class="flex justify-between py-1.5 border-b border-slate-100">
+                    <span class="text-slate-400">Location / 活动地点:</span>
+                    <strong id="modalLocation" class="text-slate-800">-</strong>
+                </div>
+                <div class="flex justify-between py-1.5 border-b border-slate-100">
+                    <span class="text-slate-400">Package / 预订套餐:</span>
+                    <strong id="modalPackage" class="text-slate-800">-</strong>
+                </div>
+                <div class="flex justify-between py-1.5 border-b border-slate-100">
+                    <span class="text-slate-400">Payment Method / 收款方式:</span>
+                    <span id="modalPaymentMethod" class="text-slate-800">-</span>
+                </div>
+            </div>
+
+            <div class="bg-sky-50/50 p-3.5 rounded-2xl border border-sky-100 text-xs mb-4 space-y-1.5">
+                <div class="flex justify-between"><span class="text-slate-600">Total Price / 总价:</span> <span id="modalTotal" class="font-bold text-slate-900">-</span></div>
+                <div class="flex justify-between"><span class="text-slate-600">Deposit Paid / 已付定金:</span> <span id="modalDeposit" class="font-bold text-emerald-600">-</span></div>
+                <div class="flex justify-between border-t border-sky-200/60 pt-1.5"><span class="font-bold text-slate-700">Balance Due / 待付尾款:</span> <span id="modalBalance" class="font-bold text-rose-600 text-sm">-</span></div>
+            </div>
+
+            <div class="text-xs mb-5">
+                <span class="text-slate-400 block mb-1">Remarks & Hotel Pick-up / 备注与接送:</span>
+                <div id="modalRemarks" class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-slate-700">-</div>
+            </div>
+
+            <div class="no-print flex flex-col sm:flex-row justify-between items-center pt-3 border-t border-slate-100 gap-3">
+                <p class="text-[10px] text-slate-400 text-center sm:text-left">Deso_89 Operations System • Please present this voucher upon arrival.</p>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button onclick="window.print()" class="flex-1 sm:flex-initial bg-sky-600 hover:bg-sky-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition shadow-md">🖨️ Print / Save PDF</button>
+                    <button onclick="closeVoucherModal()" class="flex-1 sm:flex-initial bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-5 py-2.5 rounded-xl text-xs transition">Close / 关闭</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="max-w-[95%] md:max-w-[92%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
@@ -73,14 +170,231 @@
         </div>
 
         <!-- Location Cards Grid -->
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6" id="manifestContainer">
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6 mb-8" id="manifestContainer">
             <!-- Dynamic Location Manifest Cards Populated Here -->
         </div>
+
+        <!-- DUPLICATED MASTER BOOKING SECTION -->
+        <div class="space-y-6 sm:space-y-8 mt-10">
+            <!-- Input Form Card -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="formTitle" class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">➕</span> 
+                        New Booking Entry / 录入新预订
+                    </h2>
+                    <button id="cancelEditBtn" onclick="resetFormMode()" class="hidden text-xs bg-rose-50 text-rose-600 border border-rose-200 px-3.5 py-1.5 rounded-xl hover:bg-rose-100 transition font-semibold">
+                        Cancel Edit / 取消编辑
+                    </button>
+                </div>
+                
+                <form id="bookingForm" onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                    <input type="hidden" id="editRowIndex" value="">
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">预定日期 (Booking Date)</label>
+                        <input type="date" id="bookingDate" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">全名 (Full Name - 中/拼音)</label>
+                        <input type="text" id="fullName" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Enter full name / 请输入全名">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">性别 (Gender)</label>
+                        <select id="gender" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                            <option value="Male / 男">Male / 男</option>
+                            <option value="Female / 女">Female / 女</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">护照号码 (Passport Number)</label>
+                        <input type="text" id="passport" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Enter passport number / 请输入护照号">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">人数 (Number of Pax)</label>
+                        <input type="number" id="pax" min="1" value="1" oninput="onPaxOrPackageChange()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">活动日期 (Activity Date)</label>
+                        <input type="date" id="activityDate" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">地点 (Location)</label>
+                        <select id="location" onchange="onLocationChange()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                            <option value="Semporna & Bum Bum">Semporna & Bum Bum (仙本那/邦邦岛)</option>
+                            <option value="Tun Sakaran Marine Park">Tun Sakaran Marine Park (敦沙卡兰公园)</option>
+                            <option value="Dreamer Island (淘梦岛)">Dreamer Island (淘梦岛)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">项目类型 (Package Type)</label>
+                        <select id="packageType" onchange="onPaxOrPackageChange()" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">收款方式 (Payment Method)</label>
+                        <select id="paymentMethod" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                            <option value="WeChat Pay">WeChat Pay (微信支付)</option>
+                            <option value="Alipay">Alipay (支付宝)</option>
+                            <option value="Bank Transfer">Bank Transfer (银行转账)</option>
+                            <option value="TNG (Touch 'n Go)">TNG (Touch 'n Go)</option>
+                            <option value="Cash">Cash (现金)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">总价 (Total Price - RM / Editable)</label>
+                        <input type="number" id="totalPrice" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none font-bold text-sky-700" placeholder="0.00">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">已付定金 (Deposit Paid - RM)</label>
+                        <input type="number" id="depositPaid" oninput="calculateBalance()" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="0.00">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">尾款 (Balance Due - RM)</label>
+                        <input type="number" id="balanceDue" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-emerald-700 font-bold" placeholder="0.00">
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">状态 (Status)</label>
+                        <select id="status" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+                            <option value="Confirmed / 已确认">Confirmed / 已确认</option>
+                            <option value="Pending / 待定">Pending / 待定</option>
+                            <option value="Completed / 已完成">Completed / 已完成</option>
+                            <option value="Cancelled / 已取消">Cancelled / 已取消</option>
+                        </select>
+                    </div>
+
+                    <!-- Hotel Pick-up & Remarks Section -->
+                    <div class="sm:col-span-2 flex flex-col gap-3">
+                        <label class="block text-xs font-bold text-slate-600">Hotel Pick-up & Remarks (酒店接送与备注)</label>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="flex items-center gap-2.5 light-input px-3.5 py-3 rounded-xl shrink-0">
+                                <input type="checkbox" id="hotelPickupToggle" onchange="toggleHotelInput()" class="w-4 h-4 accent-sky-600 cursor-pointer rounded">
+                                <label for="hotelPickupToggle" class="text-xs font-semibold text-slate-700 cursor-pointer">Hotel Pick-up / 需要酒店接送</label>
+                            </div>
+                            <input type="text" id="hotelName" disabled placeholder="Enter hotel name / 请输入酒店名称" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none text-slate-400 cursor-not-allowed">
+                        </div>
+                        <input type="text" id="remarks" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Additional remarks (e.g. equipment size, dietary requirements)">
+                    </div>
+
+                    <div class="sm:col-span-4 flex justify-end mt-3">
+                        <button type="submit" id="submitBtn" class="w-full sm:w-auto bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-400 hover:to-cyan-500 text-white font-bold px-8 py-3.5 rounded-xl text-sm transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2">
+                            Save & Sync to Sheet & Calendar 🚀
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Bookings Table Card with Search & Filter Tabs -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
+                    <h2 class="text-base sm:text-lg font-bold text-sky-700 flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">📋</span> 
+                        Master Booking Database / 预订总表
+                    </h2>
+
+                    <!-- Search Bar & Filter Tabs Container -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-xs">🔍</span>
+                            <input type="text" id="searchQuery" oninput="renderTable()" placeholder="Search name, passport, hotel..." class="light-input rounded-2xl pl-9 pr-4 py-2 text-xs w-full sm:w-56 focus:outline-none">
+                        </div>
+
+                        <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                            <button onclick="filterTab('All')" id="tab-All" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-sky-600 text-white shadow-sm transition">All</button>
+                            <button onclick="filterTab('Confirmed')" id="tab-Confirmed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Confirmed</button>
+                            <button onclick="filterTab('Pending')" id="tab-Pending" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Pending</button>
+                            <button onclick="filterTab('Completed')" id="tab-Completed" class="px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition">Completed</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
+                                <th class="py-3.5 px-3">预定日期</th>
+                                <th class="py-3.5 px-3">姓名 (Name)</th>
+                                <th class="py-3.5 px-3">性别</th>
+                                <th class="py-3.5 px-3">护照号</th>
+                                <th class="py-3.5 px-3">人数</th>
+                                <th class="py-3.5 px-3">活动日期</th>
+                                <th class="py-3.5 px-3">地点</th>
+                                <th class="py-3.5 px-3">套餐</th>
+                                <th class="py-3.5 px-3">总价</th>
+                                <th class="py-3.5 px-3">定金</th>
+                                <th class="py-3.5 px-3">尾款</th>
+                                <th class="py-3.5 px-3">付款方式</th>
+                                <th class="py-3.5 px-3">Status</th>
+                                <th class="py-3.5 px-3">Remarks</th>
+                                <th class="py-3.5 px-3 text-center">Actions / 操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingTableBody" class="divide-y divide-slate-100">
+                            <!-- Dynamic rows populate here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Hidden Iframe to guarantee Google Apps Script POST success -->
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
     <script>
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
         let allBookings = [];
+        let currentTab = 'All';
+
+        const locationPackages = {
+            "Semporna & Bum Bum": [
+                { name: "DSD: 1 Day/2 Dives (Bum Bum Island)", price: 610.00 },
+                { name: "DSD: 1 Day/3 Dives (Outer Reef)", price: 715.00 },
+                { name: "DSD: 1 Day/3 Dives + Hike (Tun Sakaran)", price: 975.00 },
+                { name: "Fun Dive: 1 Day / 6 Dives", price: 935.00 },
+                { name: "Fun Dive: 2 Days / 9 Dives", price: 1505.00 },
+                { name: "Fun Dive: 2 Days / 9 Dives (1D Sipadan)", price: 2170.00 },
+                { name: "Fun Dive: 3 Days / 12 Dives", price: 2075.00 },
+                { name: "Fun Dive: 3 Days / 12 Dives (1D Sipadan)", price: 2740.00 },
+                { name: "Fun Dive: 4 Days / 15 Dives", price: 2643.00 },
+                { name: "Fun Dive: 4 Days / 15 Dives (1D Sipadan)", price: 3308.00 },
+                { name: "Fun Dive: 4 Days / 15 Dives (2D Sipadan)", price: 3975.00 },
+                { name: "Fun Dive: 5 Days / 18 Dives", price: 3212.00 },
+                { name: "Fun Dive: 5 Days / 18 Dives (1D Sipadan)", price: 3878.00 },
+                { name: "Fun Dive: 5 Days / 18 Dives (2D Sipadan)", price: 4544.00 },
+                { name: "PADI Course: 2 Days Open Water", price: 1908.00 },
+                { name: "PADI Course: 3 Days OW + 3 Fun Dives", price: 2477.00 },
+                { name: "PADI Course: 2 Days AOW + 3 Fun Dives", price: 1992.00 },
+                { name: "PADI Course: 2 Days AOW + Sipadan", price: 2742.00 },
+                { name: "PADI Course: 3 Days Rescue + EFR", price: 2528.00 },
+                { name: "PADI Course: 6D5N OW + AOW Combo", price: 3900.00 }
+            ],
+            "Tun Sakaran Marine Park": [
+                { name: "TSMP: Snorkel + Hike (Adult)", price: 225.00 },
+                { name: "TSMP: Snorkel + Hike (Child)", price: 136.00 },
+                { name: "TSMP: Snorkel (No Hike) (Adult)", price: 152.00 },
+                { name: "TSMP: Snorkel (No Hike) (Child)", price: 100.00 },
+                { name: "TSMP: DSD Experience Diving", price: 635.00 },
+                { name: "TSMP: Fun Dive", price: 765.00 }
+            ],
+            "Dreamer Island (淘梦岛)": [
+                { name: "Dreamer Island: Package A (2 DSD + Lunch + Gear + Drone)", price: 520.00 },
+                { name: "Dreamer Island: Package B (2 DSD + Lunch + Gear + Drone + Edited Footage)", price: 620.00 }
+            ]
+        };
 
         function toggleMenu() {
             const drawer = document.getElementById('mobileDrawer');
@@ -91,17 +405,430 @@
 
         window.onload = function() {
             document.getElementById('manifestDateFilter').value = new Date().toLocaleDateString('en-CA');
+            setTodayDates();
+            onLocationChange();
+
+            ['bookingDate', 'activityDate', 'manifestDateFilter'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.addEventListener('click', function() {
+                        if (this.showPicker) { try { this.showPicker(); } catch (e) {} }
+                    });
+                }
+            });
+
             fetchData();
         };
+
+        function onLocationChange() {
+            const locSelect = document.getElementById('location');
+            const pkgSelect = document.getElementById('packageType');
+            const selectedLoc = locSelect.value;
+            
+            pkgSelect.innerHTML = '';
+            const items = locationPackages[selectedLoc] || [];
+            
+            items.forEach(item => {
+                const el = document.createElement('option');
+                el.value = item.name;
+                el.textContent = item.name;
+                el.setAttribute('data-price', item.price);
+                pkgSelect.appendChild(el);
+            });
+
+            onPaxOrPackageChange();
+        }
+
+        function onPaxOrPackageChange() {
+            const pkgSelect = document.getElementById('packageType');
+            const selectedOption = pkgSelect.options[pkgSelect.selectedIndex];
+            
+            if (selectedOption) {
+                const unitPrice = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+                const pax = parseInt(document.getElementById('pax').value) || 1;
+                const calculatedTotal = unitPrice * pax;
+                
+                document.getElementById('totalPrice').value = calculatedTotal.toFixed(2);
+                calculateBalance();
+            }
+        }
+
+        function setTodayDates() {
+            const todayStr = new Date().toLocaleDateString('en-CA');
+            const bDate = document.getElementById('bookingDate');
+            const aDate = document.getElementById('activityDate');
+            if(bDate) bDate.value = todayStr;
+            if(aDate) aDate.value = todayStr;
+            const toggle = document.getElementById('hotelPickupToggle');
+            if(toggle) toggle.checked = false;
+            toggleHotelInput();
+        }
+
+        function toggleHotelInput() {
+            const toggle = document.getElementById('hotelPickupToggle');
+            const hotelInput = document.getElementById('hotelName');
+            if (!toggle || !hotelInput) return;
+            if (toggle.checked) {
+                hotelInput.disabled = false;
+                hotelInput.required = true;
+                hotelInput.classList.remove('text-slate-400', 'cursor-not-allowed');
+                hotelInput.classList.add('text-slate-900');
+            } else {
+                hotelInput.disabled = true;
+                hotelInput.required = false;
+                hotelInput.value = '';
+                hotelInput.classList.add('text-slate-400', 'cursor-not-allowed');
+                hotelInput.classList.remove('text-slate-900');
+            }
+        }
+
+        function calculateBalance() {
+            const total = parseFloat(document.getElementById('totalPrice').value) || 0;
+            const deposit = parseFloat(document.getElementById('depositPaid').value) || 0;
+            const balance = total - deposit;
+            document.getElementById('balanceDue').value = balance >= 0 ? balance.toFixed(2) : "0.00";
+        }
 
         async function fetchData() {
             try {
                 const res = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
                 allBookings = await res.json();
                 renderManifest();
+                renderTable();
             } catch (e) {
                 console.error(e);
             }
+        }
+
+        function filterTab(tabName) {
+            currentTab = tabName;
+            ['All', 'Confirmed', 'Pending', 'Completed'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if(!btn) return;
+                if (t === tabName) {
+                    btn.className = "px-3.5 py-1.5 text-xs font-bold rounded-xl bg-sky-600 text-white shadow-sm transition";
+                } else {
+                    btn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-xl text-slate-600 hover:text-slate-900 transition";
+                }
+            });
+            renderTable();
+        }
+
+        function shareBooking(name, actDate, location, pkg, pax, total, balance, status, remarks) {
+            const message = 
+`🌊 【沙巴潜水预定确认单 / Sabah Diving Confirmation】
+-----------------------------------
+👤 贵宾姓名 (Name): ${name}
+👥 人数 (Pax): ${pax} 位
+📅 活动日期 (Date): ${actDate}
+📍 活动地点 (Location): ${location}
+🏊 项目 (Package): ${pkg}
+🏨 备注/接送 (Remarks): ${remarks}
+-----------------------------------
+💰 订单总额: RM${total}
+🏷️ 待付尾款: RM${balance}
+📌 Status (状态): ${status}
+-----------------------------------
+💡 温馨提示：请提前准备好泳衣, 毛巾及个人随身物品。期待与您开启精彩的沙巴海洋之旅！`;
+
+            navigator.clipboard.writeText(message).then(() => {
+                alert(`✅ Confirmation text copied for ${name}!\n已成功复制给【${name}】的确认单，可直接粘贴至微信或WhatsApp！`);
+            }).catch(err => {
+                console.error("Failed to copy text: ", err);
+                alert("Failed to copy confirmation text.");
+            });
+        }
+
+        function generatePDFVoucher(name, gender, passport, actDate, location, pkg, pax, total, deposit, balance, paymentMethod, status, remarks) {
+            document.getElementById('modalName').innerText = name;
+            document.getElementById('modalGender').innerText = gender;
+            document.getElementById('modalPassport').innerText = passport;
+            document.getElementById('modalPax').innerText = `${pax} Pax`;
+            document.getElementById('modalActivityDate').innerText = actDate;
+            document.getElementById('modalLocation').innerText = location;
+            document.getElementById('modalPackage').innerText = pkg;
+            document.getElementById('modalPaymentMethod').innerText = paymentMethod;
+            document.getElementById('modalTotal').innerText = `RM${total}`;
+            document.getElementById('modalDeposit').innerText = `RM${deposit}`;
+            document.getElementById('modalBalance').innerText = `RM${balance}`;
+            document.getElementById('modalStatus').innerText = status;
+            document.getElementById('modalRemarks').innerText = remarks;
+
+            document.getElementById('voucherModal').classList.remove('hidden');
+        }
+
+        function closeVoucherModal() {
+            document.getElementById('voucherModal').classList.add('hidden');
+        }
+
+        function editBooking(rowIndex, bookingDate, fullName, gender, passport, pax, activityDate, location, pkg, total, deposit, paymentMethod, status, remarks) {
+            document.getElementById('editRowIndex').value = rowIndex;
+            document.getElementById('bookingDate').value = bookingDate;
+            document.getElementById('fullName').value = fullName;
+            document.getElementById('gender').value = gender;
+            document.getElementById('passport').value = passport;
+            document.getElementById('pax').value = pax;
+            document.getElementById('activityDate').value = activityDate;
+            
+            document.getElementById('location').value = location;
+            onLocationChange();
+            document.getElementById('packageType').value = pkg;
+
+            document.getElementById('totalPrice').value = total;
+            document.getElementById('depositPaid').value = deposit;
+            document.getElementById('paymentMethod').value = paymentMethod;
+            document.getElementById('status').value = status;
+
+            if (remarks.includes('[Hotel Pick-up / 酒店接送:')) {
+                const match = remarks.match(/\[Hotel Pick-up \/ 酒店接送: (.*?)\]/);
+                if (match && match[1]) {
+                    document.getElementById('hotelPickupToggle').checked = true;
+                    toggleHotelInput();
+                    document.getElementById('hotelName').value = match[1];
+                    document.getElementById('remarks').value = remarks.replace(match[0], '').replace(/^ - /, '').trim();
+                }
+            } else {
+                document.getElementById('hotelPickupToggle').checked = false;
+                toggleHotelInput();
+                document.getElementById('remarks').value = remarks;
+            }
+
+            calculateBalance();
+
+            document.getElementById('formTitle').innerText = `✏️ Edit Booking (Row ${rowIndex}) / 修改预定`;
+            document.getElementById('submitBtn').innerText = "Update Booking 🔄";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function resetFormMode() {
+            document.getElementById('bookingForm').reset();
+            document.getElementById('editRowIndex').value = '';
+            setTodayDates();
+            onLocationChange();
+            document.getElementById('formTitle').innerHTML = '<span class="w-7 h-7 rounded-lg bg-sky-50 border border-sky-200 flex items-center justify-center text-xs text-sky-600">➕</span> New Booking Entry / 录入新预订';
+            document.getElementById('submitBtn').innerText = "Save & Sync to Sheet & Calendar 🚀";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+        }
+
+        async function deleteBooking(rowIndex, name) {
+            if (!confirm(`Are you sure you want to delete the booking for [${name}]?\n您确定要删除【${name}】的预定吗？`)) {
+                return;
+            }
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = APPS_SCRIPT_URL;
+            form.target = 'hidden_iframe';
+
+            const inputAction = document.createElement('input');
+            inputAction.type = 'hidden';
+            inputAction.name = 'action';
+            inputAction.value = 'delete';
+            form.appendChild(inputAction);
+
+            const inputRow = document.createElement('input');
+            inputRow.type = 'hidden';
+            inputRow.name = 'rowIndex';
+            inputRow.value = rowIndex;
+            form.appendChild(inputRow);
+
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+
+            setTimeout(() => {
+                alert("Booking deleted successfully!");
+                fetchData();
+            }, 2000);
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const editRowIndex = document.getElementById('editRowIndex').value;
+            const isEditing = editRowIndex !== '';
+
+            const fullNameInput = document.getElementById('fullName').value.trim();
+            const passportInput = document.getElementById('passport').value.trim().toUpperCase();
+            const aDateVal = document.getElementById('activityDate').value;
+            const bDateVal = document.getElementById('bookingDate').value;
+            const genderVal = document.getElementById('gender').value;
+            const paxVal = document.getElementById('pax').value;
+            const locationVal = document.getElementById('location').value;
+            const pkgVal = document.getElementById('packageType').value;
+            const totalVal = document.getElementById('totalPrice').value;
+            const depositVal = document.getElementById('depositPaid').value;
+            const balanceVal = document.getElementById('balanceDue').value;
+            const paymentMethodVal = document.getElementById('paymentMethod').value;
+            const statusVal = document.getElementById('status').value;
+
+            if (aDateVal < bDateVal) {
+                alert("⚠️ Warning: Activity Date cannot be earlier than Booking Date!");
+                return;
+            }
+
+            if (!isEditing) {
+                const duplicateFound = allBookings.some(b => {
+                    const existingName = (b["Full Name"] || '').trim().toLowerCase();
+                    const existingPassport = (b["Passport"] || '').trim().toUpperCase();
+                    const existingActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                    const status = (b["Status"] || '').toLowerCase();
+
+                    if (status.includes('cancelled')) return false;
+
+                    const matchesNameOrPassport = (existingPassport === passportInput) || (existingName === fullNameInput.toLowerCase());
+                    const matchesDate = (existingActivityDate === aDateVal);
+
+                    return matchesNameOrPassport && matchesDate;
+                });
+
+                if (duplicateFound) {
+                    const confirmDuplicate = confirm(`⚠️ Duplicate Warning:\n\nIt looks like [${fullNameInput}] (Passport: ${passportInput}) already has a diving activity scheduled on ${aDateVal}.\n\nDo you still want to proceed with saving this duplicate booking?`);
+                    if (!confirmDuplicate) return;
+                }
+            }
+
+            submitBtn.innerText = isEditing ? "Updating Booking... / 正在更新..." : "Syncing to Sheet & Calendar... / 正在同步...";
+            submitBtn.disabled = true;
+
+            let remarksVal = document.getElementById('remarks').value.trim();
+            const isHotelChecked = document.getElementById('hotelPickupToggle').checked;
+            const hotelVal = document.getElementById('hotelName').value.trim();
+
+            if (isHotelChecked && hotelVal) {
+                const hotelString = `[Hotel Pick-up / 酒店接送: ${hotelVal}]`;
+                remarksVal = remarksVal ? `${hotelString} - ${remarksVal}` : hotelString;
+            } else if (!remarksVal) {
+                remarksVal = '-';
+            }
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = APPS_SCRIPT_URL;
+            form.target = 'hidden_iframe';
+
+            const fields = {
+                "action": isEditing ? "update" : "create",
+                "rowIndex": editRowIndex,
+                "Timestamp": new Date().toISOString(),
+                "Booking Date": bDateVal,
+                "Full Name": fullNameInput,
+                "Gender": genderVal,
+                "Passport": passportInput,
+                "Pax": paxVal,
+                "Activity Date": aDateVal,
+                "Location": locationVal,
+                "Package": pkgVal,
+                "Total Price": totalVal,
+                "Deposit Paid": depositVal,
+                "Balance Due": balanceVal,
+                "Payment Method": paymentMethodVal,
+                "Status": statusVal,
+                "Remarks": remarksVal
+            };
+
+            for (const key in fields) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = fields[key];
+                form.appendChild(input);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+
+            setTimeout(() => {
+                alert(isEditing ? "Booking updated successfully!" : "Booking saved & Google Calendar synced successfully!");
+                generatePDFVoucher(fullNameInput, genderVal, passportInput, aDateVal, locationVal, pkgVal, paxVal, totalVal, depositVal, balanceVal, paymentMethodVal, statusVal, remarksVal);
+                resetFormMode();
+                fetchData();
+                submitBtn.disabled = false;
+            }, 2500);
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('bookingTableBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            const searchTerm = (document.getElementById('searchQuery').value || '').toLowerCase();
+
+            let filtered = allBookings.filter(b => {
+                const status = (b["Status"] || '').toLowerCase();
+                const matchesTab = (currentTab === 'All' || status.includes(currentTab.toLowerCase()));
+                
+                if (!matchesTab) return false;
+
+                if (searchTerm) {
+                    const name = (b["Full Name"] || '').toLowerCase();
+                    const passport = (b["Passport"] || '').toLowerCase();
+                    const remarks = (b["Remarks"] || '').toLowerCase();
+                    const location = (b["Location"] || '').toLowerCase();
+                    return name.includes(searchTerm) || passport.includes(searchTerm) || remarks.includes(searchTerm) || location.includes(searchTerm);
+                }
+                return true;
+            });
+
+            if (!filtered || filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="15" class="py-8 text-center text-slate-400 text-sm">No matching bookings found. 暂无符合条件的预订记录。</td></tr>`;
+                return;
+            }
+
+            filtered.slice().reverse().forEach(b => {
+                const rowIndex = b._rowIndex;
+                const cleanBookingDate = (b["Booking Date"] || '').toString().replace(/^'/, '');
+                const cleanActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
+                const rawStatus = b["Status"] || '';
+                const name = b["Full Name"] || '';
+                const gender = b["Gender"] || '';
+                const passport = b["Passport"] || '';
+                const location = b["Location"] || '';
+                const pkg = b["Package"] || '';
+                const pax = b["Pax"] || 1;
+                const total = b["Total Price"] || 0;
+                const deposit = b["Deposit Paid"] || 0;
+                const balance = b["Balance Due"] || 0;
+                const paymentMethod = b["Payment Method"] || '';
+                const remarks = b["Remarks"] || '-';
+
+                let badgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg font-semibold";
+                if (rawStatus.toLowerCase().includes('pending')) {
+                    badgeClass = "bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-lg font-semibold";
+                } else if (rawStatus.toLowerCase().includes('cancel')) {
+                    badgeClass = "bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-lg font-semibold";
+                } else if (rawStatus.toLowerCase().includes('complet')) {
+                    badgeClass = "bg-sky-50 text-sky-700 border border-sky-200 px-2.5 py-1 rounded-lg font-semibold";
+                }
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3.5 px-3 text-slate-600">${cleanBookingDate}</td>
+                        <td class="py-3.5 px-3 font-bold text-slate-900">${name}</td>
+                        <td class="py-3.5 px-3 text-slate-500">${gender}</td>
+                        <td class="py-3.5 px-3 text-slate-500">${passport}</td>
+                        <td class="py-3.5 px-3 text-center text-sky-700 font-bold">${pax}</td>
+                        <td class="py-3.5 px-3 text-sky-700 font-semibold">${cleanActivityDate}</td>
+                        <td class="py-3.5 px-3 text-slate-600">${location}</td>
+                        <td class="py-3.5 px-3 text-slate-600" title="${pkg}">${pkg}</td>
+                        <td class="py-3.5 px-3 text-slate-800 font-medium">RM${total}</td>
+                        <td class="py-3.5 px-3 text-emerald-600 font-medium">RM${deposit}</td>
+                        <td class="py-3.5 px-3 text-rose-600 font-bold">RM${balance}</td>
+                        <td class="py-3.5 px-3 text-slate-500">${paymentMethod}</td>
+                        <td class="py-3.5 px-3"><span class="${badgeClass}">${rawStatus}</span></td>
+                        <td class="py-3.5 px-3 text-slate-500 truncate max-w-[150px]" title="${remarks}">${remarks}</td>
+                        <td class="py-3.5 px-3 text-center flex items-center justify-center gap-1.5">
+                            <button onclick="shareBooking('${name.replace(/'/g, "\\'")}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${balance}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Copy confirmation message">💬 Share</button>
+                            <button onclick="generatePDFVoucher('${name.replace(/'/g, "\\'")}', '${gender}', '${passport}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${deposit}', '${balance}', '${paymentMethod}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Generate printable booking voucher">📄 Voucher</button>
+                            <button onclick="editBooking('${rowIndex}', '${cleanBookingDate}', '${name.replace(/'/g, "\\'")}', '${gender}', '${passport}', '${pax}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${total}', '${deposit}', '${paymentMethod}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Edit booking">✏️ Edit</button>
+                            <button onclick="deleteBooking('${rowIndex}', '${name.replace(/'/g, "\\'")}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Delete booking">🗑️ Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
         }
 
         function renderManifest() {
@@ -117,7 +844,6 @@
             ];
 
             let allHotelStops = {};
-            let totalDiversToday = 0;
 
             locations.forEach(loc => {
                 const divers = allBookings.filter(b => {
@@ -126,8 +852,6 @@
                     const bLoc = (b["Location"] || '').toLowerCase();
                     return actDate === selectedDate && bLoc.includes(loc.name.toLowerCase().split(' ')[0]) && !status.includes('cancelled');
                 });
-
-                totalDiversToday += divers.reduce((sum, b) => sum + (parseInt(b["Pax"]) || 1), 0);
 
                 let cardsHTML = '';
                 if (divers.length === 0) {
@@ -173,7 +897,6 @@
                 `;
             });
 
-            // Populate Hotel Summary Strip
             const hotelStrip = document.getElementById('hotelSummaryStrip');
             hotelStrip.innerHTML = '';
             const hotelKeys = Object.keys(allHotelStops);
@@ -229,8 +952,8 @@
                 if (actDate === date && !status.includes('cancelled') && hMatch) {
                     pickupCount++;
                     text += `\n👤 ${b["Full Name"]} (${b["Pax"]}p)\n`;
-                    text += `   🏨 酒店: ${hMatch[1]}\n`;
-                    text += `   📍 地点: ${b["Location"]}\n`;
+                    text += `    🏨 酒店: ${hMatch[1]}\n`;
+                    text += `    📍 地点: ${b["Location"]}\n`;
                 }
             });
 
