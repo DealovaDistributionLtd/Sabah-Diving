@@ -36,24 +36,25 @@
 </head>
 <body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white flex flex-col justify-between">
 
-    <!-- ADMIN EXIT LOCK MODAL -->
+    <!-- ADMIN LOGIN MODAL -->
     <div id="adminModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-sm p-6 rounded-3xl shadow-2xl border border-slate-200">
             <h3 class="font-bold text-slate-900 text-sm mb-2">Admin Access Required / 管理员验证</h3>
-            <p class="text-xs text-slate-500 mb-4">Enter PIN to return to the Master Dashboard.</p>
-            <input type="password" id="adminPin" placeholder="Enter PIN (e.g. 8888)" class="w-full light-input rounded-xl px-3.5 py-3 text-sm mb-4 focus:outline-none">
-            <div class="flex gap-2">
-                <button onclick="verifyAdminPin()" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl text-xs transition">Confirm / 确认</button>
-                <button onclick="closeAdminModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">Cancel / 取消</button>
+            <p class="text-xs text-slate-500 mb-4">Enter PIN to unlock review management or return to dashboard.</p>
+            <input type="password" id="adminPin" placeholder="Enter PIN" class="w-full light-input rounded-xl px-3.5 py-3 text-sm mb-4 focus:outline-none">
+            <div class="space-y-2">
+                <button onclick="verifyAdminPin('unlock')" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl text-xs transition">Unlock Review Management / 解锁管理权限</button>
+                <button onclick="verifyAdminPin('dashboard')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs transition">Return to Dashboard / 返回主后台</button>
+                <button onclick="closeAdminModal()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">Cancel / 取消</button>
             </div>
         </div>
     </div>
 
     <!-- MAIN CONTAINER -->
-    <div class="max-w-xl mx-auto px-4 py-8 w-full flex-1 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto px-4 py-8 w-full flex-1 space-y-8">
         
         <!-- Header Branding -->
-        <div class="text-center mb-6">
+        <div class="text-center">
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-600 flex items-center justify-center text-2xl shadow-lg shadow-sky-500/20 text-white mx-auto mb-3">
                 🌊
             </div>
@@ -63,7 +64,8 @@
 
         <!-- Review Form Card -->
         <div class="light-panel p-6 sm:p-8 rounded-3xl">
-            <form id="reviewForm" onsubmit="handleReviewSubmit(event)" class="space-y-5">
+            <h2 class="text-sm font-bold text-sky-700 mb-4">Leave a Review / 留下您的评价</h2>
+            <form id="reviewForm" onsubmit="handleReviewSubmit(event)" class="space-y-4">
                 
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-1.5">Your Name / 您的姓名</label>
@@ -95,7 +97,7 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-1.5">Review Comments / 体验评价与感受</label>
-                    <textarea id="reviewComment" rows="4" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none resize-none" placeholder="Tell us about your instructor, marine life encounters, and overall experience..."></textarea>
+                    <textarea id="reviewComment" rows="3" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none resize-none" placeholder="Tell us about your experience..."></textarea>
                 </div>
 
                 <!-- Photo Upload Field -->
@@ -109,9 +111,9 @@
                         <span id="fileNameDisplay" class="text-xs text-slate-400 truncate">No file chosen</span>
                     </div>
                     <!-- Image Preview Box -->
-                    <div id="imagePreviewContainer" class="hidden mt-3 relative w-24 h-24 rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+                    <div id="imagePreviewContainer" class="hidden mt-3 relative w-20 h-20 rounded-xl overflow-hidden border border-slate-200 shadow-sm">
                         <img id="imagePreview" class="w-full h-full object-cover">
-                        <button type="button" onclick="removeImage()" class="absolute top-1 right-1 bg-slate-900/70 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">✕</button>
+                        <button type="button" onclick="removeImage()" class="absolute top-1 right-1 bg-slate-900/70 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px]">✕</button>
                     </div>
                 </div>
 
@@ -122,15 +124,28 @@
             </form>
         </div>
 
+        <!-- Staged Reviews Feed Section -->
+        <div class="light-panel p-6 sm:p-8 rounded-3xl">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-sm font-bold text-slate-900">Recent Guest Reviews / 客户精选评价</h2>
+                <button id="clearAllBtn" onclick="clearReviews()" class="hidden text-[11px] text-rose-500 hover:underline font-semibold">Clear All / 清空全部</button>
+            </div>
+            <div id="reviewsList" class="space-y-4">
+                <!-- Staged reviews populate here -->
+            </div>
+        </div>
+
     </div>
 
     <!-- Footer Lock Trigger -->
     <footer class="py-4 text-center text-[11px] text-slate-400">
-        Secured Kiosk Mode • <button onclick="openAdminModal()" class="text-sky-600 hover:underline font-semibold">Admin Exit / 返回管理后台</button>
+        Secured Kiosk Mode • <button onclick="openAdminModal()" class="text-sky-600 hover:underline font-semibold">Admin Portal / 管理员登录</button>
     </footer>
 
     <script>
         let currentRating = 5;
+        let base64Photo = "";
+        let isAdminUnlocked = false;
 
         function setRating(rating) {
             currentRating = rating;
@@ -149,7 +164,6 @@
             });
         }
 
-        // Initialize default 5 stars highlighted
         setRating(5);
 
         function previewImage(event) {
@@ -158,7 +172,8 @@
                 document.getElementById('fileNameDisplay').innerText = file.name;
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('imagePreview').src = e.target.result;
+                    base64Photo = e.target.result;
+                    document.getElementById('imagePreview').src = base64Photo;
                     document.getElementById('imagePreviewContainer').classList.remove('hidden');
                 }
                 reader.readAsDataURL(file);
@@ -169,16 +184,87 @@
             document.getElementById('photoUpload').value = '';
             document.getElementById('fileNameDisplay').innerText = 'No file chosen';
             document.getElementById('imagePreviewContainer').classList.add('hidden');
+            base64Photo = "";
         }
 
         function handleReviewSubmit(event) {
             event.preventDefault();
-            const name = document.getElementById('reviewName').value;
-            alert(`Thank you, ${name}! Your review has been submitted successfully.\n感谢您的评价！`);
+            const name = document.getElementById('reviewName').value.trim();
+            const location = document.getElementById('reviewLocation').value;
+            const rating = parseInt(document.getElementById('selectedRating').value);
+            const comment = document.getElementById('reviewComment').value.trim();
+            const date = new Date().toLocaleDateString();
+
+            const newReview = { id: Date.now(), name, location, rating, comment, photo: base64Photo, date };
+
+            let reviews = JSON.parse(localStorage.getItem('sabah_diving_reviews') || '[]');
+            reviews.unshift(newReview); 
+            localStorage.setItem('sabah_diving_reviews', JSON.stringify(reviews));
+
+            alert(`Thank you, ${name}! Your review has been saved successfully.\n感谢您的评价！`);
             document.getElementById('reviewForm').reset();
             removeImage();
             setRating(5);
+            loadReviews();
         }
+
+        function loadReviews() {
+            const container = document.getElementById('reviewsList');
+            container.innerHTML = '';
+
+            let reviews = JSON.parse(localStorage.getItem('sabah_diving_reviews') || '[]');
+
+            if (reviews.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">No reviews yet. Be the first to leave feedback! 暂无评价</p>`;
+                return;
+            }
+
+            reviews.forEach(r => {
+                let starsStr = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                let photoHtml = r.photo ? `<div class="mt-2 w-20 h-20 rounded-xl overflow-hidden border border-slate-200"><img src="${r.photo}" class="w-full h-full object-cover"></div>` : '';
+                
+                // Show delete button only if admin mode is unlocked
+                let deleteBtnHtml = isAdminUnlocked ? `
+                    <button onclick="deleteSingleReview(${r.id})" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-2 py-1 rounded-lg text-[10px] font-bold transition">
+                        🗑️ Delete
+                    </button>
+                ` : '';
+
+                container.innerHTML += `
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs space-y-1.5 relative">
+                        <div class="flex justify-between items-center">
+                            <strong class="text-slate-900 text-sm">${r.name}</strong>
+                            <div class="flex items-center gap-2">
+                                <span class="text-slate-400 text-[10px]">${r.date}</span>
+                                ${deleteBtnHtml}
+                            </div>
+                        </div>
+                        <div class="text-amber-400 text-sm tracking-widest">${starsStr}</div>
+                        <div class="text-sky-700 font-semibold text-[11px]">📍 ${r.location}</div>
+                        <p class="text-slate-700 mt-1">${r.comment}</p>
+                        ${photoHtml}
+                    </div>
+                `;
+            });
+        }
+
+        function deleteSingleReview(id) {
+            if (confirm("Are you sure you want to delete this review?\n确定要删除这条评价吗？")) {
+                let reviews = JSON.parse(localStorage.getItem('sabah_diving_reviews') || '[]');
+                reviews = reviews.filter(r => r.id !== id);
+                localStorage.setItem('sabah_diving_reviews', JSON.stringify(reviews));
+                loadReviews();
+            }
+        }
+
+        function clearReviews() {
+            if (confirm("Are you sure you want to clear all staged reviews?\n确定要清空所有已保存的评价吗？")) {
+                localStorage.removeItem('sabah_diving_reviews');
+                loadReviews();
+            }
+        }
+
+        window.onload = loadReviews;
 
         function openAdminModal() {
             document.getElementById('adminModal').classList.remove('hidden');
@@ -190,11 +276,18 @@
             document.getElementById('adminPin').value = '';
         }
 
-        function verifyAdminPin() {
+        function verifyAdminPin(actionType) {
             const pin = document.getElementById('adminPin').value;
-            // Change '8888' to whatever secret PIN code you prefer
-            if (pin === '8888') {
-                window.location.href = 'index.html';
+            if (pin === 'sabah2026') {
+                if (actionType === 'dashboard') {
+                    window.location.href = 'index.html';
+                } else if (actionType === 'unlock') {
+                    isAdminUnlocked = true;
+                    document.getElementById('clearAllBtn').classList.remove('hidden');
+                    closeAdminModal();
+                    loadReviews();
+                    alert("Admin Mode Unlocked: You can now delete reviews.\n已解锁管理员模式：您可以删除评价。");
+                }
             } else {
                 alert('Incorrect PIN code. / 密码错误');
                 document.getElementById('adminPin').value = '';
