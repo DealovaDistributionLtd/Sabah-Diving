@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest Review & Feedback | 客户评价反馈系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc;
+        }
+        .light-panel {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        .light-input {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
+        }
+        .light-input:focus {
+            border-color: #0284c7;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+        }
+        .star-btn {
+            transition: transform 0.15s ease, color 0.15s ease;
+        }
+        .star-btn:hover {
+            transform: scale(1.15);
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white flex flex-col justify-between">
+
+    <!-- ADMIN EXIT LOCK MODAL -->
+    <div id="adminModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm p-6 rounded-3xl shadow-2xl border border-slate-200">
+            <h3 class="font-bold text-slate-900 text-sm mb-2">Admin Access Required / 管理员验证</h3>
+            <p class="text-xs text-slate-500 mb-4">Enter PIN to return to the Master Dashboard.</p>
+            <input type="password" id="adminPin" placeholder="Enter PIN (e.g. 8888)" class="w-full light-input rounded-xl px-3.5 py-3 text-sm mb-4 focus:outline-none">
+            <div class="flex gap-2">
+                <button onclick="verifyAdminPin()" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl text-xs transition">Confirm / 确认</button>
+                <button onclick="closeAdminModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">Cancel / 取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="max-w-xl mx-auto px-4 py-8 w-full flex-1 flex flex-col justify-center">
+        
+        <!-- Header Branding -->
+        <div class="text-center mb-6">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-600 flex items-center justify-center text-2xl shadow-lg shadow-sky-500/20 text-white mx-auto mb-3">
+                🌊
+            </div>
+            <h1 class="text-lg sm:text-xl font-bold text-slate-900">Deso_89 | Sabah Diving Experience</h1>
+            <p class="text-slate-500 text-xs mt-1">We value your feedback! Please share your diving journey with us.</p>
+        </div>
+
+        <!-- Review Form Card -->
+        <div class="light-panel p-6 sm:p-8 rounded-3xl">
+            <form id="reviewForm" onsubmit="handleReviewSubmit(event)" class="space-y-5">
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5">Your Name / 您的姓名</label>
+                    <input type="text" id="reviewName" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none" placeholder="Enter your full name">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5">Diving Location / 潜水地点</label>
+                    <select id="reviewLocation" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none cursor-pointer">
+                        <option value="Semporna & Bum Bum">Semporna & Bum Bum (仙本那/邦邦岛)</option>
+                        <option value="Tun Sakaran Marine Park">Tun Sakaran Marine Park (敦沙卡兰公园)</option>
+                        <option value="Dreamer Island (淘梦岛)">Dreamer Island (淘梦岛)</option>
+                    </select>
+                </div>
+
+                <!-- Star Rating Component -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">Rating / 总体评分 (1 to 5 Stars)</label>
+                    <div class="flex items-center gap-2" id="starContainer">
+                        <button type="button" onclick="setRating(1)" class="star-btn text-3xl text-slate-300 focus:outline-none" data-value="1">★</button>
+                        <button type="button" onclick="setRating(2)" class="star-btn text-3xl text-slate-300 focus:outline-none" data-value="2">★</button>
+                        <button type="button" onclick="setRating(3)" class="star-btn text-3xl text-slate-300 focus:outline-none" data-value="3">★</button>
+                        <button type="button" onclick="setRating(4)" class="star-btn text-3xl text-slate-300 focus:outline-none" data-value="4">★</button>
+                        <button type="button" onclick="setRating(5)" class="star-btn text-3xl text-slate-300 focus:outline-none" data-value="5">★</button>
+                        <span id="ratingText" class="ml-2 text-xs font-bold text-sky-700 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-200">5 / 5 Stars</span>
+                    </div>
+                    <input type="hidden" id="selectedRating" value="5">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5">Review Comments / 体验评价与感受</label>
+                    <textarea id="reviewComment" rows="4" required class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none resize-none" placeholder="Tell us about your instructor, marine life encounters, and overall experience..."></textarea>
+                </div>
+
+                <!-- Photo Upload Field -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5">Upload Photo / 上传精彩照片 (Optional)</label>
+                    <div class="flex items-center gap-3">
+                        <label class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-xs transition border border-slate-200 flex items-center gap-2">
+                            <span>📷 Choose File</span>
+                            <input type="file" id="photoUpload" accept="image/*" onchange="previewImage(event)" class="hidden">
+                        </label>
+                        <span id="fileNameDisplay" class="text-xs text-slate-400 truncate">No file chosen</span>
+                    </div>
+                    <!-- Image Preview Box -->
+                    <div id="imagePreviewContainer" class="hidden mt-3 relative w-24 h-24 rounded-xl overflow-hidden border border-slate-200 shadow-sm">
+                        <img id="imagePreview" class="w-full h-full object-cover">
+                        <button type="button" onclick="removeImage()" class="absolute top-1 right-1 bg-slate-900/70 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">✕</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-400 hover:to-cyan-500 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2 mt-4">
+                    Submit Review / 提交评价 🚀
+                </button>
+
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Footer Lock Trigger -->
+    <footer class="py-4 text-center text-[11px] text-slate-400">
+        Secured Kiosk Mode • <button onclick="openAdminModal()" class="text-sky-600 hover:underline font-semibold">Admin Exit / 返回管理后台</button>
+    </footer>
+
+    <script>
+        let currentRating = 5;
+
+        function setRating(rating) {
+            currentRating = rating;
+            document.getElementById('selectedRating').value = rating;
+            document.getElementById('ratingText').innerText = `${rating} / 5 Stars`;
+
+            const stars = document.querySelectorAll('.star-btn');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.remove('text-slate-300');
+                    star.classList.add('text-amber-400');
+                } else {
+                    star.classList.remove('text-amber-400');
+                    star.classList.add('text-slate-300');
+                }
+            });
+        }
+
+        // Initialize default 5 stars highlighted
+        setRating(5);
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('fileNameDisplay').innerText = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage() {
+            document.getElementById('photoUpload').value = '';
+            document.getElementById('fileNameDisplay').innerText = 'No file chosen';
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+        }
+
+        function handleReviewSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('reviewName').value;
+            alert(`Thank you, ${name}! Your review has been submitted successfully.\n感谢您的评价！`);
+            document.getElementById('reviewForm').reset();
+            removeImage();
+            setRating(5);
+        }
+
+        function openAdminModal() {
+            document.getElementById('adminModal').classList.remove('hidden');
+            document.getElementById('adminPin').focus();
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+            document.getElementById('adminPin').value = '';
+        }
+
+        function verifyAdminPin() {
+            const pin = document.getElementById('adminPin').value;
+            // Change '8888' to whatever secret PIN code you prefer
+            if (pin === '8888') {
+                window.location.href = 'index.html';
+            } else {
+                alert('Incorrect PIN code. / 密码错误');
+                document.getElementById('adminPin').value = '';
+            }
+        }
+    </script>
+</body>
+</html>
