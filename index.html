@@ -889,10 +889,19 @@
             tbody.innerHTML = '';
 
             const searchTerm = (document.getElementById('searchQuery').value || '').toLowerCase();
+            const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format for date comparison
 
             let filtered = bookings.filter(b => {
-                const status = (b["Status"] || '').toLowerCase();
-                const matchesTab = (currentTab === 'All' || status.includes(currentTab.toLowerCase()));
+                let actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                let status = (b["Status"] || '').toLowerCase();
+
+                // Auto-complete status if activity date is strictly in the past and not cancelled
+                if (actDate && actDate < todayStr && !status.includes('cancel')) {
+                    b["Status"] = "Completed / 已完成";
+                }
+
+                const currentStatus = (b["Status"] || '').toLowerCase();
+                const matchesTab = (currentTab === 'All' || currentStatus.includes(currentTab.toLowerCase()));
                 
                 if (!matchesTab) return false;
 
@@ -906,15 +915,22 @@
                 return true;
             });
 
-            // SORTING: Sort bookings by Activity Date (Upcoming / Newest first, past dates further down)
+            // SMART SORTING: Sort upcoming/nearest dates first, then older past dates
             filtered.sort((a, b) => {
                 const dateA = (a["Activity Date"] || '').toString().replace(/^'/, '').trim();
                 const dateB = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
                 
+                const isAUpcoming = dateA >= todayStr;
+                const isBUpcoming = dateB >= todayStr;
+
+                // Upcoming/today dates take absolute priority at the top (sorted ascending)
+                if (isAUpcoming && !isBUpcoming) return -1;
+                if (!isAUpcoming && isBUpcoming) return 1;
+
                 if (dateA !== dateB) {
-                    return dateA.localeCompare(dateB); // Ascending: earliest/upcoming date first
+                    return dateA.localeCompare(dateB); 
                 }
-                return parseInt(b._rowIndex || 0) - parseInt(a._rowIndex || 0); // Descending row index
+                return parseInt(b._rowIndex || 0) - parseInt(a._rowIndex || 0);
             });
 
             if (!filtered || filtered.length === 0) {
