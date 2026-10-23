@@ -11,9 +11,23 @@
         .light-panel { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .light-input { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; }
         #mobileDrawer { transition: transform 0.3s ease-in-out; }
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen antialiased selection:bg-emerald-500 selection:text-white">
+
+    <!-- GLOBAL LOADING SPINNER OVERLAY -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 flex flex-col items-center gap-4 max-w-xs w-full mx-4">
+            <div class="w-12 h-12 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+            <div class="text-center">
+                <h3 id="loadingText" class="font-bold text-slate-900 text-sm">Loading Financial Ledger...</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Please wait while we sync cloud records 🌊</p>
+            </div>
+        </div>
+    </div>
 
     <div id="drawerOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-opacity"></div>
 
@@ -33,9 +47,10 @@
                 <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📅</span> Master Calendar / 全屏日程表</a>
                 <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-emerald-50 text-emerald-700 font-bold text-xs shadow-sm"><span>📈</span> Financial Ledger / 财务利润报表</a>
                 <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>💰</span> Assistant Commission / 助理提成</a>
+                <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⭐</span> Guest Review Kiosk / 客户评价填写</a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.1</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.5</div>
     </div>
 
     <div class="max-w-[95%] md:max-w-[88%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
@@ -95,6 +110,19 @@
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
         const ADMIN_PASSWORD = "sabah2026";
 
+        function showLoading(text = "Loading Financial Ledger...") {
+            document.getElementById('loadingText').innerText = text;
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100');
+        }
+
         function toggleMenu() {
             const drawer = document.getElementById('mobileDrawer');
             const overlay = document.getElementById('drawerOverlay');
@@ -115,6 +143,7 @@
         }
 
         async function fetchData() {
+            showLoading("Syncing Financial Data...");
             try {
                 const res = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
                 const bookings = await res.json();
@@ -157,6 +186,8 @@
                 }
             } catch (e) {
                 console.error(e);
+            } finally {
+                hideLoading();
             }
         }
     </script>
