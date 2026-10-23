@@ -10,6 +10,7 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .light-panel { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .light-input { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; }
+        .light-input:focus { border-color: #0284c7; background: #ffffff; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
         #mobileDrawer { transition: transform 0.3s ease-in-out; }
         ::-webkit-scrollbar { height: 6px; width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
@@ -36,9 +37,10 @@
                 <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-sky-50 text-sky-700 font-bold text-xs shadow-sm"><span>📅</span> Master Calendar / 全屏日程表</a>
                 <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📈</span> Financial Ledger / 财务利润报表</a>
                 <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>💰</span> Assistant Commission / 助理提成</a>
+                <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⭐</span> Guest Review Kiosk / 客户评价</a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.1</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.3</div>
     </div>
 
     <!-- DAY DETAILS MODAL -->
@@ -48,9 +50,11 @@
                 <h3 id="modalTitle" class="text-base font-bold text-sky-700 flex items-center gap-2"><span>📅</span> Activity Manifest</h3>
                 <button onclick="closeModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">✕</button>
             </div>
+            
             <div id="modalContent" class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
-                <!-- Dynamic day bookings populate here -->
+                <!-- Dynamic items populate here -->
             </div>
+
             <div class="pt-2 flex justify-end">
                 <button onclick="closeModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-5 py-2.5 rounded-xl text-xs transition">Close / 关闭</button>
             </div>
@@ -66,7 +70,7 @@
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">📅</div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Master Operations Calendar</h1>
-                    <p class="text-slate-500 text-xs mt-0.5">全屏月度潜水日程总览与团队行程规划（点击任意日期可查看详细行程）</p>
+                    <p class="text-slate-500 text-xs mt-0.5">全屏月度潜水日程与个人 Google 日历同步总表（自动显示 Busy 状态）</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -89,7 +93,13 @@
 
     <script>
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
+        
+        // Google Calendar Integration Settings
+        const GOOGLE_CALENDAR_ID = "family10206737597948460084@group.calendar.google.com";
+        const GOOGLE_API_KEY = "AIzaSyCbJzL4Ebs830z3JkqOrAtuVCmB0F3A6vE";
+
         let bookings = [];
+        let googleEvents = [];
         let navDate = new Date();
 
         function toggleMenu() {
@@ -100,22 +110,51 @@
         }
 
         window.onload = function() {
-            fetchData();
+            fetchAllData();
         };
 
-        async function fetchData() {
+        async function fetchAllData() {
+            await Promise.all([fetchBookings(), fetchGoogleCalendarEvents()]);
+            renderFullCalendar();
+        }
+
+        async function fetchBookings() {
             try {
                 const res = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
                 bookings = await res.json();
-                renderFullCalendar();
             } catch (e) {
-                console.error(e);
+                console.error("Error fetching bookings:", e);
+            }
+        }
+
+        async function fetchGoogleCalendarEvents() {
+            if (!GOOGLE_API_KEY) {
+                console.warn("Google API Key not set.");
+                return;
+            }
+
+            try {
+                const year = navDate.getFullYear();
+                const month = navDate.getMonth();
+                const timeMin = new Date(year, month, 1).toISOString();
+                const timeMax = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
+
+                const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events?key=${GOOGLE_API_KEY}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`;
+                
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                if (data.items) {
+                    googleEvents = data.items;
+                }
+            } catch (e) {
+                console.error("Error fetching Google Calendar events:", e);
             }
         }
 
         function changeMonth(dir) {
             navDate.setMonth(navDate.getMonth() + dir);
-            renderFullCalendar();
+            fetchAllData();
         }
 
         function renderFullCalendar() {
@@ -132,7 +171,7 @@
             const todayStr = new Date().toLocaleDateString('en-CA');
 
             for (let i = 0; i < firstDayIndex; i++) {
-                grid.innerHTML += `<div class="min-h-[130px] bg-slate-100/50 rounded-2xl opacity-30"></div>`;
+                grid.innerHTML += `<div class="min-h-[135px] bg-slate-100/50 rounded-2xl opacity-30"></div>`;
             }
 
             for (let day = 1; day <= totalDays; day++) {
@@ -140,29 +179,42 @@
                 const dayStr = String(day).padStart(2, '0');
                 const dateKey = `${year}-${monthStr}-${dayStr}`;
 
+                // Filter client bookings
                 const dayBookings = bookings.filter(b => {
                     const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
                     const status = (b["Status"] || '').toLowerCase();
                     return actDate === dateKey && !status.includes('cancelled');
                 });
 
+                // Filter Google Calendar events for this date
+                const dayGoogleEvents = googleEvents.filter(ev => {
+                    const start = ev.start.date || (ev.start.dateTime ? ev.start.dateTime.split('T')[0] : '');
+                    const end = ev.end.date || (ev.end.dateTime ? ev.end.dateTime.split('T')[0] : '');
+                    return dateKey >= start && dateKey <= (end > start ? adjustDate(end, -1) : start);
+                });
+
                 let isToday = (dateKey === todayStr);
                 let boxClass = isToday ? 'bg-sky-50/80 border-sky-400 ring-2 ring-sky-300/40 shadow-sm' : 'bg-white border-slate-200 hover:border-sky-300 hover:shadow-md';
 
                 let listHTML = '';
-                dayBookings.slice(0, 3).forEach(b => {
+
+                // Render Google Calendar "Busy" items
+                dayGoogleEvents.forEach(ev => {
+                    listHTML += `<div class="bg-rose-50 px-2 py-1 rounded-lg border border-rose-200 text-[10px] font-bold text-rose-700 truncate">🔴 Busy: ${ev.summary || 'Busy'}</div>`;
+                });
+
+                // Render client bookings
+                dayBookings.slice(0, 2).forEach(b => {
                     listHTML += `<div class="bg-sky-50 px-2 py-1 rounded-lg border border-sky-100 text-[10px] font-bold text-sky-800 truncate">🏊 ${b["Full Name"]} (${b["Pax"]}p)</div>`;
                 });
 
-                if (dayBookings.length > 3) {
-                    listHTML += `<div class="text-[10px] font-bold text-slate-400 text-center">+${dayBookings.length - 3} more trips...</div>`;
-                }
+                const totalItemsCount = dayBookings.length + dayGoogleEvents.length;
 
                 grid.innerHTML += `
-                    <div onclick="openDayModal('${dateKey}')" class="min-h-[135px] ${boxClass} border rounded-2xl p-2.5 flex flex-col justify-between cursor-pointer transition select-none">
+                    <div onclick="openDayModal('${dateKey}')" class="min-h-[140px] ${boxClass} border rounded-2xl p-2.5 flex flex-col justify-between cursor-pointer transition select-none">
                         <div class="flex justify-between items-center">
                             <span class="text-xs font-bold ${isToday ? 'text-sky-600 font-extrabold bg-sky-100 px-2 py-0.5 rounded-lg' : 'text-slate-700'}">${day}</span>
-                            ${dayBookings.length > 0 ? `<span class="text-[10px] font-bold bg-sky-600 text-white px-1.5 py-0.5 rounded-md shadow-xs">${dayBookings.length} Pax</span>` : ''}
+                            ${totalItemsCount > 0 ? `<span class="text-[10px] font-bold bg-slate-800 text-white px-1.5 py-0.5 rounded-md shadow-xs">${totalItemsCount} Events</span>` : ''}
                         </div>
                         <div class="space-y-1.5 flex-1 mt-2">
                             ${listHTML}
@@ -172,8 +224,14 @@
             }
         }
 
+        function adjustDate(dateStr, days) {
+            let d = new Date(dateStr);
+            d.setDate(d.getDate() + days);
+            return d.toLocaleDateString('en-CA');
+        }
+
         function openDayModal(dateStr) {
-            document.getElementById('modalTitle').innerText = `📅 Date Manifest / 日期行程清单: ${dateStr}`;
+            document.getElementById('modalTitle').innerText = `📅 Date Manifest / 日期行程: ${dateStr}`;
             const content = document.getElementById('modalContent');
             content.innerHTML = '';
 
@@ -182,11 +240,36 @@
                 return actDate === dateStr;
             });
 
-            if (dayBookings.length === 0) {
-                content.innerHTML = `<p class="text-slate-400 text-xs italic text-center py-6">No dive trips scheduled on this date. 暂无出海行程。</p>`;
-            } else {
+            const dayGoogleEvents = googleEvents.filter(ev => {
+                const start = ev.start.date || (ev.start.dateTime ? ev.start.dateTime.split('T')[0] : '');
+                const end = ev.end.date || (ev.end.dateTime ? ev.end.dateTime.split('T')[0] : '');
+                return dateKeyMatch(dateStr, start, end);
+            });
+
+            function dateKeyMatch(d, start, end) {
+                return d >= start && d <= (end > start ? adjustDate(end, -1) : start);
+            }
+
+            let html = '';
+
+            // Render Google Calendar Events
+            if (dayGoogleEvents.length > 0) {
+                html += `<div class="font-bold text-xs text-rose-600 mb-1">🔴 Personal Google Calendar (Busy):</div>`;
+                dayGoogleEvents.forEach(ev => {
+                    html += `
+                        <div class="bg-rose-50 p-3 rounded-2xl border border-rose-200 text-xs space-y-0.5">
+                            <div class="font-bold text-rose-900">📌 ${ev.summary || 'Busy Event'}</div>
+                            ${ev.description ? `<div class="text-rose-700 text-[11px]">${ev.description}</div>` : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            // Render Client Bookings
+            if (dayBookings.length > 0) {
+                html += `<div class="font-bold text-xs text-sky-700 mt-3 mb-1">🏊 Client Dive Trips:</div>`;
                 dayBookings.forEach(b => {
-                    content.innerHTML += `
+                    html += `
                         <div class="light-input p-3.5 rounded-2xl border-slate-200 text-xs space-y-1 shadow-sm">
                             <div class="flex justify-between items-center font-bold text-slate-900">
                                 <span>👤 ${b["Full Name"]} (${b["Pax"]} Pax)</span>
@@ -194,12 +277,17 @@
                             </div>
                             <div class="text-slate-600">📍 <b>Location:</b> ${b["Location"]}</div>
                             <div class="text-slate-600">📌 <b>Status:</b> ${b["Status"]}</div>
-                            <div class="text-slate-500 text-[11px]">🏨 <b>Notes/Pickup:</b> ${b["Remarks"] || 'None'}</div>
+                            <div class="text-slate-500 text-[11px]">🏨 <b>Notes:</b> ${b["Remarks"] || 'None'}</div>
                         </div>
                     `;
                 });
             }
 
+            if (dayBookings.length === 0 && dayGoogleEvents.length === 0) {
+                html = `<p class="text-slate-400 text-xs italic text-center py-4">No events or dive trips scheduled on this date.</p>`;
+            }
+
+            content.innerHTML = html;
             document.getElementById('dayModal').classList.remove('hidden');
         }
 
