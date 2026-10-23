@@ -19,6 +19,17 @@
 </head>
 <body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white">
 
+    <!-- GLOBAL LOADING SPINNER OVERLAY -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 flex flex-col items-center gap-4 max-w-xs w-full mx-4">
+            <div class="w-12 h-12 border-4 border-sky-200 border-t-sky-600 rounded-full animate-spin"></div>
+            <div class="text-center">
+                <h3 id="loadingText" class="font-bold text-slate-900 text-sm">Loading Calendar...</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Please wait while we sync events 🌊</p>
+            </div>
+        </div>
+    </div>
+
     <div id="drawerOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-opacity"></div>
 
     <!-- HAMBURGER DRAWER -->
@@ -40,7 +51,7 @@
                 <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⭐</span> Guest Review Kiosk / 客户评价</a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.4</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.5</div>
     </div>
 
     <!-- DAY DETAILS MODAL -->
@@ -70,7 +81,7 @@
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">📅</div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Master Operations Calendar</h1>
-                    <p class="text-slate-500 text-xs mt-0.5">全屏月度潜水日程与未来个人 Google 日历同步总表（仅显示未来 Busy 状态）</p>
+                    <p class="text-slate-500 text-xs mt-0.5">全屏月度潜水日程与未来个人 Google 日历同步总表</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -93,14 +104,25 @@
 
     <script>
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
-        
-        // Google Calendar Integration Settings
         const GOOGLE_CALENDAR_ID = "family10206737597948460084@group.calendar.google.com";
         const GOOGLE_API_KEY = "AIzaSyCbJzL4Ebs830z3JkqOrAtuVCmB0F3A6vE";
 
         let bookings = [];
         let googleEvents = [];
         let navDate = new Date();
+
+        function showLoading(text = "Loading Calendar...") {
+            document.getElementById('loadingText').innerText = text;
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100');
+        }
 
         function toggleMenu() {
             const drawer = document.getElementById('mobileDrawer');
@@ -114,8 +136,10 @@
         };
 
         async function fetchAllData() {
+            showLoading("Syncing Schedule & Calendar...");
             await Promise.all([fetchBookings(), fetchGoogleCalendarEvents()]);
             renderFullCalendar();
+            hideLoading();
         }
 
         async function fetchBookings() {
@@ -128,26 +152,18 @@
         }
 
         async function fetchGoogleCalendarEvents() {
-            if (!GOOGLE_API_KEY) {
-                console.warn("Google API Key not set.");
-                return;
-            }
-
+            if (!GOOGLE_API_KEY) return;
             try {
                 const year = navDate.getFullYear();
                 const month = navDate.getMonth();
-                
-                // Only fetch from current moment onwards (or start of visible month if in the future)
                 const firstDayOfMonth = new Date(year, month, 1);
                 const now = new Date();
                 const timeMin = firstDayOfMonth > now ? firstDayOfMonth.toISOString() : now.toISOString();
                 const timeMax = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
 
                 const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events?key=${GOOGLE_API_KEY}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`;
-                
                 const res = await fetch(url);
                 const data = await res.json();
-                
                 if (data.items) {
                     googleEvents = data.items;
                 }
@@ -183,20 +199,16 @@
                 const dayStr = String(day).padStart(2, '0');
                 const dateKey = `${year}-${monthStr}-${dayStr}`;
 
-                // Filter client bookings
                 const dayBookings = bookings.filter(b => {
                     const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
                     const status = (b["Status"] || '').toLowerCase();
                     return actDate === dateKey && !status.includes('cancelled');
                 });
 
-                // Filter Google Calendar events (Future only, dropping any past end dates)
                 const dayGoogleEvents = googleEvents.filter(ev => {
                     const start = ev.start.date || (ev.start.dateTime ? ev.start.dateTime.split('T')[0] : '');
                     const end = ev.end.date || (ev.end.dateTime ? ev.end.dateTime.split('T')[0] : '');
-                    
-                    if (end < todayStr) return false; // Ignore past events
-
+                    if (end < todayStr) return false;
                     return dateKey >= start && dateKey <= (end > start ? adjustDate(end, -1) : start);
                 });
 
@@ -204,13 +216,10 @@
                 let boxClass = isToday ? 'bg-sky-50/80 border-sky-400 ring-2 ring-sky-300/40 shadow-sm' : 'bg-white border-slate-200 hover:border-sky-300 hover:shadow-md';
 
                 let listHTML = '';
-
-                // Render Future Google Calendar "Busy" items
                 dayGoogleEvents.forEach(ev => {
                     listHTML += `<div class="bg-rose-50 px-2 py-1 rounded-lg border border-rose-200 text-[10px] font-bold text-rose-700 truncate">🔴 Busy: ${ev.summary || 'Busy'}</div>`;
                 });
 
-                // Render client bookings
                 dayBookings.slice(0, 2).forEach(b => {
                     listHTML += `<div class="bg-sky-50 px-2 py-1 rounded-lg border border-sky-100 text-[10px] font-bold text-sky-800 truncate">🏊 ${b["Full Name"]} (${b["Pax"]}p)</div>`;
                 });
@@ -252,16 +261,11 @@
                 const start = ev.start.date || (ev.start.dateTime ? ev.start.dateTime.split('T')[0] : '');
                 const end = ev.end.date || (ev.end.dateTime ? ev.end.dateTime.split('T')[0] : '');
                 if (end < todayStr) return false;
-                return dateKeyMatch(dateStr, start, end);
+                return d >= start && d <= (end > start ? adjustDate(end, -1) : start);
+                function d(x) { return x; }(dateStr);
             });
 
-            function dateKeyMatch(d, start, end) {
-                return d >= start && d <= (end > start ? adjustDate(end, -1) : start);
-            }
-
             let html = '';
-
-            // Render Google Calendar Events
             if (dayGoogleEvents.length > 0) {
                 html += `<div class="font-bold text-xs text-rose-600 mb-1">🔴 Personal Google Calendar (Busy):</div>`;
                 dayGoogleEvents.forEach(ev => {
@@ -274,7 +278,6 @@
                 });
             }
 
-            // Render Client Bookings
             if (dayBookings.length > 0) {
                 html += `<div class="font-bold text-xs text-sky-700 mt-3 mb-1">🏊 Client Dive Trips:</div>`;
                 dayBookings.forEach(b => {
