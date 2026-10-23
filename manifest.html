@@ -87,8 +87,8 @@
             </div>
         </div>
 
-        <!-- Location Cards Grid -->
-        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6" id="manifestContainer">
+        <!-- Location Cards Grid (3 Columns now since KK is removed) -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6" id="manifestContainer">
             <!-- Dynamic Location Manifest Cards Populated Here -->
         </div>
     </div>
@@ -143,8 +143,7 @@
             const locations = [
                 { name: "Semporna & Bum Bum", icon: "🏝️", zh: "仙本那 / 邦邦岛" },
                 { name: "Tun Sakaran Marine Park", icon: "🐠", zh: "敦沙卡兰海洋公园" },
-                { name: "Dreamer Island (淘梦岛)", icon: "🏖️", zh: "淘梦岛" },
-                { name: "Kota Kinabalu", icon: "🏙️", zh: "亚庇" }
+                { name: "Dreamer Island (淘梦岛)", icon: "🏖️", zh: "淘梦岛" }
             ];
 
             let allHotelStops = {};
@@ -221,7 +220,7 @@
             const date = document.getElementById('manifestDateFilter').value;
             let text = `🚤 【沙巴出海船长群通知 / Captain Manifest - ${date}】\n-----------------------------------\n`;
             
-            const locations = ["Semporna", "Tun Sakaran", "Dreamer Island", "Kota Kinabalu"];
+            const locations = ["Semporna", "Tun Sakaran", "Dreamer Island"];
             locations.forEach(loc => {
                 const divers = allBookings.filter(b => {
                     const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
