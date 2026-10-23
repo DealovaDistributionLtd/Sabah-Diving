@@ -31,6 +31,17 @@
 </head>
 <body class="text-slate-800 min-h-screen antialiased selection:bg-amber-500 selection:text-white">
 
+    <!-- GLOBAL LOADING SPINNER OVERLAY -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 flex flex-col items-center gap-4 max-w-xs w-full mx-4">
+            <div class="w-12 h-12 border-4 border-amber-200 border-t-amber-600 rounded-full animate-spin"></div>
+            <div class="text-center">
+                <h3 id="loadingText" class="font-bold text-slate-900 text-sm">Loading Commission Ledger...</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Please wait while we sync data 🌊</p>
+            </div>
+        </div>
+    </div>
+
     <!-- OVERLAY -->
     <div id="commOverlay" onclick="toggleCommMenu()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-opacity"></div>
 
@@ -76,7 +87,7 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Commission System v3.1
+            Commission System v3.2
         </div>
     </div>
 
@@ -160,6 +171,19 @@
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
         let rawBookings = [];
 
+        function showLoading(text = "Loading Commission...") {
+            document.getElementById('loadingText').innerText = text;
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100');
+        }
+
         function toggleCommMenu() {
             const drawer = document.getElementById('commDrawer');
             const overlay = document.getElementById('commOverlay');
@@ -177,6 +201,7 @@
         };
 
         async function fetchCommissionData() {
+            showLoading("Loading Commission Ledger...");
             try {
                 const response = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
                 const data = await response.json();
@@ -187,6 +212,8 @@
             } catch (err) {
                 console.error("Fetch error:", err);
                 document.getElementById('commissionTableBody').innerHTML = `<tr><td colspan="8" class="py-8 text-center text-rose-500 text-sm">Failed to load live data from Google Sheet.</td></tr>`;
+            } finally {
+                hideLoading();
             }
         }
 
