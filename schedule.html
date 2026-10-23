@@ -40,7 +40,7 @@
                 <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⭐</span> Guest Review Kiosk / 客户评价</a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.3</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.4</div>
     </div>
 
     <!-- DAY DETAILS MODAL -->
@@ -70,7 +70,7 @@
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">📅</div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Master Operations Calendar</h1>
-                    <p class="text-slate-500 text-xs mt-0.5">全屏月度潜水日程与个人 Google 日历同步总表（自动显示 Busy 状态）</p>
+                    <p class="text-slate-500 text-xs mt-0.5">全屏月度潜水日程与未来个人 Google 日历同步总表（仅显示未来 Busy 状态）</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -136,7 +136,11 @@
             try {
                 const year = navDate.getFullYear();
                 const month = navDate.getMonth();
-                const timeMin = new Date(year, month, 1).toISOString();
+                
+                // Only fetch from current moment onwards (or start of visible month if in the future)
+                const firstDayOfMonth = new Date(year, month, 1);
+                const now = new Date();
+                const timeMin = firstDayOfMonth > now ? firstDayOfMonth.toISOString() : now.toISOString();
                 const timeMax = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
 
                 const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events?key=${GOOGLE_API_KEY}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`;
@@ -186,10 +190,13 @@
                     return actDate === dateKey && !status.includes('cancelled');
                 });
 
-                // Filter Google Calendar events for this date
+                // Filter Google Calendar events (Future only, dropping any past end dates)
                 const dayGoogleEvents = googleEvents.filter(ev => {
                     const start = ev.start.date || (ev.start.dateTime ? ev.start.dateTime.split('T')[0] : '');
                     const end = ev.end.date || (ev.end.dateTime ? ev.end.dateTime.split('T')[0] : '');
+                    
+                    if (end < todayStr) return false; // Ignore past events
+
                     return dateKey >= start && dateKey <= (end > start ? adjustDate(end, -1) : start);
                 });
 
@@ -198,7 +205,7 @@
 
                 let listHTML = '';
 
-                // Render Google Calendar "Busy" items
+                // Render Future Google Calendar "Busy" items
                 dayGoogleEvents.forEach(ev => {
                     listHTML += `<div class="bg-rose-50 px-2 py-1 rounded-lg border border-rose-200 text-[10px] font-bold text-rose-700 truncate">🔴 Busy: ${ev.summary || 'Busy'}</div>`;
                 });
@@ -240,9 +247,11 @@
                 return actDate === dateStr;
             });
 
+            const todayStr = new Date().toLocaleDateString('en-CA');
             const dayGoogleEvents = googleEvents.filter(ev => {
                 const start = ev.start.date || (ev.start.dateTime ? ev.start.dateTime.split('T')[0] : '');
                 const end = ev.end.date || (ev.end.dateTime ? ev.end.dateTime.split('T')[0] : '');
+                if (end < todayStr) return false;
                 return dateKeyMatch(dateStr, start, end);
             });
 
@@ -284,7 +293,7 @@
             }
 
             if (dayBookings.length === 0 && dayGoogleEvents.length === 0) {
-                html = `<p class="text-slate-400 text-xs italic text-center py-4">No events or dive trips scheduled on this date.</p>`;
+                html = `<p class="text-slate-400 text-xs italic text-center py-4">No future events or dive trips scheduled on this date.</p>`;
             }
 
             content.innerHTML = html;
