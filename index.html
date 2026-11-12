@@ -111,7 +111,7 @@
                 </button>
             </div>
 
-            <!-- Unified Drawer Links (Includes Weather Page) -->
+            <!-- Unified Drawer Links -->
             <nav class="space-y-2">
                 <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-sky-50 text-sky-700 font-bold text-xs shadow-sm">
                     <span>📋</span> Master Bookings / 预订总表
@@ -138,11 +138,11 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Sabah Diving System v3.5
+            Sabah Diving System v3.6
         </div>
     </div>
 
-    <!-- IN-PAGE VOUCHER MODAL OVERLAY (Scrollable & Mobile Optimized) -->
+    <!-- IN-PAGE VOUCHER MODAL OVERLAY -->
     <div id="voucherModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
         <div id="voucherModalContent" class="bg-white w-full max-w-xl p-5 sm:p-8 rounded-3xl shadow-2xl border border-slate-200 relative my-auto max-h-[90vh] overflow-y-auto">
             <button onclick="closeVoucherModal()" class="no-print absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm transition">
@@ -179,7 +179,7 @@
                 </div>
                 <div class="flex justify-between py-1.5 border-b border-slate-100">
                     <span class="text-slate-400">Payment Method / 收款方式:</span>
-                    <span id="modalPaymentMethod" class="text-slate-800">-</strong>
+                    <span id="modalPaymentMethod" class="text-slate-800">-</span>
                 </div>
             </div>
 
@@ -245,7 +245,7 @@
             </div>
         </header>
 
-        <!-- Main Dashboard Content (Full Width) -->
+        <!-- Main Dashboard Content -->
         <div class="space-y-6 sm:space-y-8">
             
             <!-- Input Form Card -->
@@ -335,7 +335,7 @@
                         <input type="number" id="balanceDue" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-3 text-sm text-emerald-700 font-bold" placeholder="0.00">
                     </div>
 
-                    <div class="sm:col-span-2">
+                    <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1.5">状态 (Status)</label>
                         <select id="status" class="w-full light-input rounded-xl px-3.5 py-3 text-sm focus:outline-none">
                             <option value="Confirmed / 已确认">Confirmed / 已确认</option>
@@ -603,6 +603,19 @@
                 }
             });
             renderTable();
+        }
+
+        // ⭐ Generate & Copy Guest Review Link Function
+        function copyReviewLink(name, pkg) {
+            const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+            const reviewUrl = `${baseUrl}reviews.html?name=${encodeURIComponent(name)}&pkg=${encodeURIComponent(pkg)}`;
+            
+            navigator.clipboard.writeText(reviewUrl).then(() => {
+                alert(`✅ Review link copied successfully for [${name}]!\n直接评价链接已复制，可发送给客户：\n\n${reviewUrl}`);
+            }).catch(err => {
+                console.error('Failed to copy review link: ', err);
+                prompt("Copy review link manually:", reviewUrl);
+            });
         }
 
         async function shareVoucherAsImage() {
@@ -1005,6 +1018,12 @@
                     badgeClass = "bg-sky-50 text-sky-700 border border-sky-200 px-2.5 py-1 rounded-lg font-semibold";
                 }
 
+                // Show review link button if completed
+                let reviewBtnHTML = '';
+                if (rawStatus.toLowerCase().includes('complet')) {
+                    reviewBtnHTML = `<button onclick="copyReviewLink('${name.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Copy guest review link">⭐ Review</button>`;
+                }
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80 transition">
                         <td class="py-3.5 px-3 font-bold text-slate-900">${name}</td>
@@ -1020,7 +1039,8 @@
                         <td class="py-3.5 px-3 text-slate-500">${paymentMethod}</td>
                         <td class="py-3.5 px-3"><span class="${badgeClass}">${rawStatus}</span></td>
                         <td class="py-3.5 px-3 text-slate-500 truncate max-w-[150px]" title="${remarks}">${remarks}</td>
-                        <td class="py-3.5 px-3 text-center flex items-center justify-center gap-1.5">
+                        <td class="py-3.5 px-3 text-center flex items-center justify-center gap-1.5 flex-wrap">
+                            ${reviewBtnHTML}
                             <button onclick="generatePDFVoucher('${name.replace(/'/g, "\\'")}', '${gender}', '${passport}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${deposit}', '${balance}', '${paymentMethod}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Generate printable booking voucher">
                                 📄 Voucher
                             </button>
