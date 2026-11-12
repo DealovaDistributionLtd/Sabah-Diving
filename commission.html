@@ -7,6 +7,8 @@
     <!-- PWA Manifest Link -->
     <link rel="manifest" href="manifest.html">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include Chart.js for Analytics Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
         body { 
@@ -39,7 +41,7 @@
             <div class="w-12 h-12 border-4 border-amber-200 border-t-amber-600 rounded-full animate-spin"></div>
             <div class="text-center">
                 <h3 id="loadingText" class="font-bold text-slate-900 text-sm">Loading Commission Ledger...</h3>
-                <p class="text-[11px] text-slate-400 mt-0.5">Please wait while we sync data 🌊</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Please wait while we sync analytics 🌊</p>
             </div>
         </div>
     </div>
@@ -92,7 +94,7 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Commission System v3.3
+            Commission System v3.4
         </div>
     </div>
 
@@ -111,32 +113,32 @@
                 </div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-                        Assistant Commission & Payout Portal
+                        Assistant Commission & Analytics Hub
                     </h1>
                     <p class="text-slate-500 text-xs mt-0.5">
-                        助理提成结算（订单总价需满 RM500 且仅限已完成 Completed 订单参与结算，Snorkeling无提成）
+                        助理提成结算（订单总价需满 RM500 且仅限已完成订单）与月度提成趋势分析面板
                     </p>
                 </div>
             </div>
         </header>
 
         <!-- Main Body -->
-        <div class="light-panel p-6 sm:p-8 rounded-3xl space-y-6">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-6">
+        <div class="space-y-6">
+            <!-- Summary Cards Panel -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2.5">
                         <span class="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-sm text-orange-600">📊</span>
-                        Payout Ledger & Settlement / 提成发放台账
+                        Payout Ledger Summary / 提成结算概览
                     </h2>
                     <p class="text-xs text-slate-500 mt-1">
-                        点击发放状态可随时切换【待发放 Unpaid】与【已结算 Settled】
+                        实时计算已完成且达标订单的助理总提成
                     </p>
                 </div>
                 
-                <!-- Commission Summary Cards -->
                 <div class="flex flex-wrap gap-3">
                     <div class="light-input px-4 py-3 rounded-2xl flex flex-col min-w-[120px]">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase">Eligible Pax / 达标结算人数</span>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase">Eligible Pax / 达标人数</span>
                         <span id="commTotalPax" class="text-base font-bold text-slate-900 mt-0.5">0 Pax</span>
                     </div>
                     <div class="light-input px-4 py-3 rounded-2xl flex flex-col bg-amber-50/50 border-amber-200 min-w-[140px]">
@@ -150,25 +152,58 @@
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
-                    <thead>
-                        <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
-                            <th class="py-3.5 px-3">活动日期</th>
-                            <th class="py-3.5 px-3">客户姓名 (Client Name)</th>
-                            <th class="py-3.5 px-3">预订项目 (Package Type)</th>
-                            <th class="py-3.5 px-3 text-center">人数 (Pax)</th>
-                            <th class="py-3.5 px-3 text-right">订单总价 (Total Price)</th>
-                            <th class="py-3.5 px-3">订单状态</th>
-                            <th class="py-3.5 px-3">单人提成标准</th>
-                            <th class="py-3.5 px-3 text-right">总提成金额</th>
-                            <th class="py-3.5 px-3 text-center">发放状态 (Payout)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="commissionTableBody" class="divide-y divide-slate-100">
-                        <tr><td colspan="9" class="py-8 text-center text-slate-400 text-sm">Loading commission ledger... / 正在加载提成台账...</td></tr>
-                    </tbody>
-                </table>
+            <!-- Analytics Charts Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Monthly Payout Trend Chart -->
+                <div class="light-panel p-6 sm:p-8 rounded-3xl space-y-4">
+                    <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <span>📈</span> Monthly Commission Payout Trend / 月度提成发放趋势
+                    </h3>
+                    <div class="relative w-full h-[260px]">
+                        <canvas id="monthlyTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Package Breakdown Doughnut Chart -->
+                <div class="light-panel p-6 sm:p-8 rounded-3xl space-y-4">
+                    <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <span>🍩</span> Commission Breakdown by Package / 按潜水项目提成占比
+                    </h3>
+                    <div class="relative w-full h-[260px]">
+                        <canvas id="packageBreakdownChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Ledger Table -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl space-y-6">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <span>📋</span> Detailed Commission Ledger / 详细提成台账
+                    </h3>
+                    <span class="text-xs text-slate-400">点击发放状态可随时切换【待发放】与【已结算】</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
+                                <th class="py-3.5 px-3">活动日期</th>
+                                <th class="py-3.5 px-3">客户姓名 (Client Name)</th>
+                                <th class="py-3.5 px-3">预订项目 (Package Type)</th>
+                                <th class="py-3.5 px-3 text-center">人数 (Pax)</th>
+                                <th class="py-3.5 px-3 text-right">订单总价 (Total Price)</th>
+                                <th class="py-3.5 px-3">订单状态</th>
+                                <th class="py-3.5 px-3">单人提成标准</th>
+                                <th class="py-3.5 px-3 text-right">总提成金额</th>
+                                <th class="py-3.5 px-3 text-center">发放状态 (Payout)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="commissionTableBody" class="divide-y divide-slate-100">
+                            <tr><td colspan="9" class="py-8 text-center text-slate-400 text-sm">Loading commission ledger... / 正在加载提成台账...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -176,6 +211,8 @@
     <script>
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
         let rawBookings = [];
+        let monthlyChart = null;
+        let packageChart = null;
 
         function showLoading(text = "Loading Commission...") {
             document.getElementById('loadingText').innerText = text;
@@ -213,7 +250,7 @@
                 const data = await response.json();
                 if (Array.isArray(data)) {
                     rawBookings = data;
-                    renderCommissionTable();
+                    renderCommissionDashboard();
                 }
             } catch (err) {
                 console.error("Fetch error:", err);
@@ -226,12 +263,10 @@
         function getCommissionDetails(pkg, totalPrice) {
             const p = (pkg || '').toLowerCase();
             
-            // Rule 1: Snorkeling or Total Price below RM500 = No Commission
             if (p.includes('snorkeling') || totalPrice < 500) {
                 return { rate: 0, label: totalPrice < 500 ? 'RM0.00 (< RM500 门槛)' : 'RM0.00 (Snorkeling)' };
             }
 
-            // Rule 2: Package Tiers for RM500+ orders
             if (p.includes('dsd')) return { rate: 25, label: 'RM25 / pax (DSD)' };
             if (p.includes('fun dive')) return { rate: 35, label: 'RM35 / pax (Fun Dive)' };
             if (p.includes('course') || p.includes('open water')) return { rate: 70, label: 'RM70 / student (Course)' };
@@ -244,10 +279,10 @@
             const currentStatus = localStorage.getItem(storageKey) || 'Unpaid';
             const newStatus = currentStatus === 'Unpaid' ? 'Settled' : 'Unpaid';
             localStorage.setItem(storageKey, newStatus);
-            renderCommissionTable();
+            renderCommissionDashboard();
         }
 
-        function renderCommissionTable() {
+        function renderCommissionDashboard() {
             const tbody = document.getElementById('commissionTableBody');
             tbody.innerHTML = '';
 
@@ -270,27 +305,28 @@
                 document.getElementById('commTotalPax').innerText = `0 Pax`;
                 document.getElementById('commTotalUnpaid').innerText = `RM0.00`;
                 document.getElementById('commTotalSettled').innerText = `RM0.00`;
+                renderCharts([], {});
                 return;
             }
 
             let totalPaxCount = 0;
             let totalUnpaidAmount = 0;
             let totalSettledAmount = 0;
+            
+            const monthlyData = {};
+            const packageData = {};
 
             validBookings.slice().reverse().forEach(b => {
                 const rowIndex = b._rowIndex;
                 const cleanActivityDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
                 const name = b["Full Name"] || '';
-                const pkg = b["Package"] || '';
+                const pkg = b["Package"] || 'Standard';
                 const pax = parseInt(b["Pax"]) || 1;
                 const status = b["Status"] || '';
-                
-                // Parse Total Price from row data (falls back to 0 if missing)
                 const totalPrice = parseFloat(b["Total Price"] || b["Price"] || 0);
 
                 const { rate, label } = getCommissionDetails(pkg, totalPrice);
                 const commissionEarned = pax * rate;
-
                 const payoutStatus = localStorage.getItem(`sabah_payout_status_${rowIndex}`) || 'Unpaid';
 
                 if (rate > 0) {
@@ -300,10 +336,16 @@
                     } else {
                         totalUnpaidAmount += commissionEarned;
                     }
+
+                    // Aggregate Monthly Data (YYYY-MM)
+                    const monthKey = cleanActivityDate.substring(0, 7) || '2026-11';
+                    monthlyData[monthKey] = (monthlyData[monthKey] || 0) + commissionEarned;
+
+                    // Aggregate Package Data
+                    packageData[pkg] = (packageData[pkg] || 0) + commissionEarned;
                 }
 
                 let badgeClass = "bg-sky-50 text-sky-700 border border-sky-200 px-2.5 py-1 rounded-lg font-semibold";
-
                 let payoutButtonHTML = '';
                 if (rate === 0) {
                     payoutButtonHTML = `<span class="text-slate-400 text-[11px] italic">Ineligible / 未达标</span>`;
@@ -331,6 +373,62 @@
             document.getElementById('commTotalPax').innerText = `${totalPaxCount} Pax`;
             document.getElementById('commTotalUnpaid').innerText = `RM${totalUnpaidAmount.toFixed(2)}`;
             document.getElementById('commTotalSettled').innerText = `RM${totalSettledAmount.toFixed(2)}`;
+
+            renderCharts(monthlyData, packageData);
+        }
+
+        function renderCharts(monthlyData, packageData) {
+            // 1. Monthly Trend Chart
+            const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+            const sortedMonths = Object.keys(monthlyData).sort();
+            const monthlyValues = sortedMonths.map(m => monthlyData[m]);
+
+            if (monthlyChart) monthlyChart.destroy();
+            monthlyChart = new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: sortedMonths.length ? sortedMonths : ['Nov 2026'],
+                    datasets: [{
+                        label: 'Commission (RM)',
+                        data: monthlyValues.length ? monthlyValues : [0],
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // 2. Package Breakdown Doughnut Chart
+            const packageCtx = document.getElementById('packageBreakdownChart').getContext('2d');
+            const pkgLabels = Object.keys(packageData);
+            const pkgValues = pkgLabels.map(p => packageData[p]);
+
+            if (packageChart) packageChart.destroy();
+            packageChart = new Chart(packageCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: pkgLabels.length ? pkgLabels : ['No Data'],
+                    datasets: [{
+                        data: pkgValues.length ? pkgValues : [1],
+                        backgroundColor: ['#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+                    }
+                }
+            });
         }
     </script>
 </body>
