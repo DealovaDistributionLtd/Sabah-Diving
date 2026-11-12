@@ -44,7 +44,7 @@
                 <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-amber-50 text-amber-700 font-bold text-xs shadow-sm"><span>⭐</span> Guest Review Kiosk / 客户评价填写</a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.6</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.7</div>
     </div>
 
     <div class="max-w-3xl mx-auto px-4 py-8 sm:py-12">
@@ -65,7 +65,7 @@
         <div id="reviewFormCard" class="light-panel p-6 sm:p-8 rounded-3xl space-y-6">
             <div class="border-b border-slate-100 pb-4">
                 <h2 class="text-base font-bold text-slate-900">⭐ Share Your Dive Experience / 分享您的潜水体验</h2>
-                <p class="text-xs text-slate-500 mt-0.5" id="welcomeSub">Your feedback helps us provide world-class 1-to-1 coaching and underwater videography.</p>
+                <p class="text-xs text-slate-500 mt-0.5">Your feedback helps us provide world-class 1-to-1 coaching and underwater videography.</p>
             </div>
 
             <form id="reviewForm" onsubmit="submitReview(event)" class="space-y-4">
@@ -81,12 +81,12 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-1.5">Rating / 整体评分 (1 - 5 Stars)</label>
-                    <div class="flex gap-3 text-2xl cursor-pointer select-none" id="starContainer">
-                        <span onclick="setRating(1)" class="star text-slate-300 transition hover:scale-110" data-val="1">★</span>
-                        <span onclick="setRating(2)" class="star text-slate-300 transition hover:scale-110" data-val="2">★</span>
-                        <span onclick="setRating(3)" class="star text-slate-300 transition hover:scale-110" data-val="3">★</span>
-                        <span onclick="setRating(4)" class="star text-slate-300 transition hover:scale-110" data-val="4">★</span>
-                        <span onclick="setRating(5)" class="star text-amber-400 transition hover:scale-110" data-val="5">★</span>
+                    <div class="flex gap-2 text-3xl cursor-pointer select-none" id="starContainer">
+                        <span onclick="setRating(1)" onmouseover="hoverRating(1)" onmouseout="resetHover()" class="star text-amber-400 transition hover:scale-110" data-val="1">★</span>
+                        <span onclick="setRating(2)" onmouseover="hoverRating(2)" onmouseout="resetHover()" class="star text-amber-400 transition hover:scale-110" data-val="2">★</span>
+                        <span onclick="setRating(3)" onmouseover="hoverRating(3)" onmouseout="resetHover()" class="star text-amber-400 transition hover:scale-110" data-val="3">★</span>
+                        <span onclick="setRating(4)" onmouseover="hoverRating(4)" onmouseout="resetHover()" class="star text-amber-400 transition hover:scale-110" data-val="4">★</span>
+                        <span onclick="setRating(5)" onmouseover="hoverRating(5)" onmouseout="resetHover()" class="star text-amber-400 transition hover:scale-110" data-val="5">★</span>
                     </div>
                     <input type="hidden" id="reviewRating" value="5">
                 </div>
@@ -132,7 +132,6 @@
         let currentRating = 5;
 
         window.onload = function() {
-            // Check for URL parameters (?name=...&pkg=...)
             const urlParams = new URLSearchParams(window.location.search);
             const guestName = urlParams.get('name');
             const guestPkg = urlParams.get('pkg');
@@ -144,6 +143,7 @@
                 document.getElementById('reviewPackage').value = decodeURIComponent(guestPkg);
             }
 
+            setRating(5);
             renderStoredReviews();
         };
 
@@ -157,6 +157,18 @@
         function setRating(val) {
             currentRating = val;
             document.getElementById('reviewRating').value = val;
+            updateStarsDisplay(val);
+        }
+
+        function hoverRating(val) {
+            updateStarsDisplay(val);
+        }
+
+        function resetHover() {
+            updateStarsDisplay(currentRating);
+        }
+
+        function updateStarsDisplay(val) {
             const stars = document.querySelectorAll('#starContainer .star');
             stars.forEach(star => {
                 const starVal = parseInt(star.getAttribute('data-val'));
@@ -186,7 +198,6 @@
                 date: dateStr
             };
 
-            // Retrieve existing local reviews
             let storedReviews = [];
             try {
                 storedReviews = JSON.parse(localStorage.getItem('sabah_guest_reviews') || '[]');
@@ -194,10 +205,9 @@
                 storedReviews = [];
             }
 
-            storedReviews.unshift(newReview); // Add to top
+            storedReviews.unshift(newReview);
             localStorage.setItem('sabah_guest_reviews', JSON.stringify(storedReviews));
 
-            // Show success screen
             document.getElementById('reviewFormCard').classList.add('hidden');
             document.getElementById('successCard').classList.remove('hidden');
             renderStoredReviews();
