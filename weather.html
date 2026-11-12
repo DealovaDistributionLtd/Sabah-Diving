@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marine Weather & Dive Conditions | 沙巴海洋天气与潜水状况监控</title>
+    <title>Marine Weather & Tide Charts | 沙巴海洋天气与潮汐预报监控</title>
     <!-- PWA Manifest Link -->
     <link rel="manifest" href="manifest.html">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -55,8 +55,8 @@
                 </button>
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">⛅</div>
                 <div>
-                    <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Marine Weather & Dive Conditions Hub</h1>
-                    <p class="text-slate-500 text-xs mt-0.5">仙本那、敦沙卡兰海洋公园与淘梦岛实时海况、浪高与水下能见度监测</p>
+                    <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Marine Weather & Tide Hub</h1>
+                    <p class="text-slate-500 text-xs mt-0.5">仙本那、敦沙卡兰海洋公园与淘梦岛实时海况、浪高与高低潮汐预报监控</p>
                 </div>
             </div>
         </header>
@@ -66,7 +66,7 @@
             <div class="light-panel p-6 sm:p-8 rounded-3xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h2 class="text-base font-bold text-slate-900">Select Operational Zone / 选择观测海域</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Switch between dive spots to inspect live meteorological forecasts.</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Switch between dive spots to inspect live meteorological and tide forecasts.</p>
                 </div>
                 <div class="flex gap-2 w-full sm:w-auto">
                     <select id="zoneSelect" onchange="renderWeatherZone()" class="light-input rounded-xl px-4 py-2.5 text-xs font-bold text-sky-700 focus:outline-none w-full sm:w-64 cursor-pointer">
@@ -98,6 +98,25 @@
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Wind Speed & Direction / 风速与风向</span>
                     <div class="text-3xl font-bold text-slate-700 mt-4" id="cardWind">7 kts (NE)</div>
                     <span class="text-xs text-slate-500 font-semibold mt-2" id="cardWindDesc">Light breeze, low chop</span>
+                </div>
+            </div>
+
+            <!-- Tide Schedule & Cycle Tracker Card -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl space-y-5">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <span>🌊</span> Today's Tide Schedule & Cycle / 今日高潮与低潮时间表
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Critical for boat jetty departures, drift dives, and shallow reef navigation.</p>
+                    </div>
+                    <span id="currentTideStatus" class="px-3 py-1 bg-sky-50 text-sky-700 border border-sky-200 rounded-xl text-xs font-bold">
+                        🌊 Rising Tide / 涨潮中
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="tideCardsContainer">
+                    <!-- Populated dynamically -->
                 </div>
             </div>
 
@@ -173,6 +192,12 @@
                 wind: "7 kts (NE)",
                 windDesc: "Light breeze, low chop",
                 advisory: "Current marine conditions are optimal for all diving levels, underwater photography, and drone operations. Enjoy the coral reefs and fish storms!",
+                tides: [
+                    { type: "High Tide / 满潮", time: "05:40 AM", height: "2.1m", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+                    { type: "Low Tide / 干潮", time: "11:50 AM", height: "0.4m", badge: "bg-amber-50 text-amber-700 border-amber-200" },
+                    { type: "High Tide / 满潮", time: "06:15 PM", height: "2.3m", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+                    { type: "Low Tide / 干潮", time: "11:55 PM (Night)", height: "0.6m", badge: "bg-slate-100 text-slate-700 border-slate-200" }
+                ],
                 trendWaves: [0.4, 0.5, 0.4, 0.3, 0.4],
                 trendWinds: [7, 8, 6, 5, 7],
                 forecast: [
@@ -193,6 +218,12 @@
                 wind: "10 kts (E)",
                 windDesc: "Steady breeze, secure boat moorings",
                 advisory: "Great conditions for Bohey Dulang hiking and outer reef wall dives. Keep surface marker buoys ready due to moderate open-water chop.",
+                tides: [
+                    { type: "High Tide / 满潮", time: "06:05 AM", height: "2.2m", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+                    { type: "Low Tide / 干潮", time: "12:15 PM", height: "0.3m", badge: "bg-amber-50 text-amber-700 border-amber-200" },
+                    { type: "High Tide / 满潮", time: "06:40 PM", height: "2.4m", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+                    { type: "Low Tide / 干潮", time: "12:20 AM (Night)", height: "0.5m", badge: "bg-slate-100 text-slate-700 border-slate-200" }
+                ],
                 trendWaves: [0.6, 0.7, 0.5, 0.6, 0.8],
                 trendWinds: [10, 12, 9, 11, 13],
                 forecast: [
@@ -213,6 +244,12 @@
                 wind: "5 kts (N)",
                 windDesc: "Gentle offshore breeze",
                 advisory: "Perfect lagoon conditions for Discover Scuba Diving (DSD), snorkeling day trips, and drone aerial videography.",
+                tides: [
+                    { type: "High Tide / 满潮", time: "05:15 AM", height: "2.0m", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+                    { type: "Low Tide / 干潮", time: "11:20 AM", height: "0.5m", badge: "bg-amber-50 text-amber-700 border-amber-200" },
+                    { type: "High Tide / 满潮", time: "05:50 PM", height: "2.2m", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+                    { type: "Low Tide / 干潮", time: "11:30 PM (Night)", height: "0.7m", badge: "bg-slate-100 text-slate-700 border-slate-200" }
+                ],
                 trendWaves: [0.3, 0.3, 0.4, 0.3, 0.3],
                 trendWinds: [5, 6, 5, 4, 5],
                 forecast: [
@@ -248,13 +285,32 @@
             document.getElementById('cardWindDesc').innerText = profile.windDesc;
             document.getElementById('safetyAdvisory').innerText = profile.advisory;
 
+            renderTides(profile.tides);
             renderChart(profile.trendWaves, profile.trendWinds);
             renderTable(profile.forecast);
         }
 
+        function renderTides(tideArr) {
+            const container = document.getElementById('tideCardsContainer');
+            container.innerHTML = '';
+
+            tideArr.forEach(tide => {
+                container.innerHTML += `
+                    <div class="light-input p-4 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-2 shadow-sm">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-slate-700">${tide.type}</span>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${tide.badge}">${tide.height}</span>
+                        </div>
+                        <div class="text-lg font-bold text-slate-900 flex items-center gap-1.5">
+                            <span>⏰</span> ${tide.time}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         function renderChart(waves, winds) {
             const ctx = document.getElementById('marineTrendChart').getContext('2d');
-            
             const labels = ["Today / 今天", "Day 2 / 明天", "Day 3 / 后天", "Day 4 / 第4天", "Day 5 / 第5天"];
 
             if (trendChart) {
