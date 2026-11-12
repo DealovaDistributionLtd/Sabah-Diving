@@ -62,7 +62,7 @@
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">📈</div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Advanced Financial & Profit Ledger</h1>
-                    <p class="text-slate-500 text-xs mt-0.5">多维财务清算、收款渠道流水与代理利润审计报表</p>
+                    <p class="text-slate-500 text-xs mt-0.5">多维财务清算、已完成订单自动结算与收款渠道审计报表</p>
                 </div>
             </div>
         </header>
@@ -81,18 +81,26 @@
         <!-- Main Financial Content (Hidden Until Unlocked) -->
         <div id="financeContent" class="space-y-8 hidden">
             <!-- KPI Cards Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
                 <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gross Revenue / 总营业额</span>
-                    <div class="text-3xl font-bold text-emerald-600 mt-3" id="finTotalRev">RM0.00</div>
+                    <div class="text-2xl sm:text-3xl font-bold text-emerald-600 mt-3" id="finTotalRev">RM0.00</div>
+                    <span class="text-[10px] text-slate-400 mt-1">包含所有有效订单总额</span>
+                </div>
+                <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Realized Revenue / 已实收总额</span>
+                    <div class="text-2xl sm:text-3xl font-bold text-teal-600 mt-3" id="finRealizedRev">RM0.00</div>
+                    <span class="text-[10px] text-slate-400 mt-1">已完成订单全款 + 进行中定金</span>
                 </div>
                 <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Deposits Collected / 已收定金</span>
-                    <div class="text-3xl font-bold text-sky-600 mt-3" id="finTotalDep">RM0.00</div>
+                    <div class="text-2xl sm:text-3xl font-bold text-sky-600 mt-3" id="finTotalDep">RM0.00</div>
+                    <span class="text-[10px] text-slate-400 mt-1">未完成订单已收定金</span>
                 </div>
                 <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Outstanding Balance / 待收尾款</span>
-                    <div class="text-3xl font-bold text-rose-600 mt-3" id="finTotalBal">RM0.00</div>
+                    <div class="text-2xl sm:text-3xl font-bold text-rose-600 mt-3" id="finTotalBal">RM0.00</div>
+                    <span class="text-[10px] text-slate-400 mt-1">仅限待出行/进行中订单尾款</span>
                 </div>
             </div>
 
@@ -101,6 +109,34 @@
                 <h2 class="text-base font-bold text-slate-900">💳 Payment Method Reconciliation / 收款渠道流水明细</h2>
                 <div class="grid grid-cols-2 sm:grid-cols-5 gap-4" id="paymentMethodCards">
                     <!-- Dynamic Channel Totals Populated Here -->
+                </div>
+            </div>
+
+            <!-- Detailed Transactions Breakdown Table -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-base font-bold text-slate-900">📋 Financial Audit Trail / 财务清算明细表</h2>
+                    <span id="auditCount" class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-xl font-semibold">0 records</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
+                                <th class="py-3 px-3">日期 (Date)</th>
+                                <th class="py-3 px-3">客户姓名 (Guest Name)</th>
+                                <th class="py-3 px-3">活动地点 (Location)</th>
+                                <th class="py-3 px-3">订单套餐 (Package)</th>
+                                <th class="py-3 px-3">总价 (Total)</th>
+                                <th class="py-3 px-3">已收 (Paid/Deposit)</th>
+                                <th class="py-3 px-3">待收尾款 (Balance)</th>
+                                <th class="py-3 px-3">付款方式 (Method)</th>
+                                <th class="py-3 px-3">状态 (Status)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="financeTableBody" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -148,18 +184,37 @@
                 const res = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
                 const bookings = await res.json();
                 
-                let rev = 0, dep = 0, bal = 0;
+                let totalRev = 0;
+                let realizedRev = 0;
+                let totalDep = 0;
+                let totalBal = 0;
                 let methods = { "WeChat Pay": 0, "Alipay": 0, "Bank Transfer": 0, "TNG (Touch 'n Go)": 0, "Cash": 0 };
+
+                const tbody = document.getElementById('financeTableBody');
+                tbody.innerHTML = '';
+                let validCount = 0;
 
                 bookings.forEach(b => {
                     const status = (b["Status"] || '').toLowerCase();
                     if (!status.includes('cancelled')) {
+                        validCount++;
                         const total = parseFloat(b["Total Price"]) || 0;
-                        const deposit = parseFloat(b["Deposit Paid"]) || 0;
-                        const balance = parseFloat(b["Balance Due"]) || 0;
-                        rev += total;
-                        dep += deposit;
-                        bal += balance;
+                        let deposit = parseFloat(b["Deposit Paid"]) || 0;
+                        let balance = parseFloat(b["Balance Due"]) || 0;
+                        const isCompleted = status.includes('complet');
+
+                        totalRev += total;
+
+                        if (isCompleted) {
+                            // 已完成订单尾款清零，视为全款已结清
+                            deposit = total;
+                            balance = 0;
+                            realizedRev += total;
+                        } else {
+                            realizedRev += deposit;
+                            totalDep += deposit;
+                            totalBal += balance;
+                        }
 
                         const pm = b["Payment Method"] || 'Cash';
                         if (methods[pm] !== undefined) {
@@ -167,12 +222,41 @@
                         } else {
                             methods[pm] = total;
                         }
+
+                        const cleanDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
+                        const name = b["Full Name"] || '';
+                        const location = b["Location"] || '';
+                        const pkg = b["Package"] || '';
+                        const rawStatus = b["Status"] || '';
+
+                        let badgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md font-semibold";
+                        if (rawStatus.toLowerCase().includes('pending')) {
+                            badgeClass = "bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-md font-semibold";
+                        } else if (rawStatus.toLowerCase().includes('complet')) {
+                            badgeClass = "bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-md font-semibold";
+                        }
+
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="py-3 px-3 text-sky-700 font-semibold">${cleanDate}</td>
+                                <td class="py-3 px-3 font-bold text-slate-900">${name}</td>
+                                <td class="py-3 px-3 text-slate-600">${location}</td>
+                                <td class="py-3 px-3 text-slate-600 truncate max-w-[180px]" title="${pkg}">${pkg}</td>
+                                <td class="py-3 px-3 text-slate-900 font-bold">RM${total.toFixed(2)}</td>
+                                <td class="py-3 px-3 text-teal-600 font-medium">RM${deposit.toFixed(2)}</td>
+                                <td class="py-3 px-3 text-rose-600 font-medium">RM${balance.toFixed(2)}</td>
+                                <td class="py-3 px-3 text-slate-500">${pm}</td>
+                                <td class="py-3 px-3"><span class="${badgeClass}">${rawStatus}</span></td>
+                            </tr>
+                        `;
                     }
                 });
 
-                document.getElementById('finTotalRev').innerText = `RM${rev.toFixed(2)}`;
-                document.getElementById('finTotalDep').innerText = `RM${dep.toFixed(2)}`;
-                document.getElementById('finTotalBal').innerText = `RM${bal.toFixed(2)}`;
+                document.getElementById('finTotalRev').innerText = `RM${totalRev.toFixed(2)}`;
+                document.getElementById('finRealizedRev').innerText = `RM${realizedRev.toFixed(2)}`;
+                document.getElementById('finTotalDep').innerText = `RM${totalDep.toFixed(2)}`;
+                document.getElementById('finTotalBal').innerText = `RM${totalBal.toFixed(2)}`;
+                document.getElementById('auditCount').innerText = `${validCount} records`;
 
                 const pmContainer = document.getElementById('paymentMethodCards');
                 pmContainer.innerHTML = '';
