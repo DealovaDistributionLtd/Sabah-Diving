@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Boat Manifest & Operations | 每日出海船期与调度中心</title>
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.html">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
@@ -41,11 +43,14 @@
                 </div>
                 <button onclick="toggleMenu()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">✕</button>
             </div>
+            
+            <!-- Unified Drawer Links (Includes Weather & All Portals) -->
             <nav class="space-y-2">
                 <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📋</span> Master Bookings / 预订总表</a>
                 <a href="manifest.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-sky-50 text-sky-700 font-bold text-xs shadow-sm"><span>🚤</span> Daily Manifest / 每日船期清单</a>
                 <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📅</span> Master Calendar / 全屏日程表</a>
                 <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📈</span> Financial Ledger / 财务利润报表</a>
+                <a href="weather.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⛅</span> Marine Weather / 海洋天气监测</a>
                 <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>💰</span> Assistant Commission / 助理提成</a>
                 <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⭐</span> Guest Review Kiosk / 客户评价填写</a>
             </nav>
@@ -87,7 +92,7 @@
             </div>
         </div>
 
-        <!-- Location Cards Grid (3 Columns now since KK is removed) -->
+        <!-- Location Cards Grid -->
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-6" id="manifestContainer">
             <!-- Dynamic Location Manifest Cards Populated Here -->
         </div>
