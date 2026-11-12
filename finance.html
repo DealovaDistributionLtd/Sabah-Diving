@@ -193,9 +193,18 @@
                 const tbody = document.getElementById('financeTableBody');
                 tbody.innerHTML = '';
                 let validCount = 0;
+                const todayStr = new Date().toLocaleDateString('en-CA'); // 2026-11-12
 
                 bookings.forEach(b => {
-                    const status = (b["Status"] || '').toLowerCase();
+                    let actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                    let status = (b["Status"] || '').toLowerCase();
+
+                    // 核心对齐：如果活动日期早于今天且未取消，财务上自动判定为已完成
+                    if (actDate && actDate < todayStr && !status.includes('cancel')) {
+                        b["Status"] = "Completed / 已完成";
+                        status = "completed / 已完成";
+                    }
+
                     if (!status.includes('cancelled')) {
                         validCount++;
                         const total = parseFloat(b["Total Price"]) || 0;
@@ -206,7 +215,7 @@
                         totalRev += total;
 
                         if (isCompleted) {
-                            // 已完成订单尾款清零，视为全款已结清
+                            // 已完成订单自动清零尾款，全款计入已收
                             deposit = total;
                             balance = 0;
                             realizedRev += total;
@@ -223,7 +232,6 @@
                             methods[pm] = total;
                         }
 
-                        const cleanDate = (b["Activity Date"] || '').toString().replace(/^'/, '');
                         const name = b["Full Name"] || '';
                         const location = b["Location"] || '';
                         const pkg = b["Package"] || '';
@@ -238,7 +246,7 @@
 
                         tbody.innerHTML += `
                             <tr class="hover:bg-slate-50 transition">
-                                <td class="py-3 px-3 text-sky-700 font-semibold">${cleanDate}</td>
+                                <td class="py-3 px-3 text-sky-700 font-semibold">${actDate}</td>
                                 <td class="py-3 px-3 font-bold text-slate-900">${name}</td>
                                 <td class="py-3 px-3 text-slate-600">${location}</td>
                                 <td class="py-3 px-3 text-slate-600 truncate max-w-[180px]" title="${pkg}">${pkg}</td>
