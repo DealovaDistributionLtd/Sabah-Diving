@@ -111,7 +111,7 @@
                 </button>
             </div>
 
-            <!-- Unified Drawer Links -->
+            <!-- Unified Drawer Links (Includes Weather Page) -->
             <nav class="space-y-2">
                 <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-sky-50 text-sky-700 font-bold text-xs shadow-sm">
                     <span>📋</span> Master Bookings / 预订总表
@@ -124,6 +124,9 @@
                 </a>
                 <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
                     <span>📈</span> Financial Ledger / 财务利润报表
+                </a>
+                <a href="weather.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>⛅</span> Marine Weather / 海洋天气监测
                 </a>
                 <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
                     <span>💰</span> Assistant Commission / 助理提成
@@ -260,7 +263,6 @@
                 <form id="bookingForm" onsubmit="handleFormSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
                     
                     <input type="hidden" id="editRowIndex" value="">
-
                     <input type="hidden" id="bookingDate">
 
                     <div>
@@ -684,7 +686,6 @@
             
             document.getElementById('modalTotal').innerText = `RM${total}`;
 
-            // 智能判断：如果活动日期早于今天，或者状态已经是已完成，强制在确认单中显示为已完成，且尾款清零、定金等于总价
             const todayStr = new Date().toLocaleDateString('en-CA');
             let displayStatus = status;
             let displayDeposit = deposit;
@@ -694,8 +695,8 @@
 
             if (isCompleted) {
                 displayStatus = "Completed / 已完成";
-                displayDeposit = total; // 已完成服务视同全款付清
-                displayBalance = "0.00"; // 尾款清零
+                displayDeposit = total; 
+                displayBalance = "0.00"; 
             }
 
             document.getElementById('modalDeposit').innerText = `RM${displayDeposit}`;
@@ -704,7 +705,6 @@
             const modalStatusEl = document.getElementById('modalStatus');
             modalStatusEl.innerText = displayStatus;
             
-            // 调整确认单状态徽章的视觉颜色
             if (displayStatus.toLowerCase().includes('complet')) {
                 modalStatusEl.className = "px-3 py-1 bg-sky-50 text-sky-700 border border-sky-200 rounded-lg text-xs font-bold shrink-0";
             } else if (displayStatus.toLowerCase().includes('pending')) {
@@ -827,14 +827,13 @@
             const paymentMethodVal = document.getElementById('paymentMethod').value;
             let statusVal = document.getElementById('status').value;
 
-            // 智能自动完成：如果录入的活动日期早于今天，且未取消，自动置为已完成，且尾款归零
             const todayStr = new Date().toLocaleDateString('en-CA');
             if (aDateVal < todayStr && !statusVal.toLowerCase().includes('cancel')) {
                 statusVal = "Completed / 已完成";
             }
 
             if (statusVal.toLowerCase().includes('complet')) {
-                depositVal = totalVal; // 已完成自动全款结清
+                depositVal = totalVal; 
                 balanceVal = "0.00";
             }
 
@@ -929,13 +928,12 @@
             tbody.innerHTML = '';
 
             const searchTerm = (document.getElementById('searchQuery').value || '').toLowerCase();
-            const todayStr = new Date().toLocaleDateString('en-CA'); // 2026-11-12
+            const todayStr = new Date().toLocaleDateString('en-CA');
 
             let filtered = bookings.filter(b => {
                 let actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
                 let status = (b["Status"] || '').toLowerCase();
 
-                // 核心更新：如果活动日期早于今天，且未取消，自动判定为已完成
                 if (actDate && actDate < todayStr && !status.includes('cancel')) {
                     b["Status"] = "Completed / 已完成";
                 }
@@ -955,7 +953,6 @@
                 return true;
             });
 
-            // 智能排序：将未过期、今天的日程放前面，过期的排在后面
             filtered.sort((a, b) => {
                 const dateA = (a["Activity Date"] || '').toString().replace(/^'/, '').trim();
                 const dateB = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
@@ -994,7 +991,6 @@
                 const paymentMethod = b["Payment Method"] || '';
                 const remarks = b["Remarks"] || '-';
 
-                // 如果是已完成状态，界面列表也自动清零尾款
                 if (rawStatus.toLowerCase().includes('complet')) {
                     deposit = total;
                     balance = 0;
