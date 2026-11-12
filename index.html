@@ -129,7 +129,7 @@
                     <span>💰</span> Assistant Commission / 助理提成
                 </a>
                 <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
-    <span>⭐</span> Guest Review Kiosk / 客户评价填写
+                    <span>⭐</span> Guest Review Kiosk / 客户评价填写
                 </a>
             </nav>
         </div>
@@ -261,7 +261,6 @@
                     
                     <input type="hidden" id="editRowIndex" value="">
 
-                    <!-- 隐藏预定日期输入框，系统自动带入当天日期提交以保证后端和日历逻辑完整 -->
                     <input type="hidden" id="bookingDate">
 
                     <div>
@@ -685,9 +684,27 @@
             document.getElementById('modalTotal').innerText = `RM${total}`;
             document.getElementById('modalDeposit').innerText = `RM${deposit}`;
             document.getElementById('modalBalance').innerText = `RM${balance}`;
-            document.getElementById('modalStatus').innerText = status;
-            document.getElementById('modalRemarks').innerText = remarks;
+            
+            // 自动判断：如果活动日期早于今天，强制在确认单中显示为已完成
+            const todayStr = new Date().toLocaleDateString('en-CA');
+            let displayStatus = status;
+            if (actDate && actDate < todayStr && !status.toLowerCase().includes('cancel')) {
+                displayStatus = "Completed / 已完成";
+            }
+            
+            const modalStatusEl = document.getElementById('modalStatus');
+            modalStatusEl.innerText = displayStatus;
+            
+            // 调整凭证状态徽章的视觉颜色
+            if (displayStatus.toLowerCase().includes('complet')) {
+                modalStatusEl.className = "px-3 py-1 bg-sky-50 text-sky-700 border border-sky-200 rounded-lg text-xs font-bold shrink-0";
+            } else if (displayStatus.toLowerCase().includes('pending')) {
+                modalStatusEl.className = "px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold shrink-0";
+            } else {
+                modalStatusEl.className = "px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold shrink-0";
+            }
 
+            document.getElementById('modalRemarks').innerText = remarks;
             document.getElementById('voucherModal').classList.remove('hidden');
         }
 
@@ -799,7 +816,13 @@
             const depositVal = document.getElementById('depositPaid').value;
             const balanceVal = document.getElementById('balanceDue').value;
             const paymentMethodVal = document.getElementById('paymentMethod').value;
-            const statusVal = document.getElementById('status').value;
+            let statusVal = document.getElementById('status').value;
+
+            // 智能自动完成：如果录入的活动日期早于今天，且未取消，自动置为已完成
+            const todayStr = new Date().toLocaleDateString('en-CA');
+            if (aDateVal < todayStr && !statusVal.toLowerCase().includes('cancel')) {
+                statusVal = "Completed / 已完成";
+            }
 
             if (!isEditing) {
                 const duplicateFound = bookings.some(b => {
@@ -892,13 +915,13 @@
             tbody.innerHTML = '';
 
             const searchTerm = (document.getElementById('searchQuery').value || '').toLowerCase();
-            const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format for date comparison
+            const todayStr = new Date().toLocaleDateString('en-CA'); // 2026-11-12
 
             let filtered = bookings.filter(b => {
                 let actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
                 let status = (b["Status"] || '').toLowerCase();
 
-                // Auto-complete status if activity date is strictly in the past and not cancelled
+                // 核心更新：如果活动日期早于今天，且未取消，自动判定为已完成
                 if (actDate && actDate < todayStr && !status.includes('cancel')) {
                     b["Status"] = "Completed / 已完成";
                 }
@@ -918,7 +941,7 @@
                 return true;
             });
 
-            // SMART SORTING: Sort upcoming/nearest dates first, then older past dates
+            // 智能排序：将未过期、今天的日程放前面，过期的排在后面
             filtered.sort((a, b) => {
                 const dateA = (a["Activity Date"] || '').toString().replace(/^'/, '').trim();
                 const dateB = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
@@ -926,7 +949,6 @@
                 const isAUpcoming = dateA >= todayStr;
                 const isBUpcoming = dateB >= todayStr;
 
-                // Upcoming/today dates take absolute priority at the top (sorted ascending)
                 if (isAUpcoming && !isBUpcoming) return -1;
                 if (!isAUpcoming && isBUpcoming) return 1;
 
