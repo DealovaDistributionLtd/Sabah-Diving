@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marine Weather & Dive Conditions | 沙巴海洋天气与潜水状况监控</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .light-panel { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .light-input { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; }
+        #mobileDrawer { transition: transform 0.3s ease-in-out; }
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white">
+
+    <div id="drawerOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+
+    <!-- HAMBURGER DRAWER -->
+    <div id="mobileDrawer" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full">
+        <div>
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-cyan-600 flex items-center justify-center text-lg text-white shadow-md">🌊</div>
+                    <div><h2 class="font-bold text-slate-900 text-sm">Sabah Operations</h2><p class="text-[10px] text-slate-400">Navigation Menu</p></div>
+                </div>
+                <button onclick="toggleMenu()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">✕</button>
+            </div>
+            <nav class="space-y-2">
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📋</span> Master Bookings / 预订总表</a>
+                <a href="manifest.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>🚤</span> Daily Manifest / 每日船期清单</a>
+                <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📅</span> Master Calendar / 全屏日程表</a>
+                <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📈</span> Financial Ledger / 财务利润报表</a>
+                <a href="weather.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-sky-50 text-sky-700 font-bold text-xs shadow-sm"><span>⛅</span> Marine Weather / 海洋天气监测</a>
+                <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>💰</span> Assistant Commission / 助理提成</a>
+                <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⭐</span> Guest Review Kiosk / 客户评价填写</a>
+            </nav>
+        </div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.5</div>
+    </div>
+
+    <div class="max-w-[95%] md:max-w-[88%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
+        <header class="flex justify-between items-center mb-8 light-panel p-5 sm:p-6 rounded-3xl gap-4">
+            <div class="flex items-center gap-3.5">
+                <button onclick="toggleMenu()" class="p-2.5 rounded-2xl light-input hover:border-sky-400 text-slate-700 transition flex items-center justify-center shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-cyan-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">⛅</div>
+                <div>
+                    <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Marine Weather & Dive Conditions Hub</h1>
+                    <p class="text-slate-500 text-xs mt-0.5">仙本那、敦沙卡兰海洋公园与淘梦岛实时海况、浪高与水下能见度监测</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Location Selector & Main Weather Display Grid -->
+        <div class="space-y-6">
+            <div class="light-panel p-6 sm:p-8 rounded-3xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">Select Operational Zone / 选择观测海域</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Switch between dive spots to inspect live meteorological forecasts.</p>
+                </div>
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <select id="zoneSelect" onchange="renderWeatherZone()" class="light-input rounded-xl px-4 py-2.5 text-xs font-bold text-sky-700 focus:outline-none w-full sm:w-64 cursor-pointer">
+                        <option value="Semporna">Semporna Jetty & Outer Reefs (仙本那码头与外海)</option>
+                        <option value="Tun Sakaran">Tun Sakaran Marine Park (敦沙卡兰海洋公园)</option>
+                        <option value="Dreamer Island">Dreamer Island (淘梦岛)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Detailed Weather Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Air & Water Temp / 气温与水温</span>
+                    <div class="text-3xl font-bold text-slate-900 mt-4" id="cardTemp">29°C</div>
+                    <span class="text-xs text-emerald-600 font-semibold mt-2" id="cardTempDesc">Comfortable tropical climate</span>
+                </div>
+                <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Wave Height & State / 浪高与海况</span>
+                    <div class="text-3xl font-bold text-sky-600 mt-4" id="cardWaves">0.4m</div>
+                    <span class="text-xs text-sky-700 font-semibold mt-2" id="cardWaveDesc">Calm surface, ideal for boat transit</span>
+                </div>
+                <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Underwater Visibility / 水下能见度</span>
+                    <div class="text-3xl font-bold text-teal-600 mt-4" id="cardVisibility">20-25m</div>
+                    <span class="text-xs text-teal-700 font-semibold mt-2" id="cardVisDesc">Excellent crystal clear water</span>
+                </div>
+                <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Wind Speed & Direction / 风速与风向</span>
+                    <div class="text-3xl font-bold text-slate-700 mt-4" id="cardWind">7 kts (NE)</div>
+                    <span class="text-xs text-slate-500 font-semibold mt-2" id="cardWindDesc">Light breeze, low chop</span>
+                </div>
+            </div>
+
+            <!-- Dive Safety Advisory Banner -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-sky-50 to-cyan-50/50 border border-sky-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <h3 class="text-sm font-bold text-sky-900 flex items-center gap-2">
+                        <span>🛡️</span> Dive Master Operational Safety Recommendation
+                    </h3>
+                    <p class="text-xs text-sky-700" id="safetyAdvisory">
+                        Current marine conditions are optimal for all diving levels, underwater photography, and drone operations. Enjoy the coral reefs and fish storms!
+                    </p>
+                </div>
+                <a href="index.html" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition shadow-md shrink-0">
+                    Back to Bookings / 返回预订总表 📋
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const weatherProfiles = {
+            "Semporna": {
+                temp: "29°C / Water 28°C",
+                tempDesc: "Comfortable tropical climate",
+                waves: "0.4m",
+                waveDesc: "Calm surface, ideal for boat transit",
+                visibility: "20-25m",
+                visDesc: "Excellent crystal clear water",
+                wind: "7 kts (NE)",
+                windDesc: "Light breeze, low chop",
+                advisory: "Current marine conditions are optimal for all diving levels, underwater photography, and drone operations. Enjoy the coral reefs and fish storms!"
+            },
+            "Tun Sakaran": {
+                temp: "28°C / Water 27°C",
+                tempDesc: "Slightly breezy at peak elevation",
+                waves: "0.6m",
+                waveDesc: "Moderate open-water chop near reef drop-offs",
+                visibility: "25-30m",
+                visDesc: "World-class visibility for deep wall dives",
+                wind: "10 kts (E)",
+                windDesc: "Steady breeze, secure boat moorings",
+                advisory: "Great conditions for Bohey Dulang hiking and outer reef wall dives. Keep surface marker buoys ready due to moderate open-water chop."
+            },
+            "Dreamer Island": {
+                temp: "30°C / Water 29°C",
+                tempDesc: "Warm sunny tropical weather",
+                waves: "0.3m",
+                waveDesc: "Flat calm lagoon waters",
+                visibility: "15-22m",
+                visDesc: "Very good visibility for introductory DSD courses",
+                wind: "5 kts (N)",
+                windDesc: "Gentle offshore breeze",
+                advisory: "Perfect lagoon conditions for Discover Scuba Diving (DSD), snorkeling day trips, and drone aerial videography."
+            }
+        };
+
+        function toggleMenu() {
+            const drawer = document.getElementById('mobileDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            drawer.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        function renderWeatherZone() {
+            const zone = document.getElementById('zoneSelect').value;
+            const profile = weatherProfiles[zone] || weatherProfiles["Semporna"];
+
+            document.getElementById('cardTemp').innerText = profile.temp;
+            document.getElementById('cardTempDesc').innerText = profile.tempDesc;
+            document.getElementById('cardWaves').innerText = profile.waves;
+            document.getElementById('cardWaveDesc').innerText = profile.waveDesc;
+            document.getElementById('cardVisibility').innerText = profile.visibility;
+            document.getElementById('cardVisDesc').innerText = profile.visDesc;
+            document.getElementById('cardWind').innerText = profile.wind;
+            document.getElementById('cardWindDesc').innerText = profile.windDesc;
+            document.getElementById('safetyAdvisory').innerText = profile.advisory;
+        }
+
+        window.onload = function() {
+            renderWeatherZone();
+        };
+    </script>
+</body>
+</html>
