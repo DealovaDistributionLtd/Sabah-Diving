@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assistant Commission Payout Portal | 助理提成结算后台</title>
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.html">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
@@ -63,7 +65,7 @@
                 </button>
             </div>
 
-            <!-- Unified Drawer Links -->
+            <!-- Unified Drawer Links (Includes Weather Page & Complete List) -->
             <nav class="space-y-2">
                 <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
                     <span>📋</span> Master Bookings / 预订总表
@@ -76,6 +78,9 @@
                 </a>
                 <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
                     <span>📈</span> Financial Ledger / 财务利润报表
+                </a>
+                <a href="weather.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>⛅</span> Marine Weather / 海洋天气监测
                 </a>
                 <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-amber-50 text-amber-700 font-bold text-xs shadow-sm">
                     <span>💰</span> Assistant Commission / 助理提成
@@ -240,18 +245,15 @@
 
             const todayStr = new Date().toLocaleDateString('en-CA');
 
-            // Evaluate statuses and filter for completed/payable bookings
             const validBookings = rawBookings.filter(b => {
                 let actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
                 let status = (b["Status"] || '').toLowerCase();
 
-                // Auto-complete status if activity date is strictly in the past and not cancelled
                 if (actDate && actDate < todayStr && !status.includes('cancel')) {
                     b["Status"] = "Completed / 已完成";
                 }
 
                 const currentStatus = (b["Status"] || '').toLowerCase();
-                // ONLY payable if status is strictly "completed"
                 return currentStatus.includes('complet');
             });
 
