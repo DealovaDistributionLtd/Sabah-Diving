@@ -681,21 +681,30 @@
             document.getElementById('modalLocation').innerText = location;
             document.getElementById('modalPackage').innerText = pkg;
             document.getElementById('modalPaymentMethod').innerText = paymentMethod;
-            document.getElementById('modalTotal').innerText = `RM${total}`;
-            document.getElementById('modalDeposit').innerText = `RM${deposit}`;
-            document.getElementById('modalBalance').innerText = `RM${balance}`;
             
-            // 自动判断：如果活动日期早于今天，强制在确认单中显示为已完成
+            document.getElementById('modalTotal').innerText = `RM${total}`;
+
+            // 智能判断：如果活动日期早于今天，或者状态已经是已完成，强制在确认单中显示为已完成，且尾款清零、定金等于总价
             const todayStr = new Date().toLocaleDateString('en-CA');
             let displayStatus = status;
-            if (actDate && actDate < todayStr && !status.toLowerCase().includes('cancel')) {
+            let displayDeposit = deposit;
+            let displayBalance = balance;
+
+            const isCompleted = (actDate && actDate < todayStr && !status.toLowerCase().includes('cancel')) || status.toLowerCase().includes('complet');
+
+            if (isCompleted) {
                 displayStatus = "Completed / 已完成";
+                displayDeposit = total; // 已完成服务视同全款付清
+                displayBalance = "0.00"; // 尾款清零
             }
+
+            document.getElementById('modalDeposit').innerText = `RM${displayDeposit}`;
+            document.getElementById('modalBalance').innerText = `RM${displayBalance}`;
             
             const modalStatusEl = document.getElementById('modalStatus');
             modalStatusEl.innerText = displayStatus;
             
-            // 调整凭证状态徽章的视觉颜色
+            // 调整确认单状态徽章的视觉颜色
             if (displayStatus.toLowerCase().includes('complet')) {
                 modalStatusEl.className = "px-3 py-1 bg-sky-50 text-sky-700 border border-sky-200 rounded-lg text-xs font-bold shrink-0";
             } else if (displayStatus.toLowerCase().includes('pending')) {
@@ -813,15 +822,20 @@
             const locationVal = document.getElementById('location').value;
             const pkgVal = document.getElementById('packageType').value;
             const totalVal = document.getElementById('totalPrice').value;
-            const depositVal = document.getElementById('depositPaid').value;
-            const balanceVal = document.getElementById('balanceDue').value;
+            let depositVal = document.getElementById('depositPaid').value;
+            let balanceVal = document.getElementById('balanceDue').value;
             const paymentMethodVal = document.getElementById('paymentMethod').value;
             let statusVal = document.getElementById('status').value;
 
-            // 智能自动完成：如果录入的活动日期早于今天，且未取消，自动置为已完成
+            // 智能自动完成：如果录入的活动日期早于今天，且未取消，自动置为已完成，且尾款归零
             const todayStr = new Date().toLocaleDateString('en-CA');
             if (aDateVal < todayStr && !statusVal.toLowerCase().includes('cancel')) {
                 statusVal = "Completed / 已完成";
+            }
+
+            if (statusVal.toLowerCase().includes('complet')) {
+                depositVal = totalVal; // 已完成自动全款结清
+                balanceVal = "0.00";
             }
 
             if (!isEditing) {
@@ -975,10 +989,16 @@
                 const pkg = b["Package"] || '';
                 const pax = b["Pax"] || 1;
                 const total = b["Total Price"] || 0;
-                const deposit = b["Deposit Paid"] || 0;
-                const balance = b["Balance Due"] || 0;
+                let deposit = b["Deposit Paid"] || 0;
+                let balance = b["Balance Due"] || 0;
                 const paymentMethod = b["Payment Method"] || '';
                 const remarks = b["Remarks"] || '-';
+
+                // 如果是已完成状态，界面列表也自动清零尾款
+                if (rawStatus.toLowerCase().includes('complet')) {
+                    deposit = total;
+                    balance = 0;
+                }
 
                 let badgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg font-semibold";
                 if (rawStatus.toLowerCase().includes('pending')) {
