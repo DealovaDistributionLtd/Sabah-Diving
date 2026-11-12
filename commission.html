@@ -41,7 +41,7 @@
             <div class="w-12 h-12 border-4 border-amber-200 border-t-amber-600 rounded-full animate-spin"></div>
             <div class="text-center">
                 <h3 id="loadingText" class="font-bold text-slate-900 text-sm">Loading Commission Ledger...</h3>
-                <p class="text-[11px] text-slate-400 mt-0.5">Please wait while we sync analytics 🌊</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Please wait while we sync historical records 🌊</p>
             </div>
         </div>
     </div>
@@ -94,7 +94,7 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Commission System v3.4
+            Commission System v3.5
         </div>
     </div>
 
@@ -116,7 +116,7 @@
                         Assistant Commission & Analytics Hub
                     </h1>
                     <p class="text-slate-500 text-xs mt-0.5">
-                        助理提成结算（订单总价需满 RM500 且仅限已完成订单）与月度提成趋势分析面板
+                        助理提成结算（订单总价需满 RM500 且仅限已完成订单）与历史月份提成档案查询
                     </p>
                 </div>
             </div>
@@ -124,16 +124,20 @@
 
         <!-- Main Body -->
         <div class="space-y-6">
-            <!-- Summary Cards Panel -->
-            <div class="light-panel p-6 sm:p-8 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
+            <!-- Summary Cards & Month Filter Panel -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                <div class="space-y-2">
                     <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2.5">
                         <span class="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-sm text-orange-600">📊</span>
-                        Payout Ledger Summary / 提成结算概览
+                        Payout Ledger & Archive / 提成结算与历史档案
                     </h2>
-                    <p class="text-xs text-slate-500 mt-1">
-                        实时计算已完成且达标订单的助理总提成
-                    </p>
+                    <!-- Month Selector Dropdown -->
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs font-bold text-slate-500">Select Month / 选择月份:</label>
+                        <select id="monthFilter" onchange="renderCommissionDashboard()" class="light-input rounded-xl px-3 py-2 text-xs font-bold text-amber-700 cursor-pointer">
+                            <option value="ALL">📅 All Months Combined / 全部历史月份汇总</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="flex flex-wrap gap-3">
@@ -250,6 +254,7 @@
                 const data = await response.json();
                 if (Array.isArray(data)) {
                     rawBookings = data;
+                    populateMonthFilter();
                     renderCommissionDashboard();
                 }
             } catch (err) {
@@ -258,6 +263,26 @@
             } finally {
                 hideLoading();
             }
+        }
+
+        function populateMonthFilter() {
+            const monthsSet = new Set();
+            rawBookings.forEach(b => {
+                let actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                if (actDate && actDate.length >= 7) {
+                    monthsSet.add(actDate.substring(0, 7)); // YYYY-MM
+                }
+            });
+
+            const sortedMonths = Array.from(monthsSet).sort().reverse();
+            const selectEl = document.getElementById('monthFilter');
+            
+            // Keep "ALL" option
+            selectEl.innerHTML = `<option value="ALL">📅 All Months Combined / 全部历史月份汇总</option>`;
+            
+            sortedMonths.forEach(m => {
+                selectEl.innerHTML += `<option value="${m}">${m}</option>`;
+            });
         }
 
         function getCommissionDetails(pkg, totalPrice) {
@@ -286,6 +311,7 @@
             const tbody = document.getElementById('commissionTableBody');
             tbody.innerHTML = '';
 
+            const selectedMonth = document.getElementById('monthFilter').value;
             const todayStr = new Date().toLocaleDateString('en-CA');
 
             const validBookings = rawBookings.filter(b => {
@@ -297,15 +323,21 @@
                 }
 
                 const currentStatus = (b["Status"] || '').toLowerCase();
-                return currentStatus.includes('complet');
+                if (!currentStatus.includes('complet')) return false;
+
+                if (selectedMonth !== 'ALL') {
+                    if (!actDate || !actDate.startsWith(selectedMonth)) return false;
+                }
+
+                return true;
             });
 
             if (validBookings.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-slate-400 text-sm">No completed bookings eligible for commission yet. 暂无已完成的可结算提成记录。</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-slate-400 text-sm">No completed bookings found for the selected period. 选定月份暂无已完成的提成记录。</td></tr>`;
                 document.getElementById('commTotalPax').innerText = `0 Pax`;
                 document.getElementById('commTotalUnpaid').innerText = `RM0.00`;
                 document.getElementById('commTotalSettled').innerText = `RM0.00`;
-                renderCharts([], {});
+                renderCharts({}, {});
                 return;
             }
 
@@ -315,6 +347,21 @@
             
             const monthlyData = {};
             const packageData = {};
+
+            // Also compute overall monthly data for the trend chart regardless of filter
+            rawBookings.forEach(b => {
+                let actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                let status = (b["Status"] || '').toLowerCase();
+                if ((actDate && actDate < todayStr && !status.includes('cancel')) || status.includes('complet')) {
+                    const totalPrice = parseFloat(b["Total Price"] || b["Price"] || 0);
+                    const pax = parseInt(b["Pax"]) || 1;
+                    const { rate } = getCommissionDetails(b["Package"], totalPrice);
+                    if (rate > 0 && actDate.length >= 7) {
+                        const mKey = actDate.substring(0, 7);
+                        monthlyData[mKey] = (monthlyData[mKey] || 0) + (pax * rate);
+                    }
+                }
+            });
 
             validBookings.slice().reverse().forEach(b => {
                 const rowIndex = b._rowIndex;
@@ -337,11 +384,7 @@
                         totalUnpaidAmount += commissionEarned;
                     }
 
-                    // Aggregate Monthly Data (YYYY-MM)
-                    const monthKey = cleanActivityDate.substring(0, 7) || '2026-11';
-                    monthlyData[monthKey] = (monthlyData[monthKey] || 0) + commissionEarned;
-
-                    // Aggregate Package Data
+                    // Aggregate Package Data for current view
                     packageData[pkg] = (packageData[pkg] || 0) + commissionEarned;
                 }
 
