@@ -72,7 +72,7 @@
                 </a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.8</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.9</div>
     </div>
 
     <!-- DAY DETAILS MODAL -->
@@ -94,7 +94,7 @@
     </div>
 
     <div class="max-w-[95%] md:max-w-[92%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
-        <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 light-panel p-5 sm:p-6 rounded-3xl gap-4">
+        <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 light-panel p-5 sm:p-6 rounded-3xl gap-4">
             <div class="flex items-center gap-3.5">
                 <button onclick="toggleMenu()" class="p-2.5 rounded-2xl light-input hover:border-sky-400 text-slate-700 transition flex items-center justify-center shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -125,11 +125,11 @@
         </div>
 
         <!-- Full Calendar Grid Panel -->
-        <div class="light-panel p-4 sm:p-6 rounded-3xl space-y-4">
-            <div class="grid grid-cols-7 gap-2 text-center text-xs font-bold text-slate-400 mb-2">
-                <div>Sun / 周日</div><div>Mon / 周一</div><div>Tue / 周二</div><div>Wed / 周三</div><div>Thu / 周四</div><div>Fri / 周五</div><div>Sat / 周六</div>
+        <div class="light-panel p-3 sm:p-6 rounded-3xl space-y-4">
+            <div class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center text-[11px] sm:text-xs font-bold text-slate-400 mb-2">
+                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
             </div>
-            <div id="fullCalendarGrid" class="grid grid-cols-7 gap-2 text-xs">
+            <div id="fullCalendarGrid" class="grid grid-cols-7 gap-1.5 sm:gap-2 text-xs">
                 <!-- Dynamic Full Calendar Days Here -->
             </div>
         </div>
@@ -231,7 +231,7 @@
             }
 
             for (let i = 0; i < firstDayIndex; i++) {
-                grid.innerHTML += `<div class="min-h-[110px] sm:min-h-[145px] bg-slate-100/40 rounded-2xl opacity-25"></div>`;
+                grid.innerHTML += `<div class="min-h-[120px] sm:min-h-[145px] bg-slate-100/40 rounded-2xl opacity-20"></div>`;
             }
 
             for (let day = 1; day <= totalDays; day++) {
@@ -265,25 +265,29 @@
                 let vacationBadge = '';
                 if (isVacation) {
                     boxClass = 'bg-amber-50/95 border-amber-300 shadow-sm';
-                    vacationBadge = `<span class="block text-[9px] sm:text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded font-bold text-center mb-1 shadow-xs">✈️ Vacation</span>`;
+                    vacationBadge = `<div class="bg-amber-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold text-center mb-1">✈️ Vacation</div>`;
                 }
 
                 let listHTML = '';
                 dayGoogleEvents.forEach(ev => {
-                    listHTML += `<div class="bg-rose-50 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg border border-rose-200 text-[9px] sm:text-[10px] font-bold text-rose-700 truncate">🔴 ${ev.summary || 'Busy'}</div>`;
+                    let title = ev.summary || 'Busy';
+                    if(title.length > 12) title = title.substring(0, 10) + '...';
+                    listHTML += `<div class="bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200 text-[9px] font-bold text-rose-700 truncate" title="${ev.summary}">🔴 ${title}</div>`;
                 });
 
-                dayBookings.slice(0, 2).forEach(b => {
-                    listHTML += `<div class="bg-sky-50 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg border border-sky-100 text-[9px] sm:text-[10px] font-bold text-sky-800 truncate">🏊 ${b["Full Name"]} (${b["Pax"]}p)</div>`;
+                dayBookings.forEach(b => {
+                    let clientName = b["Full Name"] || 'Client';
+                    if(clientName.length > 10) clientName = clientName.substring(0, 8) + '..';
+                    listHTML += `<div class="bg-sky-50 px-1.5 py-0.5 rounded border border-sky-100 text-[9px] font-bold text-sky-800 truncate" title="${b["Full Name"]} (${b["Pax"]}p)">🏊 ${clientName} (${b["Pax"]}p)</div>`;
                 });
 
-                const totalItemsCount = dayBookings.length + dayGoogleEvents.length;
+                const totalItemsCount = dayBookings.length + dayGoogleEvents.length + (isVacation ? 1 : 0);
 
                 grid.innerHTML += `
-                    <div onclick="openDayModal('${dateKey}')" class="min-h-[110px] sm:min-h-[145px] ${boxClass} border rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between cursor-pointer transition select-none">
+                    <div onclick="openDayModal('${dateKey}')" class="min-h-[120px] sm:min-h-[145px] ${boxClass} border rounded-2xl p-1.5 sm:p-2.5 flex flex-col justify-between cursor-pointer transition select-none">
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-xs font-bold ${isToday ? 'text-sky-600 font-extrabold bg-sky-100 px-2 py-0.5 rounded-lg' : 'text-slate-700'}">${day}</span>
-                            ${totalItemsCount > 0 ? `<span class="text-[9px] sm:text-[10px] font-bold bg-slate-800 text-white px-1.5 py-0.5 rounded-md shadow-xs">${totalItemsCount}</span>` : ''}
+                            <span class="text-xs font-bold ${isToday ? 'text-sky-600 font-extrabold bg-sky-100 px-1.5 py-0.5 rounded-lg' : 'text-slate-700'}">${day}</span>
+                            ${totalItemsCount > 0 ? `<span class="text-[9px] font-bold bg-slate-800 text-white px-1 rounded shadow-xs">${totalItemsCount}</span>` : ''}
                         </div>
                         ${vacationBadge}
                         <div class="space-y-1 flex-1 overflow-hidden">
@@ -325,7 +329,7 @@
                 const start = ev.start.date || (ev.start.dateTime ? ev.start.dateTime.split('T')[0] : '');
                 const end = ev.end.date || (ev.end.dateTime ? ev.end.dateTime.split('T')[0] : '');
                 if (!start) return false;
-                return dateKey >= start && dateKey <= (end && end > start ? adjustDate(end, -1) : start);
+                return dateStr >= start && dateStr <= (end && end > start ? adjustDate(end, -1) : start);
             });
 
             let html = '';
@@ -334,7 +338,7 @@
                 html += `
                     <div class="bg-amber-50 p-3.5 rounded-2xl border border-amber-200 text-xs text-amber-800 mb-3 flex items-center gap-2">
                         <span class="text-base">✈️</span>
-                        <div><strong>Active Time-Off / Vacation Period:</strong> You are set as away during these dates. New bookings are blocked.</div>
+                        <div><strong>Active Vacation / Time-Off Period:</strong> You are set as away during these dates. New bookings are blocked.</div>
                     </div>
                 `;
             }
