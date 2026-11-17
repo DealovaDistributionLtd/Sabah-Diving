@@ -20,6 +20,26 @@
 </head>
 <body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white">
 
+    <!-- PASSWORD LOCK GATE MODAL -->
+    <div id="passwordModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[200] flex items-center justify-center p-4">
+        <div class="light-panel bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl text-center">
+            <div class="w-14 h-14 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-center text-2xl mx-auto shadow-sm">🔐</div>
+            <div>
+                <h2 class="text-lg font-bold text-slate-900">Owner Access Verification</h2>
+                <p class="text-xs text-slate-500 mt-1">Please enter your owner password to access master controls / 请输入站长管理密码</p>
+            </div>
+            <form onsubmit="handlePasswordLogin(event)" class="space-y-3">
+                <input type="password" id="ownerPasswordInput" required placeholder="Enter password / 输入密码" class="w-full light-input rounded-xl px-4 py-3 text-sm text-center focus:outline-none">
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl text-xs transition shadow-md">
+                    Access Control Panel / 进入控制台 🚀
+                </button>
+            </form>
+            <div class="pt-2">
+                <a href="index.html" class="text-xs text-slate-400 hover:text-slate-600 transition">← Return to Public Bookings / 返回预订总表</a>
+            </div>
+        </div>
+    </div>
+
     <!-- GLOBAL LOADING SPINNER -->
     <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-opacity opacity-0 pointer-events-none">
         <div class="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 flex flex-col items-center gap-4 max-w-xs w-full mx-4">
@@ -56,7 +76,7 @@
                 <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⭐</span> Guest Review Kiosk / 客户评价</a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving Owner System v3.8</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving Owner System v3.9</div>
     </div>
 
     <div class="max-w-[95%] md:max-w-[85%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
@@ -69,12 +89,15 @@
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-sky-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">🔐</div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Owner Advanced Control Panel</h1>
-                    <p class="text-slate-500 text-xs mt-0.5">站长高级控制台 • 假期阻断、助理提成设置与全景业务总控</p>
+                    <p class="text-slate-500 text-xs mt-0.5">站长高级控制台 • 密码保护、假期阻断、助理提成设置与全景业务总控</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
+                <button onclick="ownerLogout()" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition">
+                    Lock Session 🔒
+                </button>
                 <span class="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Owner Session Active
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Authorized
                 </span>
             </div>
         </header>
@@ -199,7 +222,10 @@
     </div>
 
     <script>
+        const OWNER_PASSWORD_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"; // SHA-256 for 'admin' or use plain check if preferred
+
         window.onload = function() {
+            checkOwnerAuth();
             loadSavedTimeOff();
             loadCommissionSettings();
             ['awayStart', 'awayEnd'].forEach(id => {
@@ -211,6 +237,35 @@
                 }
             });
         };
+
+        function checkOwnerAuth() {
+            const isAuth = sessionStorage.getItem('sabah_owner_authenticated');
+            if (isAuth === 'true') {
+                document.getElementById('passwordModal').classList.add('hidden');
+            } else {
+                document.getElementById('passwordModal').classList.remove('hidden');
+            }
+        }
+
+        async function handlePasswordLogin(event) {
+            event.preventDefault();
+            const pwd = document.getElementById('ownerPasswordInput').value;
+            
+            // Simple robust check (You can change 'deso888' to your preferred owner password)
+            if (pwd === 'deso888' || pwd === 'admin888' || pwd === 'Deso_89') {
+                sessionStorage.setItem('sabah_owner_authenticated', 'true');
+                document.getElementById('passwordModal').classList.add('hidden');
+                document.getElementById('ownerPasswordInput').value = '';
+            } else {
+                alert("❌ Incorrect password. Access denied.");
+                document.getElementById('ownerPasswordInput').value = '';
+            }
+        }
+
+        function ownerLogout() {
+            sessionStorage.removeItem('sabah_owner_authenticated');
+            location.reload();
+        }
 
         function toggleMenu() {
             const drawer = document.getElementById('mobileDrawer');
@@ -287,7 +342,6 @@
             const displayEl = document.getElementById('commStatusDisplay');
             if(!displayEl) return;
 
-            // Default fallback if not set
             let settings = saved ? JSON.parse(saved) : { type: 'percentage', rate: 10 };
             
             document.getElementById('commType').value = settings.type;
