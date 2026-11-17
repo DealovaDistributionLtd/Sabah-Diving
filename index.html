@@ -113,6 +113,7 @@
 
             <!-- Unified Drawer Links -->
             <nav class="space-y-2">
+                <a href="owner.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-indigo-50 text-indigo-700 font-bold text-xs shadow-sm"><span>🔐</span> Owner Control Panel / 站长主控台</a>
                 <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-sky-50 text-sky-700 font-bold text-xs shadow-sm">
                     <span>📋</span> Master Bookings / 预订总表
                 </a>
@@ -138,7 +139,7 @@
         </div>
 
         <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">
-            Sabah Diving System v3.7
+            Sabah Diving System v3.8
         </div>
     </div>
 
@@ -238,6 +239,9 @@
             </div>
             
             <div class="flex items-center gap-3">
+                <a href="owner.html" class="text-xs px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold flex items-center gap-1.5 transition shadow-sm">
+                    <span>🔐 Owner Control</span>
+                </a>
                 <div id="syncStatus" class="hidden sm:flex text-xs px-3.5 py-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold items-center gap-2 shadow-sm">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     Sync Active
@@ -704,7 +708,7 @@
             renderTable();
         }
 
-        // ⭐ Generate & Copy Guest Review Link Function
+        // ⭐ Compact Review Link Copy Function
         function copyReviewLink(name, pkg) {
             const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
             const reviewUrl = `${baseUrl}reviews.html?name=${encodeURIComponent(name)}&pkg=${encodeURIComponent(pkg)}`;
@@ -1124,14 +1128,19 @@
                     badgeClass = "bg-sky-50 text-sky-700 border border-sky-200 px-2.5 py-1 rounded-lg font-semibold";
                 }
 
-                let reviewBtnHTML = '';
+                let reviewLinkBadge = '';
                 if (rawStatus.toLowerCase().includes('complet')) {
-                    reviewBtnHTML = `<button onclick="copyReviewLink('${name.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Copy guest review link">⭐ Review</button>`;
+                    reviewLinkBadge = `<button onclick="copyReviewLink('${name.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}')" class="inline-flex items-center gap-1 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg text-[10px] font-bold transition shadow-xs" title="Copy guest review link">⭐ Review Link</button>`;
                 }
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80 transition">
-                        <td class="py-3.5 px-3 font-bold text-slate-900">${name}</td>
+                        <td class="py-3.5 px-3 font-bold text-slate-900">
+                            <div class="flex items-center gap-2">
+                                <span>${name}</span>
+                                ${reviewLinkBadge}
+                            </div>
+                        </td>
                         <td class="py-3.5 px-3 text-slate-500">${gender}</td>
                         <td class="py-3.5 px-3 text-slate-500">${passport}</td>
                         <td class="py-3.5 px-3 text-center text-sky-700 font-bold">${pax}</td>
@@ -1145,7 +1154,6 @@
                         <td class="py-3.5 px-3"><span class="${badgeClass}">${rawStatus}</span></td>
                         <td class="py-3.5 px-3 text-slate-500 truncate max-w-[150px]" title="${remarks}">${remarks}</td>
                         <td class="py-3.5 px-3 text-center flex items-center justify-center gap-1.5 flex-wrap">
-                            ${reviewBtnHTML}
                             <button onclick="generatePDFVoucher('${name.replace(/'/g, "\\'")}', '${gender}', '${passport}', '${cleanActivityDate}', '${location.replace(/'/g, "\\'")}', '${pkg.replace(/'/g, "\\'")}', '${pax}', '${total}', '${deposit}', '${balance}', '${paymentMethod}', '${rawStatus}', '${remarks.replace(/'/g, "\\'")}')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-xl text-xs font-bold transition shadow-sm" title="Generate printable booking voucher">
                                 📄 Voucher
                             </button>
