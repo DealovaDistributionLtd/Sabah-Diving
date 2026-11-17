@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Master Control Panel | 站长专属高级私密控制台</title>
+    <link rel="manifest" href="manifest.html">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .light-panel { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .light-input { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; }
+        .light-input:focus { border-color: #0284c7; background: #ffffff; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
+        #mobileDrawer { transition: transform 0.3s ease-in-out; }
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white">
+
+    <!-- GLOBAL LOADING SPINNER -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 flex flex-col items-center gap-4 max-w-xs w-full mx-4">
+            <div class="w-12 h-12 border-4 border-sky-200 border-t-sky-600 rounded-full animate-spin"></div>
+            <div class="text-center">
+                <h3 id="loadingText" class="font-bold text-slate-900 text-sm">Processing...</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Please wait 🌊</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DRAWER OVERLAY -->
+    <div id="drawerOverlay" onclick="toggleMenu()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+
+    <!-- HAMBURGER DRAWER -->
+    <div id="mobileDrawer" class="fixed top-0 left-0 bottom-0 w-72 bg-white z-50 shadow-2xl p-6 flex flex-col justify-between transform -translate-x-full">
+        <div>
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-sky-600 flex items-center justify-center text-lg text-white shadow-md">🔐</div>
+                    <div><h2 class="font-bold text-slate-900 text-sm">Owner Portal</h2><p class="text-[10px] text-slate-400">Master Control</p></div>
+                </div>
+                <button onclick="toggleMenu()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">✕</button>
+            </div>
+            
+            <nav class="space-y-2">
+                <a href="owner.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-indigo-50 text-indigo-700 font-bold text-xs shadow-sm"><span>🔐</span> Owner Control Panel / 站长主控台</a>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📋</span> Master Bookings / 预订总表</a>
+                <a href="manifest.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>🚤</span> Daily Manifest / 每日船期清单</a>
+                <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📅</span> Master Calendar / 全屏日程表</a>
+                <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📈</span> Financial Ledger / 财务利润报表</a>
+                <a href="weather.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⛅</span> Marine Weather / 海洋天气监测</a>
+                <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>💰</span> Assistant Commission / 助理提成</a>
+                <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⭐</span> Guest Review Kiosk / 客户评价</a>
+            </nav>
+        </div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving Owner System v3.8</div>
+    </div>
+
+    <div class="max-w-[95%] md:max-w-[85%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
+        <!-- HEADER -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 light-panel p-5 sm:p-6 rounded-3xl gap-4">
+            <div class="flex items-center gap-3.5">
+                <button onclick="toggleMenu()" class="p-2.5 rounded-2xl light-input hover:border-sky-400 text-slate-700 transition flex items-center justify-center shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-sky-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">🔐</div>
+                <div>
+                    <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Owner Advanced Control Panel</h1>
+                    <p class="text-slate-500 text-xs mt-0.5">站长高级控制台 • 假期阻断、助理提成设置与全景业务总控</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Owner Session Active
+                </span>
+            </div>
+        </header>
+
+        <!-- MAIN CONTROL SECTIONS -->
+        <div class="space-y-6 sm:space-y-8">
+
+            <!-- 1. VACATION & TIME-OFF MANAGER -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-base font-bold text-amber-600 flex items-center gap-2">
+                        <span>✈️</span> Vacation & Time-Off Date Blocking / 假期行程与暂停接单设置
+                    </h2>
+                    <span class="text-xs text-slate-400">Security Shield</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-5">
+                    Configure your away dates below. Any booking attempt during this period across your booking forms will be automatically blocked.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Away Start Date / 休假开始日期</label>
+                        <input type="date" id="awayStart" class="w-full light-input rounded-xl px-3.5 py-3 text-xs focus:outline-none cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Away End Date / 休假结束日期</label>
+                        <input type="date" id="awayEnd" class="w-full light-input rounded-xl px-3.5 py-3 text-xs focus:outline-none cursor-pointer">
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="saveTimeOff()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl text-xs transition shadow-sm">
+                            Save & Lock 🔒
+                        </button>
+                        <button type="button" onclick="clearTimeOff()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 px-3 rounded-xl text-xs transition">
+                            Clear ✕
+                        </button>
+                    </div>
+                </div>
+                <div id="awayStatusDisplay" class="mt-4 text-xs font-semibold text-slate-500">
+                    <!-- Status populates here -->
+                </div>
+            </div>
+
+            <!-- 2. ASSISTANT COMMISSION & PAYOUT SETTINGS (@lmdylr) -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-base font-bold text-indigo-600 flex items-center gap-2">
+                        <span>💰</span> Assistant Commission Configuration (@lmdylr) / 助理提成规则与费率设置
+                    </h2>
+                    <span class="text-xs text-slate-400">Synced to commission.html</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-5">
+                    Define how assistant commissions are calculated for bookings. Changes save instantly to local storage and reflect on the commission calculation page.
+                </p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Commission Type / 计算模式</label>
+                        <select id="commType" class="w-full light-input rounded-xl px-3.5 py-3 text-xs focus:outline-none cursor-pointer">
+                            <option value="percentage">Percentage of Total Price (% / 按总价百分比)</option>
+                            <option value="fixed_per_pax">Fixed Rate Per Pax (RM / 每人固定提成)</option>
+                            <option value="fixed_per_booking">Fixed Rate Per Booking (RM / 每单固定提成)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Rate Value / 提成数值 (% 或 RM)</label>
+                        <input type="number" step="0.01" id="commRate" class="w-full light-input rounded-xl px-3.5 py-3 text-xs focus:outline-none font-bold text-indigo-700" placeholder="e.g. 10 or 50">
+                    </div>
+                    <div class="flex items-end">
+                        <button type="button" onclick="saveCommissionSettings()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl text-xs transition shadow-sm">
+                            Save Commission Rule 💾
+                        </button>
+                    </div>
+                </div>
+                <div id="commStatusDisplay" class="text-xs font-semibold text-slate-600 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                    <!-- Status populates here -->
+                </div>
+            </div>
+
+            <!-- 3. QUICK SYSTEM NAVIGATION & BACKUPS -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl">
+                <h2 class="text-base font-bold text-sky-700 flex items-center gap-2 mb-4">
+                    <span>🚀</span> Quick Operations Hub / 核心业务快速导航
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <a href="index.html" class="p-4 rounded-2xl light-input hover:border-sky-400 hover:bg-sky-50/30 transition text-center flex flex-col items-center gap-2 group">
+                        <span class="text-2xl">📋</span>
+                        <span class="text-xs font-bold text-slate-700 group-hover:text-sky-700">Master Bookings</span>
+                    </a>
+                    <a href="manifest.html" class="p-4 rounded-2xl light-input hover:border-sky-400 hover:bg-sky-50/30 transition text-center flex flex-col items-center gap-2 group">
+                        <span class="text-2xl">🚤</span>
+                        <span class="text-xs font-bold text-slate-700 group-hover:text-sky-700">Daily Manifest</span>
+                    </a>
+                    <a href="schedule.html" class="p-4 rounded-2xl light-input hover:border-sky-400 hover:bg-sky-50/30 transition text-center flex flex-col items-center gap-2 group">
+                        <span class="text-2xl">📅</span>
+                        <span class="text-xs font-bold text-slate-700 group-hover:text-sky-700">Master Calendar</span>
+                    </a>
+                    <a href="commission.html" class="p-4 rounded-2xl light-input hover:border-sky-400 hover:bg-sky-50/30 transition text-center flex flex-col items-center gap-2 group">
+                        <span class="text-2xl">💰</span>
+                        <span class="text-xs font-bold text-slate-700 group-hover:text-sky-700">Commission Ledger</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 4. SYSTEM DIAGNOSTICS & MAINTENANCE -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl border-rose-100">
+                <h2 class="text-base font-bold text-rose-600 flex items-center gap-2 mb-3">
+                    <span>⚠️</span> System Diagnostics & Maintenance / 系统诊断与维护
+                </h2>
+                <p class="text-xs text-slate-500 mb-4">
+                    If you experience sync delays or browser caching issues, you can safely reset local states without affecting your cloud Google Sheet.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="clearLocalCache()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-4 py-2.5 rounded-xl text-xs font-bold transition">
+                        🧹 Clear Local Cache & Reload
+                    </button>
+                    <a href="https://docs.google.com/spreadsheets" target="_blank" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                        📊 Open Google Sheet Backend
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            loadSavedTimeOff();
+            loadCommissionSettings();
+            ['awayStart', 'awayEnd'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.addEventListener('click', function() {
+                        if (this.showPicker) { try { this.showPicker(); } catch (e) {} }
+                    });
+                }
+            });
+        };
+
+        function toggleMenu() {
+            const drawer = document.getElementById('mobileDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            drawer.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        // --- Vacation Time-Off Logic ---
+        function saveTimeOff() {
+            const start = document.getElementById('awayStart').value;
+            const end = document.getElementById('awayEnd').value;
+
+            if (!start || !end) {
+                alert("Please select both start and end dates.");
+                return;
+            }
+            if (start > end) {
+                alert("Start date cannot be after end date.");
+                return;
+            }
+
+            const timeOffRange = { start, end };
+            localStorage.setItem('sabah_diver_timeoff', JSON.stringify(timeOffRange));
+            loadSavedTimeOff();
+            alert("✅ Vacation time-off saved successfully! Booking forms are now locked for these dates.");
+        }
+
+        function clearTimeOff() {
+            localStorage.removeItem('sabah_diver_timeoff');
+            document.getElementById('awayStart').value = '';
+            document.getElementById('awayEnd').value = '';
+            loadSavedTimeOff();
+            alert("Time-off cleared. Booking dates are fully open.");
+        }
+
+        function loadSavedTimeOff() {
+            const saved = localStorage.getItem('sabah_diver_timeoff');
+            const displayEl = document.getElementById('awayStatusDisplay');
+            if(!displayEl) return;
+            
+            if (saved) {
+                try {
+                    const range = JSON.parse(saved);
+                    document.getElementById('awayStart').value = range.start;
+                    document.getElementById('awayEnd').value = range.end;
+                    displayEl.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl font-bold">🔒 Active Lock: Away from ${range.start} to ${range.end}</span>`;
+                } catch(e) {
+                    displayEl.innerHTML = '';
+                }
+            } else {
+                displayEl.innerHTML = `<span class="text-slate-400">No active vacation lock set. All dates available for booking.</span>`;
+            }
+        }
+
+        // --- Commission Settings Logic ---
+        function saveCommissionSettings() {
+            const type = document.getElementById('commType').value;
+            const rate = parseFloat(document.getElementById('commRate').value);
+
+            if (isNaN(rate) || rate < 0) {
+                alert("Please enter a valid commission rate value.");
+                return;
+            }
+
+            const commSettings = { type, rate };
+            localStorage.setItem('sabah_diver_commission_settings', JSON.stringify(commSettings));
+            loadCommissionSettings();
+            alert("✅ Assistant commission rules saved successfully!");
+        }
+
+        function loadCommissionSettings() {
+            const saved = localStorage.getItem('sabah_diver_commission_settings');
+            const displayEl = document.getElementById('commStatusDisplay');
+            if(!displayEl) return;
+
+            // Default fallback if not set
+            let settings = saved ? JSON.parse(saved) : { type: 'percentage', rate: 10 };
+            
+            document.getElementById('commType').value = settings.type;
+            document.getElementById('commRate').value = settings.rate;
+
+            let typeDesc = "Percentage of Total Price (%)";
+            if (settings.type === 'fixed_per_pax') typeDesc = "Fixed Rate Per Pax (RM)";
+            if (settings.type === 'fixed_per_booking') typeDesc = "Fixed Rate Per Booking (RM)";
+
+            displayEl.innerHTML = `<strong>Current Active Rule:</strong> ${typeDesc} at <strong>${settings.rate}${settings.type === 'percentage' ? '%' : ' RM'}</strong>`;
+        }
+
+        function clearLocalCache() {
+            if(confirm("Are you sure you want to clear local cache? Your Google Sheet data remains fully secure.")) {
+                localStorage.clear();
+                alert("Local cache cleared successfully.");
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
