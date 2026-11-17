@@ -239,9 +239,6 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <a href="owner.html" class="text-xs px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold flex items-center gap-1.5 transition shadow-sm">
-                    <span>🔐 Owner Control</span>
-                </a>
                 <div id="syncStatus" class="hidden sm:flex text-xs px-3.5 py-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold items-center gap-2 shadow-sm">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     Sync Active
@@ -516,6 +513,20 @@
 
             fetchBookings();
         };
+
+        function isDateBlocked(activityDate) {
+            const saved = localStorage.getItem('sabah_diver_timeoff');
+            if (!saved) return false;
+
+            try {
+                const range = JSON.parse(saved);
+                if (activityDate >= range.start && activityDate <= range.end) {
+                    return true;
+                }
+            } catch(e) {}
+            
+            return false;
+        }
 
         function onLocationChange() {
             const locSelect = document.getElementById('location');
@@ -834,6 +845,12 @@
             const fullNameInput = document.getElementById('fullName').value.trim();
             const passportInput = document.getElementById('passport').value.trim().toUpperCase();
             const aDateVal = document.getElementById('activityDate').value;
+
+            if (isDateBlocked(aDateVal)) {
+                alert(`⚠️ Vacation Notice:\n\nYou have set time-off / vacation covering ${aDateVal}.\nNew bookings cannot be accepted during your absence.`);
+                return;
+            }
+
             const bDateVal = document.getElementById('bookingDate').value || new Date().toLocaleDateString('en-CA');
             const genderVal = document.getElementById('gender').value;
             const paxVal = document.getElementById('pax').value;
