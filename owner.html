@@ -89,7 +89,7 @@
                 </a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving Owner System v4.1</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving Owner System v4.2</div>
     </div>
 
     <div class="max-w-[95%] md:max-w-[90%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
@@ -101,7 +101,7 @@
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-sky-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">🔐</div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Owner Advanced Control Panel</h1>
-                    <p class="text-slate-500 text-xs mt-0.5">站长高级控制台 • 假期阻断、助理提成与财务清算多维管理 (@lmdylr)</p>
+                    <p class="text-slate-500 text-xs mt-0.5">站长高级控制台 • 多时段假期阻断、助理提成与财务清算多维管理 (@lmdylr)</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -128,14 +128,14 @@
             <div class="light-panel p-6 sm:p-8 rounded-3xl">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-base font-bold text-amber-600 flex items-center gap-2">
-                        <span>✈️</span> Vacation & Time-Off Date Blocking / 假期行程与暂停接单设置
+                        <span>✈️</span> Vacation & Time-Off Date Blocking / 多时段假期行程与暂停接单设置
                     </h2>
                     <span class="text-xs text-slate-400">Security Shield</span>
                 </div>
                 <p class="text-xs text-slate-500 mb-5">
-                    Configure your away dates below. Any booking attempt during this period across your booking forms will be automatically blocked.
+                    Configure multiple away dates below. You can add as many vacation periods as needed, and bookings during any of these periods will be blocked.
                 </p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end mb-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1.5">Away Start Date / 休假开始日期</label>
                         <input type="date" id="awayStart" class="w-full light-input rounded-xl px-3.5 py-3 text-xs focus:outline-none cursor-pointer">
@@ -144,16 +144,20 @@
                         <label class="block text-xs font-bold text-slate-600 mb-1.5">Away End Date / 休假结束日期</label>
                         <input type="date" id="awayEnd" class="w-full light-input rounded-xl px-3.5 py-3 text-xs focus:outline-none cursor-pointer">
                     </div>
-                    <div class="flex gap-2">
-                        <button type="button" onclick="saveTimeOff()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl text-xs transition shadow-sm">
-                            Save & Lock 🔒
-                        </button>
-                        <button type="button" onclick="clearTimeOff()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 px-3 rounded-xl text-xs transition">
-                            Clear ✕
+                    <div>
+                        <button type="button" onclick="addTimeOff()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl text-xs transition shadow-sm">
+                            Add Vacation Period ➕
                         </button>
                     </div>
                 </div>
-                <div id="awayStatusDisplay" class="mt-4 text-xs font-semibold text-slate-500"></div>
+
+                <!-- Active Time-Off Periods List -->
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                    <h3 class="text-xs font-bold text-slate-600 mb-2">Active Vacation Periods / 当前已设定的所有假期段：</h3>
+                    <div id="awayStatusDisplay" class="space-y-2">
+                        <!-- Dynamic items populate here -->
+                    </div>
+                </div>
             </div>
 
             <!-- 2. ASSISTANT COMMISSION CONFIGURATION (@lmdylr) -->
@@ -353,38 +357,74 @@
             }
         }
 
-        // --- Vacation Time-Off Logic ---
-        function saveTimeOff() {
+        // --- Multi-Vacation Time-Off Logic ---
+        function addTimeOff() {
             const start = document.getElementById('awayStart').value;
             const end = document.getElementById('awayEnd').value;
             if (!start || !end) { alert("Please select both start and end dates."); return; }
             if (start > end) { alert("Start date cannot be after end date."); return; }
-            localStorage.setItem('sabah_diver_timeoff', JSON.stringify({ start, end }));
-            loadSavedTimeOff();
-            alert("✅ Vacation time-off saved successfully!");
-        }
 
-        function clearTimeOff() {
-            localStorage.removeItem('sabah_diver_timeoff');
+            let timeOffList = [];
+            try {
+                const saved = localStorage.getItem('sabah_diver_timeoff_list');
+                if (saved) timeOffList = JSON.parse(saved);
+                // Also support migrating old single format if exists
+                if (!Array.isArray(timeOffList)) {
+                    const oldSingle = localStorage.getItem('sabah_diver_timeoff');
+                    if (oldSingle) timeOffList = [JSON.parse(oldSingle)];
+                }
+            } catch(e) { timeOffList = []; }
+
+            timeOffList.push({ start, end });
+            localStorage.setItem('sabah_diver_timeoff_list', JSON.stringify(timeOffList));
+            
+            // Clear inputs
             document.getElementById('awayStart').value = '';
             document.getElementById('awayEnd').value = '';
             loadSavedTimeOff();
-            alert("Time-off cleared.");
+            alert("✅ Vacation period added successfully!");
+        }
+
+        function removeTimeOff(index) {
+            try {
+                let timeOffList = JSON.parse(localStorage.getItem('sabah_diver_timeoff_list') || '[]');
+                timeOffList.splice(index, 1);
+                localStorage.setItem('sabah_diver_timeoff_list', JSON.stringify(timeOffList));
+                loadSavedTimeOff();
+            } catch(e) {}
         }
 
         function loadSavedTimeOff() {
-            const saved = localStorage.getItem('sabah_diver_timeoff');
             const displayEl = document.getElementById('awayStatusDisplay');
             if(!displayEl) return;
-            if (saved) {
-                try {
-                    const range = JSON.parse(saved);
-                    document.getElementById('awayStart').value = range.start;
-                    document.getElementById('awayEnd').value = range.end;
-                    displayEl.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl font-bold">🔒 Active Lock: Away from ${range.start} to ${range.end}</span>`;
-                } catch(e) { displayEl.innerHTML = ''; }
+
+            let timeOffList = [];
+            try {
+                const saved = localStorage.getItem('sabah_diver_timeoff_list');
+                if (saved) {
+                    timeOffList = JSON.parse(saved);
+                } else {
+                    // Check backward compatibility with single format
+                    const oldSingle = localStorage.getItem('sabah_diver_timeoff');
+                    if (oldSingle) {
+                        timeOffList = [JSON.parse(oldSingle)];
+                    }
+                }
+            } catch(e) { timeOffList = []; }
+
+            if (timeOffList.length > 0) {
+                let html = '';
+                timeOffList.forEach((item, index) => {
+                    html += `
+                        <div class="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
+                            <span>🔒 <strong>Lock #${index + 1}:</strong> From ${item.start} to ${item.end}</span>
+                            <button onclick="removeTimeOff(${index})" class="px-2.5 py-1 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-lg transition text-[10px]">Delete ✕</button>
+                        </div>
+                    `;
+                });
+                displayEl.innerHTML = html;
             } else {
-                displayEl.innerHTML = `<span class="text-slate-400">No active vacation lock set. All dates available for booking.</span>`;
+                displayEl.innerHTML = `<span class="text-slate-400 italic">No active vacation locks set. All dates available for booking.</span>`;
             }
         }
 
