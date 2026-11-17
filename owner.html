@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Master Control Panel | 站长专属高级私密控制台</title>
+    <title>Owner Master Control Panel & Financials | 站长专属高级私密控制台与财务报表</title>
     <link rel="manifest" href="manifest.html">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -13,9 +13,23 @@
         .light-input { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; }
         .light-input:focus { border-color: #0284c7; background: #ffffff; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1); }
         #mobileDrawer { transition: transform 0.3s ease-in-out; }
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
-<body class="text-slate-800 min-h-screen antialiased selection:bg-sky-500 selection:text-white">
+<body class="text-slate-800 min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- GLOBAL LOADING SPINNER OVERLAY -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex flex-col items-center justify-center transition-opacity opacity-0 pointer-events-none">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl border border-slate-100 flex flex-col items-center gap-4 max-w-xs w-full mx-4">
+            <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            <div class="text-center">
+                <h3 id="loadingText" class="font-bold text-slate-900 text-sm">Loading Data...</h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Please wait while we sync records 🌊</p>
+            </div>
+        </div>
+    </div>
 
     <!-- PASSWORD LOCK GATE MODAL -->
     <div id="passwordModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[200] flex items-center justify-center p-4">
@@ -52,29 +66,45 @@
             </div>
             
             <nav class="space-y-2">
-                <a href="owner.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-indigo-50 text-indigo-700 font-bold text-xs shadow-sm"><span>🔐</span> Owner Control Panel / 站长主控台</a>
-                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📋</span> Master Bookings / 预订总表</a>
-                <a href="manifest.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>🚤</span> Daily Manifest / 每日船期清单</a>
-                <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📅</span> Master Calendar / 全屏日程表</a>
-                <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>📈</span> Financial Ledger / 财务利润报表</a>
-                <a href="weather.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⛅</span> Marine Weather / 海洋天气监测</a>
-                <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>💰</span> Assistant Commission / 助理提成</a>
-                <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⭐</span> Guest Review Kiosk / 客户评价</a>
+                <a href="owner.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-indigo-50 text-indigo-700 font-bold text-xs shadow-sm">
+                    <span>🔐</span> Owner Control Panel / 站长主控台
+                </a>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>📋</span> Master Bookings / 预订总表
+                </a>
+                <a href="manifest.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>🚤</span> Daily Manifest / 每日船期清单
+                </a>
+                <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>📅</span> Master Calendar / 全屏日程表
+                </a>
+                <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>📈</span> Financial Ledger / 财务利润报表
+                </a>
+                <a href="weather.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>⛅</span> Marine Weather / 海洋天气监测
+                </a>
+                <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>💰</span> Assistant Commission / 助理提成
+                </a>
+                <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>⭐</span> Guest Review Kiosk / 客户评价填写
+                </a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving Owner System v3.10</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving Owner System v4.0</div>
     </div>
 
-    <div class="max-w-[95%] md:max-w-[85%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
-        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 light-panel p-5 sm:p-6 rounded-3xl gap-4">
+    <div class="max-w-[95%] md:max-w-[90%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 light-panel p-5 sm:p-6 rounded-3xl gap-4">
             <div class="flex items-center gap-3.5">
-                <button onclick="toggleMenu()" class="p-2.5 rounded-2xl light-input hover:border-sky-400 text-slate-700 transition flex items-center justify-center shadow-sm">
+                <button onclick="toggleMenu()" class="p-2.5 rounded-2xl light-input hover:border-indigo-400 text-slate-700 transition flex items-center justify-center shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-sky-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">🔐</div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Owner Advanced Control Panel</h1>
-                    <p class="text-slate-500 text-xs mt-0.5">站长高级控制台 • 假期阻断与助理提成管理 (@lmdylr)</p>
+                    <p class="text-slate-500 text-xs mt-0.5">站长高级控制台 • 假期阻断、助理提成与财务清算多维管理 (@lmdylr)</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -85,8 +115,18 @@
             </div>
         </header>
 
-        <div class="space-y-6 sm:space-y-8">
+        <!-- TOP TAB NAVIGATION -->
+        <div class="flex gap-2 mb-6 border-b border-slate-200 pb-3 overflow-x-auto">
+            <button onclick="switchTab('settings')" id="tabBtn-settings" class="px-5 py-3 rounded-2xl font-bold text-xs transition flex items-center gap-2 bg-indigo-600 text-white shadow-md shrink-0">
+                <span>⚙️</span> Control & Commission / 系统设置与提成
+            </button>
+            <button onclick="switchTab('finance')" id="tabBtn-finance" class="px-5 py-3 rounded-2xl font-bold text-xs transition flex items-center gap-2 bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 shrink-0">
+                <span>📈</span> Financial Ledger / 财务清算与流水报表
+            </button>
+        </div>
 
+        <!-- TAB 1: SETTINGS & COMMISSION -->
+        <div id="tabContent-settings" class="space-y-6 sm:space-y-8">
             <!-- 1. VACATION & TIME-OFF MANAGER -->
             <div class="light-panel p-6 sm:p-8 rounded-3xl">
                 <div class="flex justify-between items-center mb-4">
@@ -116,9 +156,7 @@
                         </button>
                     </div>
                 </div>
-                <div id="awayStatusDisplay" class="mt-4 text-xs font-semibold text-slate-500">
-                    <!-- Status populates here -->
-                </div>
+                <div id="awayStatusDisplay" class="mt-4 text-xs font-semibold text-slate-500"></div>
             </div>
 
             <!-- 2. ASSISTANT COMMISSION CONFIGURATION (@lmdylr) -->
@@ -153,9 +191,7 @@
                         </button>
                     </div>
                 </div>
-                <div id="commStatusDisplay" class="text-xs font-semibold text-slate-600 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                    <!-- Status populates here -->
-                </div>
+                <div id="commStatusDisplay" class="text-xs font-semibold text-slate-600 bg-slate-50 p-3.5 rounded-2xl border border-slate-100"></div>
             </div>
 
             <!-- 3. QUICK NAVIGATION -->
@@ -168,23 +204,98 @@
                     <a href="commission.html" class="p-4 rounded-2xl light-input hover:border-sky-400 transition text-center flex flex-col items-center gap-2 group"><span class="text-2xl">💰</span><span class="text-xs font-bold text-slate-700">Commission Ledger</span></a>
                 </div>
             </div>
+        </div>
 
+        <!-- TAB 2: FINANCIAL LEDGER -->
+        <div id="tabContent-finance" class="space-y-6 sm:space-y-8 hidden">
+            <!-- KPI Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+                <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gross Revenue / 总营业额</span>
+                    <div class="text-2xl sm:text-3xl font-bold text-emerald-600 mt-3" id="finTotalRev">RM0.00</div>
+                    <span class="text-[10px] text-slate-400 mt-1">包含所有有效订单总额</span>
+                </div>
+                <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Realized Revenue / 已实收总额</span>
+                    <div class="text-2xl sm:text-3xl font-bold text-teal-600 mt-3" id="finRealizedRev">RM0.00</div>
+                    <span class="text-[10px] text-slate-400 mt-1">已完成订单全款 + 进行中定金</span>
+                </div>
+                <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Deposits Collected / 已收定金</span>
+                    <div class="text-2xl sm:text-3xl font-bold text-sky-600 mt-3" id="finTotalDep">RM0.00</div>
+                    <span class="text-[10px] text-slate-400 mt-1">未完成订单已收定金</span>
+                </div>
+                <div class="light-panel p-6 rounded-3xl flex flex-col justify-between">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Outstanding Balance / 待收尾款</span>
+                    <div class="text-2xl sm:text-3xl font-bold text-rose-600 mt-3" id="finTotalBal">RM0.00</div>
+                    <span class="text-[10px] text-slate-400 mt-1">仅限待出行/进行中订单尾款</span>
+                </div>
+            </div>
+
+            <!-- Payment Channels Breakdown -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl space-y-6">
+                <h2 class="text-base font-bold text-slate-900">💳 Payment Method Reconciliation / 收款渠道流水明细</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-4" id="paymentMethodCards">
+                    <!-- Dynamic Channel Totals Populated Here -->
+                </div>
+            </div>
+
+            <!-- Detailed Transactions Breakdown Table -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-base font-bold text-slate-900">📋 Financial Audit Trail / 财务清算明细表</h2>
+                    <span id="auditCount" class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-xl font-semibold">0 records</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
+                                <th class="py-3 px-3">日期 (Date)</th>
+                                <th class="py-3 px-3">客户姓名 (Guest Name)</th>
+                                <th class="py-3 px-3">活动地点 (Location)</th>
+                                <th class="py-3 px-3">订单套餐 (Package)</th>
+                                <th class="py-3 px-3">总价 (Total)</th>
+                                <th class="py-3 px-3">已收 (Paid/Deposit)</th>
+                                <th class="py-3 px-3">待收尾款 (Balance)</th>
+                                <th class="py-3 px-3">付款方式 (Method)</th>
+                                <th class="py-3 px-3">状态 (Status)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="financeTableBody" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwK2rXybI46SdZBTj-kTUDN-H6LV1dwgZjV8il5jX1xDpppCCdu_7YGnueYiCT47mI/exec";
+        let financeDataLoaded = false;
+
+        function showLoading(text = "Loading...") {
+            document.getElementById('loadingText').innerText = text;
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100');
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100');
+        }
+
+        function toggleMenu() {
+            document.getElementById('mobileDrawer').classList.toggle('-translate-x-full');
+            document.getElementById('drawerOverlay').classList.toggle('hidden');
+        }
+
         window.onload = function() {
             checkOwnerAuth();
             loadSavedTimeOff();
             loadCommissionSettings();
-            ['awayStart', 'awayEnd'].forEach(id => {
-                const el = document.getElementById(id);
-                if(el) {
-                    el.addEventListener('click', function() {
-                        if (this.showPicker) { try { this.showPicker(); } catch (e) {} }
-                    });
-                }
-            });
         };
 
         function checkOwnerAuth() {
@@ -198,7 +309,7 @@
         async function handlePasswordLogin(event) {
             event.preventDefault();
             const pwd = document.getElementById('ownerPasswordInput').value;
-            if (pwd === 'deso888' || pwd === 'admin888' || pwd === 'Deso_89') {
+            if (pwd === 'deso888' || pwd === 'admin888' || pwd === 'Deso_89' || pwd === 'sabah2026') {
                 sessionStorage.setItem('sabah_owner_authenticated', 'true');
                 document.getElementById('passwordModal').classList.add('hidden');
             } else {
@@ -212,29 +323,38 @@
             location.reload();
         }
 
-        function toggleMenu() {
-            document.getElementById('mobileDrawer').classList.toggle('-translate-x-full');
-            document.getElementById('drawerOverlay').classList.toggle('hidden');
+        function switchTab(tabName) {
+            const settingsTab = document.getElementById('tabContent-settings');
+            const financeTab = document.getElementById('tabContent-finance');
+            const settingsBtn = document.getElementById('tabBtn-settings');
+            const financeBtn = document.getElementById('tabBtn-finance');
+
+            if (tabName === 'settings') {
+                settingsTab.classList.remove('hidden');
+                financeTab.classList.add('hidden');
+                settingsBtn.className = "px-5 py-3 rounded-2xl font-bold text-xs transition flex items-center gap-2 bg-indigo-600 text-white shadow-md shrink-0";
+                financeBtn.className = "px-5 py-3 rounded-2xl font-bold text-xs transition flex items-center gap-2 bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 shrink-0";
+            } else {
+                settingsTab.classList.add('hidden');
+                financeTab.classList.remove('hidden');
+                financeBtn.className = "px-5 py-3 rounded-2xl font-bold text-xs transition flex items-center gap-2 bg-emerald-600 text-white shadow-md shrink-0";
+                settingsBtn.className = "px-5 py-3 rounded-2xl font-bold text-xs transition flex items-center gap-2 bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 shrink-0";
+                
+                if (!financeDataLoaded) {
+                    fetchFinanceData();
+                }
+            }
         }
 
         // --- Vacation Time-Off Logic ---
         function saveTimeOff() {
             const start = document.getElementById('awayStart').value;
             const end = document.getElementById('awayEnd').value;
-
-            if (!start || !end) {
-                alert("Please select both start and end dates.");
-                return;
-            }
-            if (start > end) {
-                alert("Start date cannot be after end date.");
-                return;
-            }
-
-            const timeOffRange = { start, end };
-            localStorage.setItem('sabah_diver_timeoff', JSON.stringify(timeOffRange));
+            if (!start || !end) { alert("Please select both start and end dates."); return; }
+            if (start > end) { alert("Start date cannot be after end date."); return; }
+            localStorage.setItem('sabah_diver_timeoff', JSON.stringify({ start, end }));
             loadSavedTimeOff();
-            alert("✅ Vacation time-off saved successfully! Booking forms are now locked for these dates.");
+            alert("✅ Vacation time-off saved successfully!");
         }
 
         function clearTimeOff() {
@@ -242,23 +362,20 @@
             document.getElementById('awayStart').value = '';
             document.getElementById('awayEnd').value = '';
             loadSavedTimeOff();
-            alert("Time-off cleared. Booking dates are fully open.");
+            alert("Time-off cleared.");
         }
 
         function loadSavedTimeOff() {
             const saved = localStorage.getItem('sabah_diver_timeoff');
             const displayEl = document.getElementById('awayStatusDisplay');
             if(!displayEl) return;
-            
             if (saved) {
                 try {
                     const range = JSON.parse(saved);
                     document.getElementById('awayStart').value = range.start;
                     document.getElementById('awayEnd').value = range.end;
                     displayEl.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl font-bold">🔒 Active Lock: Away from ${range.start} to ${range.end}</span>`;
-                } catch(e) {
-                    displayEl.innerHTML = '';
-                }
+                } catch(e) { displayEl.innerHTML = ''; }
             } else {
                 displayEl.innerHTML = `<span class="text-slate-400">No active vacation lock set. All dates available for booking.</span>`;
             }
@@ -268,38 +385,26 @@
         function onCommissionTypeChange() {
             const type = document.getElementById('commType').value;
             const container = document.getElementById('rateInputContainer');
-            if (type === 'tier_rules') {
-                container.style.display = 'none';
-            } else {
-                container.style.display = 'block';
-            }
+            container.style.display = (type === 'tier_rules') ? 'none' : 'block';
         }
 
         function saveCommissionSettings() {
             const type = document.getElementById('commType').value;
             let rate = 0;
-
             if (type !== 'tier_rules') {
                 rate = parseFloat(document.getElementById('commRate').value);
-                if (isNaN(rate) || rate < 0) {
-                    alert("Please enter a valid commission rate value.");
-                    return;
-                }
+                if (isNaN(rate) || rate < 0) { alert("Please enter a valid commission rate value."); return; }
             }
-
-            const commSettings = { type, rate };
-            localStorage.setItem('sabah_diver_commission_settings', JSON.stringify(commSettings));
+            localStorage.setItem('sabah_diver_commission_settings', JSON.stringify({ type, rate }));
             loadCommissionSettings();
-            alert("✅ Assistant commission rules saved successfully! commission.html has been updated.");
+            alert("✅ Assistant commission rules saved successfully!");
         }
 
         function loadCommissionSettings() {
             const saved = localStorage.getItem('sabah_diver_commission_settings');
             const displayEl = document.getElementById('commStatusDisplay');
             if(!displayEl) return;
-
             let settings = saved ? JSON.parse(saved) : { type: 'tier_rules', rate: 0 };
-            
             document.getElementById('commType').value = settings.type;
             document.getElementById('commRate').value = settings.rate;
             onCommissionTypeChange();
@@ -310,6 +415,102 @@
             if (settings.type === 'fixed_per_booking') typeDesc = `Fixed Rate Per Booking (RM${settings.rate})`;
 
             displayEl.innerHTML = `<strong>Current Active Rule:</strong> ${typeDesc}`;
+        }
+
+        // --- Financial Ledger Logic ---
+        async function fetchFinanceData() {
+            showLoading("Syncing Financial Data...");
+            try {
+                const res = await fetch(APPS_SCRIPT_URL + "?t=" + new Date().getTime());
+                const bookings = await res.json();
+                
+                let totalRev = 0, realizedRev = 0, totalDep = 0, totalBal = 0;
+                let methods = { "WeChat Pay": 0, "Alipay": 0, "Bank Transfer": 0, "TNG (Touch 'n Go)": 0, "Cash": 0 };
+                const tbody = document.getElementById('financeTableBody');
+                tbody.innerHTML = '';
+                let validCount = 0;
+                const todayStr = new Date().toLocaleDateString('en-CA');
+
+                bookings.forEach(b => {
+                    let actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                    let status = (b["Status"] || '').toLowerCase();
+
+                    if (actDate && actDate < todayStr && !status.includes('cancel')) {
+                        b["Status"] = "Completed / 已完成";
+                        status = "completed / 已完成";
+                    }
+
+                    if (!status.includes('cancelled')) {
+                        validCount++;
+                        const total = parseFloat(b["Total Price"]) || 0;
+                        let deposit = parseFloat(b["Deposit Paid"]) || 0;
+                        let balance = parseFloat(b["Balance Due"]) || 0;
+                        const isCompleted = status.includes('complet');
+
+                        totalRev += total;
+                        if (isCompleted) {
+                            deposit = total;
+                            balance = 0;
+                            realizedRev += total;
+                        } else {
+                            realizedRev += deposit;
+                            totalDep += deposit;
+                            totalBal += balance;
+                        }
+
+                        const pm = b["Payment Method"] || 'Cash';
+                        methods[pm] = (methods[pm] || 0) + total;
+
+                        const name = b["Full Name"] || '';
+                        const location = b["Location"] || '';
+                        const pkg = b["Package"] || '';
+                        const rawStatus = b["Status"] || '';
+
+                        let badgeClass = "bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md font-semibold";
+                        if (rawStatus.toLowerCase().includes('pending')) {
+                            badgeClass = "bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-md font-semibold";
+                        } else if (rawStatus.toLowerCase().includes('complet')) {
+                            badgeClass = "bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-md font-semibold";
+                        }
+
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="py-3 px-3 text-sky-700 font-semibold">${actDate}</td>
+                                <td class="py-3 px-3 font-bold text-slate-900">${name}</td>
+                                <td class="py-3 px-3 text-slate-600">${location}</td>
+                                <td class="py-3 px-3 text-slate-600 truncate max-w-[180px]" title="${pkg}">${pkg}</td>
+                                <td class="py-3 px-3 text-slate-900 font-bold">RM${total.toFixed(2)}</td>
+                                <td class="py-3 px-3 text-teal-600 font-medium">RM${deposit.toFixed(2)}</td>
+                                <td class="py-3 px-3 text-rose-600 font-medium">RM${balance.toFixed(2)}</td>
+                                <td class="py-3 px-3 text-slate-500">${pm}</td>
+                                <td class="py-3 px-3"><span class="${badgeClass}">${rawStatus}</span></td>
+                            </tr>
+                        `;
+                    }
+                });
+
+                document.getElementById('finTotalRev').innerText = `RM${totalRev.toFixed(2)}`;
+                document.getElementById('finRealizedRev').innerText = `RM${realizedRev.toFixed(2)}`;
+                document.getElementById('finTotalDep').innerText = `RM${totalDep.toFixed(2)}`;
+                document.getElementById('finTotalBal').innerText = `RM${totalBal.toFixed(2)}`;
+                document.getElementById('auditCount').innerText = `${validCount} records`;
+
+                const pmContainer = document.getElementById('paymentMethodCards');
+                pmContainer.innerHTML = '';
+                for (const [method, amount] of Object.entries(methods)) {
+                    pmContainer.innerHTML += `
+                        <div class="light-input p-4 rounded-2xl border-slate-200">
+                            <span class="text-[11px] font-bold text-slate-500 block truncate">${method}</span>
+                            <span class="text-base font-bold text-slate-900 mt-1 block">RM${amount.toFixed(2)}</span>
+                        </div>
+                    `;
+                }
+                financeDataLoaded = true;
+            } catch (e) {
+                console.error(e);
+            } finally {
+                hideLoading();
+            }
         }
     </script>
 </body>
