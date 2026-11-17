@@ -45,39 +45,39 @@
                 <button onclick="toggleMenu()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">✕</button>
             </div>
             
-           <nav class="space-y-2">
-    <a href="owner.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-indigo-50 text-indigo-700 font-bold text-xs shadow-sm">
-        <span>🔐</span> Owner Control Panel / 站长主控台
-    </a>
-    <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
-        <span>📋</span> Master Bookings / 预订总表
-    </a>
-    <a href="manifest.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
-        <span>🚤</span> Daily Manifest / 每日船期清单
-    </a>
-    <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
-        <span>📅</span> Master Calendar / 全屏日程表
-    </a>
-    <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
-        <span>📈</span> Financial Ledger / 财务利润报表
-    </a>
-    <a href="weather.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
-        <span>⛅</span> Marine Weather / 海洋天气监测
-    </a>
-    <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
-        <span>💰</span> Assistant Commission / 助理提成
-    </a>
-    <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
-        <span>⭐</span> Guest Review Kiosk / 客户评价填写
-    </a>
-</nav>
+            <nav class="space-y-2">
+                <a href="owner.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-indigo-50 text-indigo-700 font-bold text-xs shadow-sm">
+                    <span>🔐</span> Owner Control Panel / 站长主控台
+                </a>
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>📋</span> Master Bookings / 预订总表
+                </a>
+                <a href="manifest.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>🚤</span> Daily Manifest / 每日船期清单
+                </a>
+                <a href="schedule.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-sky-50 text-sky-700 font-bold text-xs shadow-sm">
+                    <span>📅</span> Master Calendar / 全屏日程表
+                </a>
+                <a href="finance.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>📈</span> Financial Ledger / 财务利润报表
+                </a>
+                <a href="weather.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>⛅</span> Marine Weather / 海洋天气监测
+                </a>
+                <a href="commission.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>💰</span> Assistant Commission / 助理提成
+                </a>
+                <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                    <span>⭐</span> Guest Review Kiosk / 客户评价填写
+                </a>
+            </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.7</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.8</div>
     </div>
 
     <!-- DAY DETAILS MODAL -->
     <div id="dayModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center px-4">
-        <div class="light-panel bg-white w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative">
+        <div class="light-panel bg-white w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
             <div class="flex justify-between items-center pb-4 border-b border-slate-100">
                 <h3 id="modalTitle" class="text-base font-bold text-sky-700 flex items-center gap-2"><span>📅</span> Activity Manifest</h3>
                 <button onclick="closeModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">✕</button>
@@ -94,7 +94,7 @@
     </div>
 
     <div class="max-w-[95%] md:max-w-[92%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
-        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 light-panel p-5 sm:p-6 rounded-3xl gap-4">
+        <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 light-panel p-5 sm:p-6 rounded-3xl gap-4">
             <div class="flex items-center gap-3.5">
                 <button onclick="toggleMenu()" class="p-2.5 rounded-2xl light-input hover:border-sky-400 text-slate-700 transition flex items-center justify-center shadow-sm">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -105,12 +105,24 @@
                     <p class="text-slate-500 text-xs mt-0.5">全屏月度潜水日程、休假安排与 Google 日历同步总表</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="changeMonth(-1)" class="p-2.5 light-input rounded-xl hover:border-sky-400 text-xs px-4 font-bold transition">◀ Prev</button>
-                <span id="calMonthYear" class="text-sm font-bold text-sky-700 px-3 min-w-[130px] text-center"></span>
-                <button onclick="changeMonth(1)" class="p-2.5 light-input rounded-xl hover:border-sky-400 text-xs px-4 font-bold transition">Next ▶</button>
+            <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto justify-between lg:justify-end">
+                <div class="flex items-center gap-2">
+                    <button onclick="changeMonth(-1)" class="p-2.5 light-input rounded-xl hover:border-sky-400 text-xs px-4 font-bold transition">◀ Prev</button>
+                    <span id="calMonthYear" class="text-sm font-bold text-sky-700 px-3 min-w-[140px] text-center"></span>
+                    <button onclick="changeMonth(1)" class="p-2.5 light-input rounded-xl hover:border-sky-400 text-xs px-4 font-bold transition">Next ▶</button>
+                </div>
+                <button onclick="fetchAllData()" class="px-4 py-2.5 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                    <span>🔄</span> Refresh Sync
+                </button>
             </div>
         </header>
+
+        <!-- Legend Bar -->
+        <div class="flex flex-wrap items-center gap-4 mb-6 px-4 py-3 light-panel rounded-2xl text-xs font-semibold text-slate-600">
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-sky-500"></span> 🏊 Dive Bookings (客户潜水)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500"></span> 🔴 Google Busy Event (个人日程)</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500"></span> ✈️ Vacation / Time-Off (休假阻断)</span>
+        </div>
 
         <!-- Full Calendar Grid Panel -->
         <div class="light-panel p-4 sm:p-6 rounded-3xl space-y-4">
@@ -169,6 +181,7 @@
                 bookings = await res.json();
             } catch (e) {
                 console.error("Error fetching bookings:", e);
+                bookings = [];
             }
         }
 
@@ -177,12 +190,10 @@
             try {
                 const year = navDate.getFullYear();
                 const month = navDate.getMonth();
-                const firstDayOfMonth = new Date(year, month, 1);
-                const now = new Date();
-                const timeMin = firstDayOfMonth > now ? firstDayOfMonth.toISOString() : now.toISOString();
+                const firstDayOfMonth = new Date(year, month, 1).toISOString();
                 const timeMax = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
 
-                const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events?key=${GOOGLE_API_KEY}&timeMin=${timeMin}&timeMax=${timeMax}&singleEvents=true`;
+                const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events?key=${GOOGLE_API_KEY}&timeMin=${firstDayOfMonth}&timeMax=${timeMax}&singleEvents=true`;
                 const res = await fetch(url);
                 const data = await res.json();
                 if (data.items) {
@@ -190,6 +201,7 @@
                 }
             } catch (e) {
                 console.error("Error fetching Google Calendar events:", e);
+                googleEvents = [];
             }
         }
 
@@ -211,7 +223,6 @@
             const totalDays = new Date(year, month + 1, 0).getDate();
             const todayStr = new Date().toLocaleDateString('en-CA');
 
-            // Retrieve saved time-off range from localStorage
             let timeOff = null;
             try {
                 timeOff = JSON.parse(localStorage.getItem('sabah_diver_timeoff') || 'null');
@@ -220,7 +231,7 @@
             }
 
             for (let i = 0; i < firstDayIndex; i++) {
-                grid.innerHTML += `<div class="min-h-[145px] bg-slate-100/50 rounded-2xl opacity-30"></div>`;
+                grid.innerHTML += `<div class="min-h-[110px] sm:min-h-[145px] bg-slate-100/40 rounded-2xl opacity-25"></div>`;
             }
 
             for (let day = 1; day <= totalDays; day++) {
@@ -228,7 +239,6 @@
                 const dayStr = String(day).padStart(2, '0');
                 const dateKey = `${year}-${monthStr}-${dayStr}`;
 
-                // Check if date falls within vacation / time-off range
                 let isVacation = false;
                 if (timeOff && timeOff.start && timeOff.end) {
                     if (dateKey >= timeOff.start && dateKey <= timeOff.end) {
@@ -237,46 +247,46 @@
                 }
 
                 const dayBookings = bookings.filter(b => {
-                    const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
-                    const status = (b["Status"] || '').toLowerCase();
-                    return actDate === dateKey && !status.includes('cancelled');
+                    let actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                    let status = (b["Status"] || '').toLowerCase();
+                    return actDate === dateKey && !status.includes('cancel');
                 });
 
                 const dayGoogleEvents = googleEvents.filter(ev => {
                     const start = ev.start.date || (ev.start.dateTime ? ev.start.dateTime.split('T')[0] : '');
                     const end = ev.end.date || (ev.end.dateTime ? ev.end.dateTime.split('T')[0] : '');
-                    if (end < todayStr) return false;
-                    return dateKey >= start && dateKey <= (end > start ? adjustDate(end, -1) : start);
+                    if (!start) return false;
+                    return dateKey >= start && dateKey <= (end && end > start ? adjustDate(end, -1) : start);
                 });
 
                 let isToday = (dateKey === todayStr);
-                let boxClass = isToday ? 'bg-sky-50/80 border-sky-400 ring-2 ring-sky-300/40 shadow-sm' : 'bg-white border-slate-200 hover:border-sky-300 hover:shadow-md';
+                let boxClass = isToday ? 'bg-sky-50/90 border-sky-400 ring-2 ring-sky-300/40 shadow-sm' : 'bg-white border-slate-200 hover:border-sky-300 hover:shadow-md';
 
                 let vacationBadge = '';
                 if (isVacation) {
-                    boxClass = 'bg-amber-50/90 border-amber-300 shadow-sm';
-                    vacationBadge = `<span class="block text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded font-bold text-center mb-1 shadow-xs">✈️ Vacation / 休假</span>`;
+                    boxClass = 'bg-amber-50/95 border-amber-300 shadow-sm';
+                    vacationBadge = `<span class="block text-[9px] sm:text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded font-bold text-center mb-1 shadow-xs">✈️ Vacation</span>`;
                 }
 
                 let listHTML = '';
                 dayGoogleEvents.forEach(ev => {
-                    listHTML += `<div class="bg-rose-50 px-2 py-1 rounded-lg border border-rose-200 text-[10px] font-bold text-rose-700 truncate">🔴 Busy: ${ev.summary || 'Busy'}</div>`;
+                    listHTML += `<div class="bg-rose-50 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg border border-rose-200 text-[9px] sm:text-[10px] font-bold text-rose-700 truncate">🔴 ${ev.summary || 'Busy'}</div>`;
                 });
 
                 dayBookings.slice(0, 2).forEach(b => {
-                    listHTML += `<div class="bg-sky-50 px-2 py-1 rounded-lg border border-sky-100 text-[10px] font-bold text-sky-800 truncate">🏊 ${b["Full Name"]} (${b["Pax"]}p)</div>`;
+                    listHTML += `<div class="bg-sky-50 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg border border-sky-100 text-[9px] sm:text-[10px] font-bold text-sky-800 truncate">🏊 ${b["Full Name"]} (${b["Pax"]}p)</div>`;
                 });
 
                 const totalItemsCount = dayBookings.length + dayGoogleEvents.length;
 
                 grid.innerHTML += `
-                    <div onclick="openDayModal('${dateKey}')" class="min-h-[145px] ${boxClass} border rounded-2xl p-2.5 flex flex-col justify-between cursor-pointer transition select-none">
+                    <div onclick="openDayModal('${dateKey}')" class="min-h-[110px] sm:min-h-[145px] ${boxClass} border rounded-2xl p-2 sm:p-2.5 flex flex-col justify-between cursor-pointer transition select-none">
                         <div class="flex justify-between items-center mb-1">
                             <span class="text-xs font-bold ${isToday ? 'text-sky-600 font-extrabold bg-sky-100 px-2 py-0.5 rounded-lg' : 'text-slate-700'}">${day}</span>
-                            ${totalItemsCount > 0 ? `<span class="text-[10px] font-bold bg-slate-800 text-white px-1.5 py-0.5 rounded-md shadow-xs">${totalItemsCount} Events</span>` : ''}
+                            ${totalItemsCount > 0 ? `<span class="text-[9px] sm:text-[10px] font-bold bg-slate-800 text-white px-1.5 py-0.5 rounded-md shadow-xs">${totalItemsCount}</span>` : ''}
                         </div>
                         ${vacationBadge}
-                        <div class="space-y-1.5 flex-1">
+                        <div class="space-y-1 flex-1 overflow-hidden">
                             ${listHTML}
                         </div>
                     </div>
@@ -306,16 +316,16 @@
             }
 
             const dayBookings = bookings.filter(b => {
-                const actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
-                return actDate === dateStr;
+                let actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
+                let status = (b["Status"] || '').toLowerCase();
+                return actDate === dateStr && !status.includes('cancel');
             });
 
-            const todayStr = new Date().toLocaleDateString('en-CA');
             const dayGoogleEvents = googleEvents.filter(ev => {
                 const start = ev.start.date || (ev.start.dateTime ? ev.start.dateTime.split('T')[0] : '');
                 const end = ev.end.date || (ev.end.dateTime ? ev.end.dateTime.split('T')[0] : '');
-                if (end < todayStr) return false;
-                return dateStr >= start && dateStr <= (end > start ? adjustDate(end, -1) : start);
+                if (!start) return false;
+                return dateKey >= start && dateKey <= (end && end > start ? adjustDate(end, -1) : start);
             });
 
             let html = '';
@@ -359,7 +369,7 @@
             }
 
             if (dayBookings.length === 0 && dayGoogleEvents.length === 0 && !isVacation) {
-                html = `<p class="text-slate-400 text-xs italic text-center py-4">No future events or dive trips scheduled on this date.</p>`;
+                html = `<p class="text-slate-400 text-xs italic text-center py-4">No events or dive trips scheduled on this date.</p>`;
             }
 
             content.innerHTML = html;
