@@ -62,7 +62,7 @@
                 <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-50 font-semibold text-xs transition"><span>⭐</span> Guest Review Kiosk / 客户评价</a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving Owner System v3.9</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving Owner System v3.10</div>
     </div>
 
     <div class="max-w-[95%] md:max-w-[85%] mx-auto px-2 sm:px-6 py-6 sm:py-10">
@@ -74,7 +74,7 @@
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-sky-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">🔐</div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Owner Advanced Control Panel</h1>
-                    <p class="text-slate-500 text-xs mt-0.5">站长高级控制台 • 助理提成规则与费率设置 (@lmdylr)</p>
+                    <p class="text-slate-500 text-xs mt-0.5">站长高级控制台 • 假期阻断与助理提成管理 (@lmdylr)</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -86,7 +86,42 @@
         </header>
 
         <div class="space-y-6 sm:space-y-8">
-            <!-- ASSISTANT COMMISSION & PAYOUT SETTINGS (@lmdylr) -->
+
+            <!-- 1. VACATION & TIME-OFF MANAGER -->
+            <div class="light-panel p-6 sm:p-8 rounded-3xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-base font-bold text-amber-600 flex items-center gap-2">
+                        <span>✈️</span> Vacation & Time-Off Date Blocking / 假期行程与暂停接单设置
+                    </h2>
+                    <span class="text-xs text-slate-400">Security Shield</span>
+                </div>
+                <p class="text-xs text-slate-500 mb-5">
+                    Configure your away dates below. Any booking attempt during this period across your booking forms will be automatically blocked.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Away Start Date / 休假开始日期</label>
+                        <input type="date" id="awayStart" class="w-full light-input rounded-xl px-3.5 py-3 text-xs focus:outline-none cursor-pointer">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Away End Date / 休假结束日期</label>
+                        <input type="date" id="awayEnd" class="w-full light-input rounded-xl px-3.5 py-3 text-xs focus:outline-none cursor-pointer">
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="saveTimeOff()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl text-xs transition shadow-sm">
+                            Save & Lock 🔒
+                        </button>
+                        <button type="button" onclick="clearTimeOff()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 px-3 rounded-xl text-xs transition">
+                            Clear ✕
+                        </button>
+                    </div>
+                </div>
+                <div id="awayStatusDisplay" class="mt-4 text-xs font-semibold text-slate-500">
+                    <!-- Status populates here -->
+                </div>
+            </div>
+
+            <!-- 2. ASSISTANT COMMISSION CONFIGURATION (@lmdylr) -->
             <div class="light-panel p-6 sm:p-8 rounded-3xl">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-base font-bold text-indigo-600 flex items-center gap-2">
@@ -95,7 +130,7 @@
                     <span class="text-xs text-slate-400">Synced to commission.html</span>
                 </div>
                 <p class="text-xs text-slate-500 mb-5">
-                    Adjust your assistant commission calculation rules below. These rules match and power the calculations in your commission.html page.
+                    Adjust your assistant commission rules below. These rules instantly power the calculations on your <a href="commission.html" class="text-indigo-600 underline font-semibold">commission.html</a> page.
                 </p>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
@@ -123,7 +158,7 @@
                 </div>
             </div>
 
-            <!-- QUICK NAVIGATION -->
+            <!-- 3. QUICK NAVIGATION -->
             <div class="light-panel p-6 sm:p-8 rounded-3xl">
                 <h2 class="text-base font-bold text-sky-700 flex items-center gap-2 mb-4"><span>🚀</span> Quick Operations Hub / 核心业务快速导航</h2>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -133,13 +168,23 @@
                     <a href="commission.html" class="p-4 rounded-2xl light-input hover:border-sky-400 transition text-center flex flex-col items-center gap-2 group"><span class="text-2xl">💰</span><span class="text-xs font-bold text-slate-700">Commission Ledger</span></a>
                 </div>
             </div>
+
         </div>
     </div>
 
     <script>
         window.onload = function() {
             checkOwnerAuth();
+            loadSavedTimeOff();
             loadCommissionSettings();
+            ['awayStart', 'awayEnd'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.addEventListener('click', function() {
+                        if (this.showPicker) { try { this.showPicker(); } catch (e) {} }
+                    });
+                }
+            });
         };
 
         function checkOwnerAuth() {
@@ -172,6 +217,54 @@
             document.getElementById('drawerOverlay').classList.toggle('hidden');
         }
 
+        // --- Vacation Time-Off Logic ---
+        function saveTimeOff() {
+            const start = document.getElementById('awayStart').value;
+            const end = document.getElementById('awayEnd').value;
+
+            if (!start || !end) {
+                alert("Please select both start and end dates.");
+                return;
+            }
+            if (start > end) {
+                alert("Start date cannot be after end date.");
+                return;
+            }
+
+            const timeOffRange = { start, end };
+            localStorage.setItem('sabah_diver_timeoff', JSON.stringify(timeOffRange));
+            loadSavedTimeOff();
+            alert("✅ Vacation time-off saved successfully! Booking forms are now locked for these dates.");
+        }
+
+        function clearTimeOff() {
+            localStorage.removeItem('sabah_diver_timeoff');
+            document.getElementById('awayStart').value = '';
+            document.getElementById('awayEnd').value = '';
+            loadSavedTimeOff();
+            alert("Time-off cleared. Booking dates are fully open.");
+        }
+
+        function loadSavedTimeOff() {
+            const saved = localStorage.getItem('sabah_diver_timeoff');
+            const displayEl = document.getElementById('awayStatusDisplay');
+            if(!displayEl) return;
+            
+            if (saved) {
+                try {
+                    const range = JSON.parse(saved);
+                    document.getElementById('awayStart').value = range.start;
+                    document.getElementById('awayEnd').value = range.end;
+                    displayEl.innerHTML = `<span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl font-bold">🔒 Active Lock: Away from ${range.start} to ${range.end}</span>`;
+                } catch(e) {
+                    displayEl.innerHTML = '';
+                }
+            } else {
+                displayEl.innerHTML = `<span class="text-slate-400">No active vacation lock set. All dates available for booking.</span>`;
+            }
+        }
+
+        // --- Commission Settings Logic ---
         function onCommissionTypeChange() {
             const type = document.getElementById('commType').value;
             const container = document.getElementById('rateInputContainer');
