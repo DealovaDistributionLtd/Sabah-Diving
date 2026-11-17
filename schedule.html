@@ -72,7 +72,7 @@
                 </a>
             </nav>
         </div>
-        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v3.9</div>
+        <div class="pt-4 border-t border-slate-100 text-[11px] text-slate-400 text-center">Sabah Diving System v4.2</div>
     </div>
 
     <!-- DAY DETAILS MODAL -->
@@ -102,7 +102,7 @@
                 <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 hidden sm:flex items-center justify-center text-xl text-white shadow-lg">📅</div>
                 <div>
                     <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">Master Operations Calendar</h1>
-                    <p class="text-slate-500 text-xs mt-0.5">全屏月度潜水日程、休假安排与 Google 日历同步总表</p>
+                    <p class="text-slate-500 text-xs mt-0.5">全屏月度潜水日程、多时段休假安排与 Google 日历同步总表</p>
                 </div>
             </div>
             <div class="flex flex-wrap items-center gap-2.5 w-full lg:w-auto justify-between lg:justify-end">
@@ -210,6 +210,22 @@
             fetchAllData();
         }
 
+        // Helper to retrieve all saved vacation periods (supports multi-array & old single format)
+        function getSavedTimeOffList() {
+            try {
+                const saved = localStorage.getItem('sabah_diver_timeoff_list');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed)) return parsed;
+                }
+                const oldSingle = localStorage.getItem('sabah_diver_timeoff');
+                if (oldSingle) {
+                    return [JSON.parse(oldSingle)];
+                }
+            } catch (e) {}
+            return [];
+        }
+
         function renderFullCalendar() {
             const year = navDate.getFullYear();
             const month = navDate.getMonth();
@@ -223,12 +239,7 @@
             const totalDays = new Date(year, month + 1, 0).getDate();
             const todayStr = new Date().toLocaleDateString('en-CA');
 
-            let timeOff = null;
-            try {
-                timeOff = JSON.parse(localStorage.getItem('sabah_diver_timeoff') || 'null');
-            } catch (e) {
-                timeOff = null;
-            }
+            const timeOffList = getSavedTimeOffList();
 
             for (let i = 0; i < firstDayIndex; i++) {
                 grid.innerHTML += `<div class="min-h-[120px] sm:min-h-[145px] bg-slate-100/40 rounded-2xl opacity-20"></div>`;
@@ -239,10 +250,12 @@
                 const dayStr = String(day).padStart(2, '0');
                 const dateKey = `${year}-${monthStr}-${dayStr}`;
 
+                // Check if date falls into ANY vacation range in the list
                 let isVacation = false;
-                if (timeOff && timeOff.start && timeOff.end) {
-                    if (dateKey >= timeOff.start && dateKey <= timeOff.end) {
+                for (const range of timeOffList) {
+                    if (range.start && range.end && dateKey >= range.start && dateKey <= range.end) {
                         isVacation = true;
+                        break;
                     }
                 }
 
@@ -309,15 +322,8 @@
             const content = document.getElementById('modalContent');
             content.innerHTML = '';
 
-            let timeOff = null;
-            try {
-                timeOff = JSON.parse(localStorage.getItem('sabah_diver_timeoff') || 'null');
-            } catch(e) {}
-
-            let isVacation = false;
-            if (timeOff && timeOff.start && timeOff.end && dateStr >= timeOff.start && dateStr <= timeOff.end) {
-                isVacation = true;
-            }
+            const timeOffList = getSavedTimeOffList();
+            const matchingVacations = timeOffList.filter(item => item.start && item.end && dateStr >= item.start && dateStr <= item.end);
 
             const dayBookings = bookings.filter(b => {
                 let actDate = (b["Activity Date"] || '').toString().replace(/^'/, '').trim();
@@ -334,13 +340,15 @@
 
             let html = '';
             
-            if (isVacation) {
-                html += `
-                    <div class="bg-amber-50 p-3.5 rounded-2xl border border-amber-200 text-xs text-amber-800 mb-3 flex items-center gap-2">
-                        <span class="text-base">✈️</span>
-                        <div><strong>Active Vacation / Time-Off Period:</strong> You are set as away during these dates. New bookings are blocked.</div>
-                    </div>
-                `;
+            if (matchingVacations.length > 0) {
+                matchingVacations.forEach((vac, idx) => {
+                    html += `
+                        <div class="bg-amber-50 p-3.5 rounded-2xl border border-amber-200 text-xs text-amber-800 mb-3 flex items-center gap-2">
+                            <span class="text-base">✈️</span>
+                            <div><strong>Active Vacation Period #${idx + 1}:</strong> From ${vac.start} to ${vac.end}. Bookings are blocked.</div>
+                        </div>
+                    `;
+                });
             }
 
             if (dayGoogleEvents.length > 0) {
@@ -372,7 +380,7 @@
                 });
             }
 
-            if (dayBookings.length === 0 && dayGoogleEvents.length === 0 && !isVacation) {
+            if (dayBookings.length === 0 && dayGoogleEvents.length === 0 && matchingVacations.length === 0) {
                 html = `<p class="text-slate-400 text-xs italic text-center py-4">No events or dive trips scheduled on this date.</p>`;
             }
 
